@@ -1,7 +1,7 @@
 # Личный проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
 * Студент: [Алексей  Леоненко](https://up.htmlacademy.ru/ecmascript/11/user/224714).
-* Наставник: `Владимир Турецкий`.
+* Наставник: [Владимир Турецкий](https://htmlacademy.ru/profile/id439019).
 
 ---
 
