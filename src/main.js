@@ -268,11 +268,11 @@ const render = (template, placeElem, position) => {
 const tripMain = document.querySelector(`.trip-main`);
 render(createTripInfo(), tripMain, `afterbegin`);
 
-const tripInfo = document.querySelector(`.trip-info`);
+const tripInfo = tripMain.querySelector(`.trip-info`);
 render(createTripInfoMain(), tripInfo, `afterbegin`);
 render(createTripInfoCost(), tripInfo, `beforeend`);
 
-const tripControls = document.querySelector(`.trip-controls`);
+const tripControls = tripMain.querySelector(`.trip-controls`);
 render(createMenu(), tripControls, `afterbegin`);
 render(createFilters(), tripControls, `beforeend`);
 
@@ -281,10 +281,10 @@ render(createAddEventForm(), tripEvents, `beforeend`);
 render(createTripSort(), tripEvents, `beforeend`);
 render(createTripDays(), tripEvents, `beforeend`);
 
-const tripDays = document.querySelector(`.trip-days`);
+const tripDays = tripEvents.querySelector(`.trip-days`);
 render(createTripDay(), tripDays, `beforeend`);
 
-const tripEventsList = document.querySelector(`.trip-events__list`);
+const tripEventsList = tripDays.querySelector(`.trip-events__list`);
 for (let i = 0; i < TRIP_POINT_COUNT; i++) {
   render(createTripEvent(), tripEventsList, `beforeend`);
 }
