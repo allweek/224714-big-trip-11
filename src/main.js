@@ -2,13 +2,13 @@ import {createTripInfo} from "./components/trip-info";
 import {createTripInfoMain} from "./components/trip-info-main";
 import {createTripInfoCost} from "./components/trip-info-cost";
 import {createMenu} from "./components/menu";
-import {createFilters} from "./components/filters";
+import {createFilters} from "./components/filter";
 import {createAddEventForm} from "./components/addEvent";
 import {createTripSort} from "./components/sort";
 import {createTripDays} from "./components/days";
 import {createTripDay} from "./components/day";
 import {createTripEvent} from "./components/event";
-
+import {filterNames} from "./mock/filter";
 
 const TRIP_POINT_COUNT = 3;
 
@@ -25,7 +25,8 @@ render(createTripInfoCost(), tripInfo, `beforeend`);
 
 const tripControls = tripMain.querySelector(`.trip-controls`);
 render(createMenu(), tripControls, `afterbegin`);
-render(createFilters(), tripControls, `beforeend`);
+
+render(createFilters(filterNames), tripControls, `beforeend`);
 
 const tripEvents = document.querySelector(`.trip-events`);
 render(createAddEventForm(), tripEvents, `beforeend`);

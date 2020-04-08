@@ -1,4 +1,4 @@
-const createTripEvent = () => {
+export const createTripEvent = () => {
   return (
     `<li class="trip-events__item">
       <div class="event">
@@ -36,5 +36,3 @@ const createTripEvent = () => {
     </li>`
   );
 };
-
-export {createTripEvent};
