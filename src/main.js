@@ -1,3 +1,5 @@
+import {eventTypes} from "./const";
+import {filterNames} from "./const";
 import {createTripInfo} from "./components/trip-info";
 import {createTripInfoMain} from "./components/trip-info-main";
 import {createTripInfoCost} from "./components/trip-info-cost";
@@ -7,10 +9,13 @@ import {createAddEventForm} from "./components/addEvent";
 import {createTripSort} from "./components/sort";
 import {createTripDays} from "./components/days";
 import {createTripDay} from "./components/day";
+import {generateEvents} from "./mock/event";
 import {createTripEvent} from "./components/event";
-import {filterNames} from "./mock/filter";
+import {FILTERS} from "./const";
 
-const TRIP_POINT_COUNT = 3;
+const EVENT_COUNT = 3;
+
+var events = generateEvents(EVENT_COUNT);
 
 const render = (template, placeElem, position) => {
   placeElem.insertAdjacentHTML(position, template);
@@ -37,7 +42,8 @@ const tripDays = tripEvents.querySelector(`.trip-days`);
 render(createTripDay(), tripDays, `beforeend`);
 
 const tripEventsList = tripDays.querySelector(`.trip-events__list`);
-for (let i = 0; i < TRIP_POINT_COUNT; i++) {
-  render(createTripEvent(), tripEventsList, `beforeend`);
-}
+for (let i = 1; i < events.length; i++) {
+  render(createTripEvent(events[i]), tripEventsList, `beforeend`);
+};
+
 
