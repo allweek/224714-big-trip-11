@@ -1,8 +1,8 @@
-import {getRandomInteger} from "../utils";
+import {getRandomIntegerNumber} from "../utils";
 import {eventTypes} from "../const";
 
 const getRandomEvent = () => {
-  const index = getRandomInteger(0, eventTypes.length - 1);
+  const index = getRandomIntegerNumber(0, eventTypes.length - 1);
   return eventTypes[index];
 };
 

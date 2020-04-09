@@ -1,24 +1,19 @@
-import {generateOption} from "../components/event-option";
+const cities = [`New York`, `Saint-Petersburg`, `Tokyo`, `Pisa`];
 
-const generateDestination = () => {
-  return {
-    description: `dsafasf`,
-    photos: `http://picsum.photos/248/152?r=${Math.random()}`
-  };
-};
-
-const generateDestinations = (count) => {
-  return new Array(count)
-    .fill(``)
-    .map(generateDestination);
-};
+import {getRandomArrayElem} from "../utils";
+import {eventTypes} from "../const";
+import {generateOptions} from "./event-option";
+import {generateDestination} from "./destination";
 
 const generateEvent = () => {
   return {
-    eventType: `drive`,
-    city: `New York`,
-    eventOptions: generateOption(),
-    desination: generateDestinations(),
+    eventType: getRandomArrayElem(eventTypes),
+    city: getRandomArrayElem(cities),
+    eventOptions: generateOptions(),
+    destination: generateDestination(),
+    price: `100`,
+    timeStart: `11:20`,
+    timeEnd: `16:05`
     //остальные данные их ТЗ
   };
 };
