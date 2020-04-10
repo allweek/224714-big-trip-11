@@ -1,20 +1,26 @@
-const cities = [`New York`, `Saint-Petersburg`, `Tokyo`, `Pisa`];
-
 import {getRandomArrayElem} from "../utils";
 import {eventTypes} from "../const";
-import {generateOptions} from "./event-option";
+import {generateOptions} from "./option";
 import {generateDestination} from "./destination";
+import {cities} from "../const";
+
+const getTimeDiff = (timeStart, timeEnd) => {
+  console.log(timeEnd - timeStart);
+  return timeDiff;
+};
+
 
 const generateEvent = () => {
+  const type = getRandomArrayElem(eventTypes);
+  console.log();
   return {
-    eventType: getRandomArrayElem(eventTypes),
+    eventType: type,
     city: getRandomArrayElem(cities),
-    eventOptions: generateOptions(),
+    eventOptions: generateOptions(type.toLowerCase()),
     destination: generateDestination(),
-    price: `100`,
+    price: 100, // пока поставил фиксированную
     timeStart: `11:20`,
     timeEnd: `16:05`
-    //остальные данные их ТЗ
   };
 };
 

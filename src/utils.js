@@ -1,5 +1,3 @@
-import {eventTypes} from "./const";
-
 const getRandomIntegerNumber = (min, max) => {
   let rand = min + Math.random() * (max + 1 - min);
   return Math.floor(rand);
@@ -11,3 +9,5 @@ const getRandomArrayElem = (array) => {
 };
 
 export {getRandomIntegerNumber, getRandomArrayElem};
+
+

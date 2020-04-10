@@ -4,7 +4,7 @@ import {createTripInfoMain} from "./components/trip-info-main";
 import {createTripInfoCost} from "./components/trip-info-cost";
 import {createMenu} from "./components/menu";
 import {createFilters} from "./components/filter";
-import {createAddEventForm} from "./components/addEvent";
+import {createEventEditTemplate} from "./components/event-edit";
 import {createTripSort} from "./components/sort";
 import {createTripDays} from "./components/days";
 import {createTripDay} from "./components/day";
@@ -32,7 +32,8 @@ render(createMenu(), tripControls, `afterbegin`);
 render(createFilters(filterNames), tripControls, `beforeend`);
 
 const tripEvents = document.querySelector(`.trip-events`);
-render(createAddEventForm(), tripEvents, `beforeend`);
+console.log(events[0]);
+render(createEventEditTemplate(events[0]), tripEvents, `beforeend`);
 render(createTripSort(), tripEvents, `beforeend`);
 render(createTripDays(), tripEvents, `beforeend`);
 
