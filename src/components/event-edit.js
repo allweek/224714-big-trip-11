@@ -48,20 +48,20 @@ const getAllEventTypes = (eventTypes) => {
 
 const eventTypesGroups = getAllEventTypes(eventTypes);
 
-const createEventTypeMarkup = (tt) => {
+const createEventTypeMarkup = (eventType) => {
   return (
     `<div class="event__type-item">
       <input
-        id="event-type-${tt.name.toLowerCase()}-1"
+        id="event-type-${eventType.name.toLowerCase()}-1"
         class="event__type-input  visually-hidden"
         type="radio"
         name="event-type"
-        value="${tt.name.toLowerCase()}"
+        value="${eventType.name.toLowerCase()}"
       />
       <label
         class="event__type-label
-        event__type-label--${tt.name.toLowerCase()}"
-        for="event-type-${tt.name.toLowerCase()}-1">${tt.name}
+        event__type-label--${eventType.name.toLowerCase()}"
+        for="event-type-${eventType.name.toLowerCase()}-1">${eventType.name}
       </label>
     </div>`
   );
@@ -89,7 +89,7 @@ const createEventTypeGroupsMarkup = (eventTypes) => {
 };
 
 
-export const createEventEditTemplate = (event) => {
+export const createEventEditTemplate = (event, isNew) => {
   const {eventType, city, eventOptions, destination, price, timeStart, timeEnd} = event;
 
   const citiesList = createCitiesListElem(cities);
@@ -169,6 +169,22 @@ export const createEventEditTemplate = (event) => {
             </div>
           </section>
         </section>
+        
+        ${
+    isNew ?
+      `<section class="event__section  event__section--destination">
+          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+          <p class="event__destination-description">${destination.description}</p>
+
+          <div class="event__photos-container">
+            <div class="event__photos-tape">
+              <img class="event__photo" src="${destination.photo}" alt="Event photo">           
+            </div>
+          </div>
+        </section>
+      </section>`
+      : ``
+    }
       </form>
     </li>`
   );
