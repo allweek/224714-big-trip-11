@@ -10,6 +10,7 @@ import {createTripDays} from "./components/days";
 import {createTripDay} from "./components/day";
 import {generateEvents} from "./mock/event";
 import {createEventMarkup} from "./components/event";
+import {createEventAddTemplate} from "./components/event-add";
 
 const EVENT_COUNT = 15;
 
@@ -32,15 +33,15 @@ render(createMenu(), tripControls, `afterbegin`);
 render(createFilters(filterNames), tripControls, `beforeend`);
 
 const tripEvents = document.querySelector(`.trip-events`);
-console.log(events[0]);
-render(createEventEditTemplate(events[0]), tripEvents, `beforeend`);
 render(createTripSort(), tripEvents, `beforeend`);
+render(createEventAddTemplate(events[0]), tripEvents, `beforeend`);
 render(createTripDays(), tripEvents, `beforeend`);
 
 const tripDays = tripEvents.querySelector(`.trip-days`);
 render(createTripDay(), tripDays, `beforeend`);
 
 const tripEventsList = tripDays.querySelector(`.trip-events__list`);
+render(createEventEditTemplate(events[0]), tripEventsList, `beforeend`);
 for (let i = 1; i < events.length; i++) {
   render(createEventMarkup(events[i]), tripEventsList, `beforeend`);
 }

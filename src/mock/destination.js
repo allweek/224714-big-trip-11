@@ -21,7 +21,7 @@ const generateDestinationDescription = () => {
 const generateDestination = () => {
   return {
     description: generateDestinationDescription(),
-    photos: `http://picsum.photos/248/152?r=${Math.random()}`
+    photo: `http://picsum.photos/248/152?r=${Math.random()}`
   };
 };
 

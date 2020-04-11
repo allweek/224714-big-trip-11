@@ -1,18 +1,11 @@
 import {getRandomArrayElem} from "../utils";
-import {eventTypes} from "../const";
+import {eventTypes, cities} from "../const";
 import {generateOptions} from "./option";
 import {generateDestination} from "./destination";
-import {cities} from "../const";
-
-const getTimeDiff = (timeStart, timeEnd) => {
-  console.log(timeEnd - timeStart);
-  return timeDiff;
-};
 
 
 const generateEvent = () => {
-  const type = getRandomArrayElem(eventTypes);
-  console.log();
+  const type = getRandomArrayElem(eventTypes).name;
   return {
     eventType: type,
     city: getRandomArrayElem(cities),
