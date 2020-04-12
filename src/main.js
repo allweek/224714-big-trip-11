@@ -1,3 +1,4 @@
+import {flatpickr} from "flatpickr";
 import {filterNames} from "./const";
 import {createTripInfo} from "./components/trip-info";
 import {createTripInfoMain} from "./components/trip-info-main";
@@ -34,14 +35,19 @@ render(createFilters(filterNames), tripControls, `beforeend`);
 
 const tripEvents = document.querySelector(`.trip-events`);
 render(createTripSort(), tripEvents, `beforeend`);
-render(createEventEditTemplate(events[0], true), tripEvents, `beforeend`);
+render(createEventEditTemplate(events[0], true, 0), tripEvents, `beforeend`);
 render(createTripDays(), tripEvents, `beforeend`);
 
 const tripDays = tripEvents.querySelector(`.trip-days`);
-render(createTripDay(), tripDays, `beforeend`);
+const date = `2019-03-18`;
+render(createTripDay(date), tripDays, `beforeend`);
 
 const tripEventsList = tripDays.querySelector(`.trip-events__list`);
-render(createEventEditTemplate(events[0], false), tripEventsList, `beforeend`);
+
 for (let i = 1; i < events.length; i++) {
   render(createEventMarkup(events[i]), tripEventsList, `beforeend`);
 }
+
+const tripEventsListElem = tripEventsList.querySelector(`.trip-events__item`);
+tripEventsListElem.innerHTML = createEventEditTemplate(events[0], false, 0);
+

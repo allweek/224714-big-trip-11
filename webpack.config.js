@@ -1,5 +1,5 @@
 const path = require(`path`);
-
+const flatpickr = require("flatpickr");
 
 module.exports = {
   mode: `development`, // Режим сборки

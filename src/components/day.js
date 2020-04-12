@@ -1,4 +1,4 @@
-export const createTripDay = () => {
+export const createTripDay = (date) => {
   return (
     `<li class="trip-days__item  day">
       <div class="day__info">

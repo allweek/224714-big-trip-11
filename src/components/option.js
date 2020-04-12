@@ -11,9 +11,9 @@ export const createOptionsMarkup = (event) => {
       ).join(`\n`);
     return (
       `<h4 class="visually-hidden">Offers:</h4>
-      <ul class="event__selected-offers">
-        ${options}
-      </ul>`
+       <ul class="event__selected-offers">
+         ${options}
+       </ul>`
     );
   } else {
     return ``;
