@@ -8,7 +8,8 @@ export const createOptionsMarkup = (event) => {
             &plus;
             &euro;&nbsp;<span class="event__offer-price">${it.price}</span>
         </li>`
-      ).join(`\n`);
+      )
+      .join(`\n`);
     return (
       `<h4 class="visually-hidden">Offers:</h4>
        <ul class="event__selected-offers">

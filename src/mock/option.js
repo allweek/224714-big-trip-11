@@ -6,8 +6,8 @@ const offersByEventsType = {
       price: 50
     },
     {
-      name: `comfort`, // ...class в одном месте фраза длиннее
-      title: `Switch to comfort`,
+      name: `comfort`,
+      title: `Switch to comfort`, // ...class в одном месте фраза длиннее
       price: 100
     },
     {

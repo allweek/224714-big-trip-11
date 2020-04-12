@@ -1,12 +1,11 @@
 import {createOptionsMarkup} from "./option";
-
-const createPhoto = () => {
-  return (`http://picsum.photos/248/152?r=${Math.random()}`);
-};
+import {formatTime, formatTimeFromMin} from "../utils";
 
 export const createEventMarkup = (event) => {
-  const {eventType, city, eventOptions, destination, price, timeStart, timeEnd} = event;
-  console.log(event);
+  const {eventType, city, eventOptions, destination, price, date, timeStart, duration} = event;
+  date.setMinutes(date.getMinutes() + duration);
+  const timeEnd = formatTime(date);
+  const durationFormated = formatTimeFromMin(duration);
   return (
     `<li class="trip-events__item">
       <div class="event">
@@ -21,7 +20,7 @@ export const createEventMarkup = (event) => {
                  &mdash;
             <time class="event__end-time" datetime="2019-03-18T16:05">${timeEnd}</time>
           </p>
-          <p class="event__duration">1H 35M</p>
+          <p class="event__duration">${durationFormated}</p>
           </div>
 
           <p class="event__price">

@@ -1,5 +1,7 @@
+import flatpickr from "flatpickr";
 import {cities} from "../const";
 import {eventTypes} from "../const";
+import {formatTime, formatTimeFromMin, castTimeFormat} from "../utils";
 
 const createCitiesListElem = (cities) => {
   return cities
@@ -7,7 +9,8 @@ const createCitiesListElem = (cities) => {
       return (
         `<option value="${city}"></option>`
       );
-    }).join(`\n`);
+    })
+    .join(`\n`);
 };
 
 const createOfferMarkup = (eventOptions, index) => {
@@ -16,8 +19,7 @@ const createOfferMarkup = (eventOptions, index) => {
       return (
         `<div class="event__offer-selector">
           <input 
-            class="event__offer-checkbox  
-            visually-hidden" 
+            class="event__offer-checkbox visually-hidden" 
             id="event-offer-${option.name}-${index}" 
             type="checkbox" 
             name="event-offer-${option.name}" 
@@ -90,13 +92,25 @@ const createEventTypeGroupsMarkup = (eventTypes, index) => {
 
 
 export const createEventEditTemplate = (event, isNew, index) => {
-  const {eventType, city, eventOptions, destination, price, timeStart, timeEnd} = event;
+  const {eventType, city, eventOptions, destination, price, date, timeStart, duration} = event;
 
   const citiesList = createCitiesListElem(cities);
 
   const offersMarkup = eventOptions ? createOfferMarkup(eventOptions, index) : ``;
 
   const eventTypesGroupsMarkup = createEventTypeGroupsMarkup(eventTypes, index);
+
+  const dateText = castTimeFormat(date.getDate()) + `/` + castTimeFormat(date.getMonth() + 1) + `/` + (date.getFullYear() % 1000);
+  date.setMinutes(date.getMinutes() + duration);
+  const timeEnd = formatTime(date);
+
+  // на будущее для дат нужен будет flatpicker
+  // flatpickr(`#event-start-time-${index}`, {
+  //   dateFormat: `d/m/y H:i`
+  // });
+  // flatpickr(`#event-end-time-${index}`, {
+  //   dateFormat: `d/m/y H:i`
+  // });
 
   return (
     `<form class="${isNew ? `trip-events__item` : ``} event  event--edit" action="#" method="post">
@@ -127,12 +141,12 @@ export const createEventEditTemplate = (event, isNew, index) => {
           <label class="visually-hidden" for="event-start-time-${index}">
             From
           </label>
-          <input class="event__input  event__input--time" id="event-start-time-${index}" type="text" name="event-start-time" value="18/03/19 12:25">
+          <input class="event__input  event__input--time" id="event-start-time-${index}" type="text" name="event-start-time" value="${dateText} ${timeStart}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-${index}">
             To
           </label>
-          <input class="event__input  event__input--time" id="event-end-time-${index}" type="text" name="event-end-time" value="18/03/19 13:35">
+          <input class="event__input  event__input--time" id="event-end-time-${index}" type="text" name="event-end-time" value="${dateText} ${timeEnd}">
         </div>
 
         <div class="event__field-group  event__field-group--price">

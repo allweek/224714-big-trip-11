@@ -1,4 +1,3 @@
-import {flatpickr} from "flatpickr";
 import {filterNames} from "./const";
 import {createTripInfo} from "./components/trip-info";
 import {createTripInfoMain} from "./components/trip-info-main";
@@ -10,6 +9,7 @@ import {createTripSort} from "./components/sort";
 import {createTripDays} from "./components/days";
 import {createTripDay} from "./components/day";
 import {generateEvents} from "./mock/event";
+import {createTripEventsList} from "./components/trip-event-list";
 import {createEventMarkup} from "./components/event";
 
 
@@ -38,16 +38,41 @@ render(createTripSort(), tripEvents, `beforeend`);
 render(createEventEditTemplate(events[0], true, 0), tripEvents, `beforeend`);
 render(createTripDays(), tripEvents, `beforeend`);
 
+
+const getSortedEvents = () => {
+  return events.sort((a, b)=> a.date.getTime() - b.date.getTime());
+};
+
+const sortedEvents = getSortedEvents();
+
+const getAllDays = (events) => {
+  const eventDays = new Set();
+  events.forEach((item) => {
+    if (!eventDays.has(item.date.getDate())) {
+      eventDays.add(item.date.getDate());
+    }
+  });
+  return eventDays;
+};
+
+const allDays = getAllDays(events);
 const tripDays = tripEvents.querySelector(`.trip-days`);
-const date = `2019-03-18`;
-render(createTripDay(date), tripDays, `beforeend`);
+
+let daysCount = 0;
+for (const day of allDays) {
+  daysCount++;
+  const dayEvents = [];
+  for (const event of sortedEvents) {
+    if (day === event.date.getDate()) {
+      dayEvents.push(event);
+    }
+  }
+  const dayTripEventsList = dayEvents.map((it) => createEventMarkup(it)).join(`\n`);
+  render(createTripDay(day, dayTripEventsList, daysCount), tripDays, `beforeend`);
+}
 
 const tripEventsList = tripDays.querySelector(`.trip-events__list`);
 
-for (let i = 1; i < events.length; i++) {
-  render(createEventMarkup(events[i]), tripEventsList, `beforeend`);
-}
-
 const tripEventsListElem = tripEventsList.querySelector(`.trip-events__item`);
-tripEventsListElem.innerHTML = createEventEditTemplate(events[0], false, 0);
+tripEventsListElem.innerHTML = createEventEditTemplate(events[0], false, 1);
 
