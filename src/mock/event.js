@@ -1,5 +1,4 @@
-import {getRandomArrayElem} from "../utils";
-import {getRandomIntegerNumber} from "../utils";
+import {getRandomIntegerNumber, getRandomArrayElem} from "./temporary-functions-for-mocks";
 import {eventTypes, cities} from "../const";
 import {generateOptions} from "./option";
 import {generateDestination} from "./destination";
@@ -18,7 +17,7 @@ const generateEvent = () => {
   date.setHours(hourRange);
 
   const timeStart = formatTime(date);
-  const duration = getRandomIntegerNumber(15, 300);
+  const duration = getRandomIntegerNumber(15, 3000);
 
   const price = Math.floor(getRandomIntegerNumber(20, 600) / 10) * 10;
 

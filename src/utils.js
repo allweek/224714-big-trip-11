@@ -1,33 +1,27 @@
-const getRandomIntegerNumber = (min, max) => {
-  let rand = min + Math.random() * (max + 1 - min);
-  return Math.floor(rand);
-};
-
-const getRandomArrayElem = (array) => {
-  const index = getRandomIntegerNumber(0, array.length - 1);
-  return array[index];
-};
-
 const castTimeFormat = (value) => {
   return value < 10 ? `0${value}` : String(value);
 };
 
 const formatTime = (date) => {
-  const hours = castTimeFormat(date.getHours() % 24);
+  const hours = castTimeFormat(date.getHours());
   const minutes = castTimeFormat(date.getMinutes());
 
   return `${hours}:${minutes}`;
 };
 
 const formatTimeFromMin = (minutes) => {
-  let hours = castTimeFormat(Math.floor(minutes / 60));
-  hours = hours !== `00` ? hours + `H` : ``;
-  const min = castTimeFormat(minutes % 60);
+  console.log(minutes);
+  let days = castTimeFormat(Math.floor(minutes / 60 / 24));
+  let hours = castTimeFormat(Math.floor(minutes / 60) % 24);
+  let mins = castTimeFormat(minutes - days * 24 * 60 - hours * 60);
 
-  return `${hours} ${min}M`;
+  days = days !== `00` ? `${days}D` : ``;
+  hours = hours !== `00` ? `${hours}H` : ``;
+  mins = mins !== `00` ? `${mins}M` : ``;
+  return `${days} ${hours} ${mins}`;
 };
 
 
-export {getRandomIntegerNumber, getRandomArrayElem, formatTime, formatTimeFromMin, castTimeFormat};
+export {formatTime, formatTimeFromMin, castTimeFormat};
 
 

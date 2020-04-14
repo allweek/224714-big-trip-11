@@ -43,6 +43,7 @@ const getSortedEvents = () => {
 };
 
 const sortedEvents = getSortedEvents();
+console.log(sortedEvents);
 
 const getAllDays = (eventsList) => {
   const eventDays = new Set();
@@ -67,7 +68,9 @@ for (const day of allDays) {
     }
   }
   const dayTripEventsList = dayEvents.map((it) => createEventMarkup(it)).join(`\n`);
-  render(createTripDay(day, dayTripEventsList, daysCount), tripDays, `beforeend`);
+  const date = dayEvents[0][`date`];
+  render(createTripDay(date, dayTripEventsList, daysCount), tripDays, `beforeend`);
+  console.log(dayEvents);
 }
 
 const tripEventsList = tripDays.querySelector(`.trip-events__list`);
