@@ -1,6 +1,3 @@
-import {createEventMarkup} from "./event";
-
-
 export const createTripDay = (day, eventsList, index) => {
   return (
     `<li class="trip-days__item  day">

@@ -9,7 +9,6 @@ import {createTripSort} from "./components/sort";
 import {createTripDays} from "./components/days";
 import {createTripDay} from "./components/day";
 import {generateEvents} from "./mock/event";
-import {createTripEventsList} from "./components/trip-event-list";
 import {createEventMarkup} from "./components/event";
 
 
@@ -45,9 +44,9 @@ const getSortedEvents = () => {
 
 const sortedEvents = getSortedEvents();
 
-const getAllDays = (events) => {
+const getAllDays = (eventsList) => {
   const eventDays = new Set();
-  events.forEach((item) => {
+  eventsList.forEach((item) => {
     if (!eventDays.has(item.date.getDate())) {
       eventDays.add(item.date.getDate());
     }

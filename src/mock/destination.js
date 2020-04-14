@@ -14,7 +14,7 @@ const generateDestinationDescription = () => {
     const randomSentence = descriptions.splice(random, 1);
     destinationDescription += randomSentence + `. `;
     i++;
-  };
+  }
   return destinationDescription.trim();
 };
 

@@ -1,10 +1,9 @@
-import flatpickr from "flatpickr";
 import {cities} from "../const";
 import {eventTypes} from "../const";
-import {formatTime, formatTimeFromMin, castTimeFormat} from "../utils";
+import {formatTime, castTimeFormat} from "../utils";
 
-const createCitiesListElem = (cities) => {
-  return cities
+const createCitiesListElem = (citiesList) => {
+  return citiesList
     .map((city) => {
       return (
         `<option value="${city}"></option>`
@@ -38,9 +37,9 @@ const createOfferMarkup = (eventOptions, index) => {
     .join(`\n`);
 };
 
-const getAllEventTypes = (eventTypes) => {
+const getAllEventTypes = (types) => {
   const eventTypesGroups = new Set();
-  eventTypes.forEach((item) => {
+  types.forEach((item) => {
     if (!eventTypesGroups.has(item.group)) {
       eventTypesGroups.add(item.group);
     }
@@ -69,11 +68,11 @@ const createEventTypeMarkup = (eventType, index) => {
   );
 };
 
-const createEventTypeGroupsMarkup = (eventTypes, index) => {
+const createEventTypeGroupsMarkup = (events, index) => {
   const fieldsetsMarkup = [];
   for (const group of eventTypesGroups) {
     const eventTypeMarkups = [];
-    eventTypes.forEach((item) => {
+    events.forEach((item) => {
       if (item.group === group) {
         eventTypeMarkups.push(
             createEventTypeMarkup(item, index)
@@ -86,7 +85,7 @@ const createEventTypeGroupsMarkup = (eventTypes, index) => {
               ${eventTypeMarkups.join(`\n`)}
         </fieldset>`
     );
-  };
+  }
   return fieldsetsMarkup.join(`\n`);
 };
 
@@ -103,14 +102,6 @@ export const createEventEditTemplate = (event, isNew, index) => {
   const dateText = castTimeFormat(date.getDate()) + `/` + castTimeFormat(date.getMonth() + 1) + `/` + (date.getFullYear() % 1000);
   date.setMinutes(date.getMinutes() + duration);
   const timeEnd = formatTime(date);
-
-  // на будущее для дат нужен будет flatpicker
-  // flatpickr(`#event-start-time-${index}`, {
-  //   dateFormat: `d/m/y H:i`
-  // });
-  // flatpickr(`#event-end-time-${index}`, {
-  //   dateFormat: `d/m/y H:i`
-  // });
 
   return (
     `<form class="${isNew ? `trip-events__item` : ``} event  event--edit" action="#" method="post">
