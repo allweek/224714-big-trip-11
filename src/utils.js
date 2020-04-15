@@ -9,8 +9,8 @@ const formatTime = (date) => {
   return `${hours}:${minutes}`;
 };
 
-const formatTimeFromMin = (minutes) => {
-  console.log(minutes);
+const formatTimeFromMs = (ms) => {
+  const minutes = ms / 1000 / 60;
   let days = castTimeFormat(Math.floor(minutes / 60 / 24));
   let hours = castTimeFormat(Math.floor(minutes / 60) % 24);
   let mins = castTimeFormat(minutes - days * 24 * 60 - hours * 60);
@@ -22,6 +22,6 @@ const formatTimeFromMin = (minutes) => {
 };
 
 
-export {formatTime, formatTimeFromMin, castTimeFormat};
+export {formatTime, formatTimeFromMs, castTimeFormat};
 
 

@@ -39,17 +39,17 @@ render(createTripDays(), tripEvents, `beforeend`);
 
 
 const getSortedEvents = () => {
-  return events.sort((a, b)=> a.date.getTime() - b.date.getTime());
+  return events.sort((a, b)=> a.dateStart.getTime() - b.dateStart.getTime());
 };
 
 const sortedEvents = getSortedEvents();
-console.log(sortedEvents);
+
 
 const getAllDays = (eventsList) => {
   const eventDays = new Set();
   eventsList.forEach((item) => {
-    if (!eventDays.has(item.date.getDate())) {
-      eventDays.add(item.date.getDate());
+    if (!eventDays.has(item.dateStart.getDate())) {
+      eventDays.add(item.dateStart.getDate());
     }
   });
   return eventDays;
@@ -63,14 +63,13 @@ for (const day of allDays) {
   daysCount++;
   const dayEvents = [];
   for (const event of sortedEvents) {
-    if (day === event.date.getDate()) {
+    if (day === event.dateStart.getDate()) {
       dayEvents.push(event);
     }
   }
   const dayTripEventsList = dayEvents.map((it) => createEventMarkup(it)).join(`\n`);
-  const date = dayEvents[0][`date`];
+  const date = dayEvents[0][`dateStart`];
   render(createTripDay(date, dayTripEventsList, daysCount), tripDays, `beforeend`);
-  console.log(dayEvents);
 }
 
 const tripEventsList = tripDays.querySelector(`.trip-events__list`);

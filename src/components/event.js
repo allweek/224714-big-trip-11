@@ -1,26 +1,28 @@
 import {createOptionsMarkup} from "./option";
-import {formatTime, formatTimeFromMin} from "../utils";
+import {formatTime, formatTimeFromMs} from "../utils";
 
 export const createEventMarkup = (event) => {
-  const {eventType, city, eventOptions, destination, price, date, timeStart, duration} = event;
-  date.setMinutes(date.getMinutes() + duration);
-  const timeEnd = formatTime(date);
-  const durationFormated = formatTimeFromMin(duration);
+  const {eventType, city, eventOptions, price, dateStart, dateEnd} = event;
+  const timeStartFormatted = formatTime(dateStart);
+  const timeEndFormatted = formatTime(dateEnd);
+  const durationFormatted = formatTimeFromMs(dateEnd - dateStart);
+  console.log(dateEnd - dateStart);
+  const preposition = eventType.group === `Transfer` ? `to` : `in`;
   return (
     `<li class="trip-events__item">
       <div class="event">
         <div class="event__type">
-                 <img class="event__type-icon" width="42" height="42" src="img/icons/${eventType}.png" alt="Event type icon">
+                 <img class="event__type-icon" width="42" height="42" src="img/icons/${eventType.name}.png" alt="Event type icon">
                </div>
-        <h3 class="event__title">${eventType} to ${city}</h3>
+        <h3 class="event__title">${eventType.name} ${preposition} ${city}</h3>
 
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="2019-03-18T14:30">${timeStart}</time>
+            <time class="event__start-time" datetime="2019-03-18T14:30">${timeStartFormatted}</time>
                  &mdash;
-            <time class="event__end-time" datetime="2019-03-18T16:05">${timeEnd}</time>
+            <time class="event__end-time" datetime="2019-03-18T16:05">${timeEndFormatted}</time>
           </p>
-          <p class="event__duration">${durationFormated}</p>
+          <p class="event__duration">${durationFormatted}</p>
           </div>
 
           <p class="event__price">

@@ -1,6 +1,6 @@
 import {cities} from "../const";
 import {eventTypes} from "../const";
-import {formatTime, castTimeFormat} from "../utils";
+import {castTimeFormat, formatTime} from "../utils";
 
 const createCitiesListElem = (citiesList) => {
   return citiesList
@@ -69,7 +69,7 @@ const createEventTypeMarkup = (eventType, index) => {
 };
 
 const createEventTypeGroupsMarkup = (events, index) => {
-  const fieldsetsMarkup = [];
+  const fieldSetsMarkup = [];
   for (const group of eventTypesGroups) {
     const eventTypeMarkups = [];
     events.forEach((item) => {
@@ -79,29 +79,32 @@ const createEventTypeGroupsMarkup = (events, index) => {
         );
       }
     });
-    fieldsetsMarkup.push(
+    fieldSetsMarkup.push(
         `<fieldset class="event__type-group">
               <legend class="visually-hidden">${group}</legend>
               ${eventTypeMarkups.join(`\n`)}
         </fieldset>`
     );
   }
-  return fieldsetsMarkup.join(`\n`);
+  return fieldSetsMarkup.join(`\n`);
 };
 
 
 export const createEventEditTemplate = (event, isNew, index) => {
-  const {eventType, city, eventOptions, destination, price, date, timeStart, duration} = event;
+  const {eventType, city, eventOptions, destination, price, dateStart, dateEnd} = event;
 
   const citiesList = createCitiesListElem(cities);
 
+  const preposition = eventType.group === `Transfer` ? `to` : `in`;
+
+  const isOffersShown = eventOptions && eventOptions.length ? true : false;
   const offersMarkup = eventOptions ? createOfferMarkup(eventOptions, index) : ``;
 
   const eventTypesGroupsMarkup = createEventTypeGroupsMarkup(eventTypes, index);
 
-  const dateText = castTimeFormat(date.getDate()) + `/` + castTimeFormat(date.getMonth() + 1) + `/` + (date.getFullYear() % 1000);
-  date.setMinutes(date.getMinutes() + duration);
-  const timeEnd = formatTime(date);
+  const dateText = `${castTimeFormat(dateStart.getDate())}/${castTimeFormat(dateStart.getMonth() + 1)}/${(dateStart.getFullYear() % 1000)}`;
+  const timeStartFormatted = formatTime(dateStart);
+  const timeEndFormatted = formatTime(dateEnd);
 
   return (
     `<form class="${isNew ? `trip-events__item` : ``} event  event--edit" action="#" method="post">
@@ -109,7 +112,7 @@ export const createEventEditTemplate = (event, isNew, index) => {
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-${index}">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${eventType.toLowerCase()}.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${eventType.name.toLowerCase()}.png" alt="Event type icon">
           </label>
           <input class="event__type-toggle visually-hidden" id="event-type-toggle-${index}" type="checkbox">
 
@@ -120,7 +123,7 @@ export const createEventEditTemplate = (event, isNew, index) => {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-${index}">
-            ${eventType} to
+            ${eventType.name} ${preposition}
           </label>
           <input class="event__input  event__input--destination" id="event-destination-${index}" type="text" name="event-destination" value="${city}" list="destination-list-${index}">
           <datalist id="destination-list-${index}">
@@ -132,12 +135,12 @@ export const createEventEditTemplate = (event, isNew, index) => {
           <label class="visually-hidden" for="event-start-time-${index}">
             From
           </label>
-          <input class="event__input  event__input--time" id="event-start-time-${index}" type="text" name="event-start-time" value="${dateText} ${timeStart}">
+          <input class="event__input  event__input--time" id="event-start-time-${index}" type="text" name="event-start-time" value="${dateText} ${timeStartFormatted}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-${index}">
             To
           </label>
-          <input class="event__input  event__input--time" id="event-end-time-${index}" type="text" name="event-end-time" value="${dateText} ${timeEnd}">
+          <input class="event__input  event__input--time" id="event-end-time-${index}" type="text" name="event-end-time" value="${dateText} ${timeEndFormatted}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -163,8 +166,10 @@ export const createEventEditTemplate = (event, isNew, index) => {
           <span class="visually-hidden">Open event</span>
         </button>
       </header>
-
-      <section class="event__details">
+      
+      ${
+    isOffersShown ?
+      `<section class="event__details">
         <section class="event__section  event__section--offers">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
@@ -172,7 +177,9 @@ export const createEventEditTemplate = (event, isNew, index) => {
             ${offersMarkup}
           </div>
         </section>
-      </section>
+      </section>`
+      : ``
+    }
       
       ${
     isNew ?

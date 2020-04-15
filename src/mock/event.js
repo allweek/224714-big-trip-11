@@ -6,30 +6,30 @@ import {formatTime} from "../utils";
 
 
 const generateEvent = () => {
-  const type = getRandomArrayElem(eventTypes).name;
-
-  const date = new Date();
+  const type = getRandomArrayElem(eventTypes);
+  const dateStart = new Date();
   const dayRange = getRandomIntegerNumber(0, 3);
-  const day = date.getDate();
-  date.setDate(day + dayRange);
+  const day = dateStart.getDate();
+  dateStart.setDate(day + dayRange);
 
-  const hourRange = getRandomIntegerNumber(12, 20);
-  date.setHours(hourRange);
+  const hoursRange = getRandomIntegerNumber(0, 23);
+  dateStart.setHours(hoursRange);
 
-  const timeStart = formatTime(date);
-  const duration = getRandomIntegerNumber(15, 3000);
+  const durationMinutes = getRandomIntegerNumber(15, 3000);
+  const dateEnd = new Date(dateStart.getTime());
+  dateEnd.setMinutes(dateEnd.getMinutes() + durationMinutes);
+
 
   const price = Math.floor(getRandomIntegerNumber(20, 600) / 10) * 10;
 
   return {
     eventType: type,
     city: getRandomArrayElem(cities),
-    eventOptions: generateOptions(type.toLowerCase()),
+    eventOptions: generateOptions(type.name.toLowerCase()),
     destination: generateDestination(),
     price,
-    date,
-    timeStart,
-    duration
+    dateStart,
+    dateEnd
   };
 };
 
