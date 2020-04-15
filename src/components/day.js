@@ -1,5 +1,5 @@
 export const createTripDay = (date, eventsList, index) => {
-  const monthShortName = date.toLocaleString('en', {month: `short`});
+  const monthShortName = date.toLocaleString(`en`, {month: `short`});
   return (
     `<li class="trip-days__item  day">
       <div class="day__info">

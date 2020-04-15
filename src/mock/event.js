@@ -2,7 +2,6 @@ import {getRandomIntegerNumber, getRandomArrayElem} from "./temporary-functions-
 import {eventTypes, cities} from "../const";
 import {generateOptions} from "./option";
 import {generateDestination} from "./destination";
-import {formatTime} from "../utils";
 
 
 const generateEvent = () => {

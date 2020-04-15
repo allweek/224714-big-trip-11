@@ -6,7 +6,6 @@ export const createEventMarkup = (event) => {
   const timeStartFormatted = formatTime(dateStart);
   const timeEndFormatted = formatTime(dateEnd);
   const durationFormatted = formatTimeFromMs(dateEnd - dateStart);
-  console.log(dateEnd - dateStart);
   const preposition = eventType.group === `Transfer` ? `to` : `in`;
   return (
     `<li class="trip-events__item">
@@ -18,9 +17,9 @@ export const createEventMarkup = (event) => {
 
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="2019-03-18T14:30">${timeStartFormatted}</time>
+            <time class="event__start-time" datetime="${dateStart.toISOString().slice(0, 13)}">${timeStartFormatted}</time>
                  &mdash;
-            <time class="event__end-time" datetime="2019-03-18T16:05">${timeEndFormatted}</time>
+            <time class="event__end-time" datetime="${dateEnd.toISOString().slice(0, 13)}">${timeEndFormatted}</time>
           </p>
           <p class="event__duration">${durationFormatted}</p>
           </div>
