@@ -6,27 +6,27 @@ export const sortItems = [
   {
     name: `Day`,
     sortable: false,
-    [`non-clickable`]: true
+    nonClickable: true
   },
   {
     name: `Event`,
     sortable: false,
-    [`non-clickable`]: false
+    nonClickable: false
   },
   {
     name: `Time`,
     sortable: true,
-    [`non-clickable`]: false
+    nonClickable: false
   },
   {
     name: `Price`,
     sortable: true,
-    [`non-clickable`]: false
+    nonClickable: false
   },
   {
     name: `Offers`,
     sortable: false,
-    [`non-clickable`]: true
+    nonClickable: true
   },
 ];
 

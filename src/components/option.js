@@ -1,6 +1,6 @@
-export const createOptionsMarkup = (event) => {
-  if (event) {
-    const options = event
+export const createOptionsMarkup = (events) => {
+  if (events && events.length) {
+    const options = events
       .slice(0, 3)
       .map((it) =>
         `<li class="event__offer">
@@ -20,4 +20,3 @@ export const createOptionsMarkup = (event) => {
     return ``;
   }
 };
-

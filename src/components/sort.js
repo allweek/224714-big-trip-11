@@ -2,7 +2,7 @@ import {sortItems} from "../const";
 
 const createSortItemMarkup = (sortItem, isChecked) => {
 
-  if (sortItem[`non-clickable`]) {
+  if (sortItem[`nonClickable`]) {
     return (
       `<span class="trip-sort__item  trip-sort__item--${sortItem.name.toLowerCase()}">${sortItem.name}</span>`
     );
@@ -33,9 +33,12 @@ const createSortItemMarkup = (sortItem, isChecked) => {
 };
 
 export const createTripSort = () => {
+  const getRandomCheck = () => {
+    return Math.random() < 0.5 ? true : false;
+  };
   return (
     `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
-      ${sortItems.map((it) => createSortItemMarkup(it, false)).join(`\n`)}
+      ${sortItems.map((it) => createSortItemMarkup(it, getRandomCheck())).join(`\n`)}
     </form>`
   );
 };
