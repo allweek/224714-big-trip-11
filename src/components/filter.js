@@ -14,7 +14,7 @@ const createFilterMarkup = (name, isChecked) => {
 };
 
 export const createFilters = (filters) => {
-  const filtersMarkup = filters.map((it, i) => createFilterMarkup(it, i === 0)).join(`\n`);
+  const filtersMarkup = filters.map((filter, i) => createFilterMarkup(filter, i === 0)).join(`\n`);
 
   return (
     `<h2 class="visually-hidden">Filter events</h2>

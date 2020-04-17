@@ -34,7 +34,7 @@ const createSortItemMarkup = (sortItem, isChecked) => {
 
 export const createTripSort = () => {
   const getRandomCheck = () => {
-    return Math.random() < 0.5 ? true : false;
+    return Math.random() < 0.5;
   };
   return (
     `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">

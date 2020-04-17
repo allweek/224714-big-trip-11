@@ -38,24 +38,26 @@ render(createEventEditTemplate(events[0], true, 0), tripEvents, `beforeend`);
 render(createTripDays(), tripEvents, `beforeend`);
 
 
-const getSortedEvents = () => {
-  return events.sort((a, b)=> a.dateStart.getTime() - b.dateStart.getTime());
+const sortEvents = (eventsArray) => {
+  const sortedEvents = [...eventsArray];
+  return sortedEvents.sort((a, b)=> a.dateStart.getTime() - b.dateStart.getTime());
 };
-
-const sortedEvents = getSortedEvents();
+const sortedEvents = sortEvents(events);
 
 
 const getAllDays = (eventsList) => {
   const eventDays = new Set();
-  eventsList.forEach((item) => {
-    if (!eventDays.has(item.dateStart.getDate())) {
-      eventDays.add(item.dateStart.getDate());
+  eventsList.forEach((evt) => {
+    const date = `${evt.dateStart.getFullYear()}.${evt.dateStart.getMonth()}.${evt.dateStart.getDate()}`;
+    if (!eventDays.has(date)) {
+      eventDays.add(date);
     }
   });
   return eventDays;
 };
 
-const allDays = getAllDays(events);
+
+const allDays = getAllDays(sortedEvents);
 const tripDays = tripEvents.querySelector(`.trip-days`);
 
 let daysCount = 0;
@@ -63,7 +65,8 @@ for (const day of allDays) {
   daysCount++;
   const dayEvents = [];
   for (const event of sortedEvents) {
-    if (day === event.dateStart.getDate()) {
+    const date = `${event.dateStart.getFullYear()}.${event.dateStart.getMonth()}.${event.dateStart.getDate()}`;
+    if (day === date) {
       dayEvents.push(event);
     }
   }
@@ -72,8 +75,9 @@ for (const day of allDays) {
   render(createTripDay(date, dayTripEventsList, daysCount), tripDays, `beforeend`);
 }
 
+
 const tripEventsList = tripDays.querySelector(`.trip-events__list`);
 
 const tripEventsListElem = tripEventsList.querySelector(`.trip-events__item`);
-tripEventsListElem.innerHTML = createEventEditTemplate(events[0], false, 1);
+tripEventsListElem.innerHTML = createEventEditTemplate(sortedEvents[0], false, 1);
 

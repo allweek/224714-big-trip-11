@@ -72,10 +72,10 @@ const createEventTypeGroupsMarkup = (events, index) => {
   const fieldSetsMarkup = [];
   for (const group of eventTypesGroups) {
     const eventTypeMarkups = [];
-    events.forEach((item) => {
-      if (item.group === group) {
+    events.forEach((event) => {
+      if (event.group === group) {
         eventTypeMarkups.push(
-            createEventTypeMarkup(item, index)
+            createEventTypeMarkup(event, index)
         );
       }
     });

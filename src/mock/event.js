@@ -7,7 +7,7 @@ import {generateDestination} from "./destination";
 const generateEvent = () => {
   const type = getRandomArrayElem(eventTypes);
   const dateStart = new Date();
-  const dayRange = getRandomIntegerNumber(0, 3);
+  const dayRange = getRandomIntegerNumber(-40, 40);
   const day = dateStart.getDate();
   dateStart.setDate(day + dayRange);
 

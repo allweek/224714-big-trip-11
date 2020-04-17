@@ -5,7 +5,10 @@ const destinationDescriptions = `Lorem ipsum dolor sit amet, consectetur adipisc
 const DESCRIPTION_SENTENCES_COUNT = 5;
 
 const generateDestinationDescription = () => {
-  const descriptions = destinationDescriptions.split(`.`).map((it) => it.trim()).filter((it) => it !== ``);
+  const descriptions = destinationDescriptions
+    .split(`.`)
+    .map((descr) => descr.trim())
+    .filter((descr) => descr !== ``);
   const count = getRandomIntegerNumber(1, DESCRIPTION_SENTENCES_COUNT);
   let destinationDescription = ``;
   for (let i = 1; i <= count; i++) {
