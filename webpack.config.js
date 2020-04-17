@@ -1,6 +1,5 @@
 const path = require(`path`);
 
-
 module.exports = {
   mode: `development`, // Режим сборки
   entry: `./src/main.js`, // Точка входа приложения
