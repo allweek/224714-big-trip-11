@@ -1,4 +1,6 @@
-export const createOptionsMarkup = (events) => {
+import {createElement} from "../utils";
+
+const createOptionsMarkup = (events) => {
   if (events && events.length) {
     const options = events
       .slice(0, 3)
@@ -10,6 +12,7 @@ export const createOptionsMarkup = (events) => {
         </li>`
       )
       .join(`\n`);
+
     return (
       `<h4 class="visually-hidden">Offers:</h4>
        <ul class="event__selected-offers">
@@ -20,3 +23,28 @@ export const createOptionsMarkup = (events) => {
     return ``;
   }
 };
+
+
+export default class Options {
+  constructor(events) {
+    this._events = events;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createOptionsMarkup(this._events);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

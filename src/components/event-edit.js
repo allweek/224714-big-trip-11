@@ -1,6 +1,7 @@
+import {createOptionsMarkup} from "./option";
 import {cities} from "../const";
 import {eventTypes} from "../const";
-import {castTimeFormat, formatTime} from "../utils";
+import {castTimeFormat, createElement, formatTime} from "../utils";
 
 const createCitiesListElem = (citiesList) => {
   return citiesList
@@ -90,10 +91,13 @@ const createEventTypeGroupsMarkup = (events, index) => {
 };
 
 
-export const createEventEditTemplate = (event, isNew, index) => {
+const createEventEditTemplate = (event, isNew, index) => {
   const {eventType, city, eventOptions, destination, price, dateStart, dateEnd} = event;
 
   const citiesList = createCitiesListElem(cities);
+
+  const isNewFormClass = isNew ? `trip-events__item` : ``;
+  const eventNameLowerCase = eventType.name.toLowerCase();
 
   const preposition = eventType.group === `Transfer` ? `to` : `in`;
 
@@ -107,12 +111,12 @@ export const createEventEditTemplate = (event, isNew, index) => {
   const timeEndFormatted = formatTime(dateEnd);
 
   return (
-    `<form class="${isNew ? `trip-events__item` : ``} event  event--edit" action="#" method="post">
+    `<form class="${isNewFormClass} event  event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-${index}">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${eventType.name.toLowerCase()}.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${eventNameLowerCase}.png" alt="Event type icon">
           </label>
           <input class="event__type-toggle visually-hidden" id="event-type-toggle-${index}" type="checkbox">
 
@@ -167,9 +171,7 @@ export const createEventEditTemplate = (event, isNew, index) => {
         </button>
       </header>
       
-      ${
-    isOffersShown ?
-      `<section class="event__details">
+      ${isOffersShown ? `<section class="event__details">
         <section class="event__section  event__section--offers">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
@@ -177,13 +179,9 @@ export const createEventEditTemplate = (event, isNew, index) => {
             ${offersMarkup}
           </div>
         </section>
-      </section>`
-      : ``
-    }
+      </section>` : ``}
       
-      ${
-    isNew ?
-      `<section class="event__section  event__section--destination">
+      ${isNew ? `<section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
           <p class="event__destination-description">${destination.description}</p>
   
@@ -193,9 +191,34 @@ export const createEventEditTemplate = (event, isNew, index) => {
             </div>
           </div>
         </section>
-      </section>`
-      : ``
-    }
+      </section>` : ``}
     </form>`
   );
 };
+
+
+export default class EventEdit {
+  constructor(event, isNew, index) {
+    this._event = event;
+    this._isNew = isNew;
+    this._index = index;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEventEditTemplate(this._event, this._isNew, this._index);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

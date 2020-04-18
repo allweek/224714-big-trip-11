@@ -1,4 +1,6 @@
-export const createMenu = () => {
+import {createElement} from "../utils";
+
+const createMenu = () => {
   return (
     `<h2 class="visually-hidden">Switch trip view</h2>
      <nav class="trip-controls__trip-tabs  trip-tabs">
@@ -7,3 +9,26 @@ export const createMenu = () => {
      </nav>`
   );
 };
+
+
+export default class Menu {
+  constructor() {
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createMenu();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
