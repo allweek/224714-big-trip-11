@@ -9,12 +9,11 @@ import SortComponent from "./components/sort";
 import EventEditComponent from "./components/event-edit";
 import DaysComponent from "./components/days";
 import DayComponent from "./components/day";
-import EventListComponent from "./components/event-list";
 import EventComponent from "./components/event";
 import {generateEvents} from "./mock/event";
 
 
-const renderEvent = (eventListElement, event) => {
+const renderEvent = (eventListElement, event, index) => {
   const onEditButtonClick = () => {
     eventListElement.replaceChild(eventEditComponent.getElement(), eventComponent.getElement());
   };
@@ -28,11 +27,10 @@ const renderEvent = (eventListElement, event) => {
   const editButton = eventComponent.getElement().querySelector(`.event__rollup-btn`);
   editButton.addEventListener(`click`, onEditButtonClick);
 
-  const eventEditComponent = new EventEditComponent(event);
+  const eventEditComponent = new EventEditComponent(event, false, index);
   const editForm = eventEditComponent.getElement();
   editForm.addEventListener(`submit`, onEditFormSubmit);
 
-  // day
   render(eventComponent.getElement(), eventListElement, RenderPosition.BEFOREEND);
 };
 
@@ -55,7 +53,6 @@ render(new FilterComponent(filterNames).getElement(), tripControls, RenderPositi
 
 const tripEvents = document.querySelector(`.trip-events`);
 render(new SortComponent().getElement(), tripEvents, RenderPosition.BEFOREEND);
-// render(createEventEditTemplate(events[0], true, 0), tripEvents, `beforeend`);
 render(new DaysComponent().getElement(), tripEvents, RenderPosition.BEFOREEND);
 
 
@@ -65,7 +62,7 @@ const sortEvents = (eventsArray) => {
 };
 const sortedEvents = sortEvents(events);
 const dayList = tripEvents.querySelector(`.trip-days`);
-const putEventsIntoDays = sortedEvents
+sortedEvents
   .reduce((eventsByDay, event) => {
     const date = new Date(event.dateStart);
     const lastDay = eventsByDay.length ? eventsByDay[eventsByDay.length - 1] : null;
@@ -84,48 +81,8 @@ const putEventsIntoDays = sortedEvents
     const eventsList = day.getElement().querySelector(`.trip-events__list`);
     eventsByDay.events
       .forEach((event) => {
-        renderEvent(eventsList, event);
+        renderEvent(eventsList, event, index + 1);
       });
   });
 
-
-console.log(putEventsIntoDays);
-
-// const getAllDays = (eventsList) => {
-//   const eventDays = new Set();
-//   eventsList.forEach((evt) => {
-//     const date = `${evt.dateStart.getFullYear()}.${evt.dateStart.getMonth()}.${evt.dateStart.getDate()}`;
-//     if (!eventDays.has(date)) {
-//       eventDays.add(date);
-//     }
-//   });
-//   return eventDays;
-// };
-//
-//
-// const allDays = getAllDays(sortedEvents);
-// const tripDays = tripEvents.querySelector(`.trip-days`);
-//
-//
-// let daysCount = 0;
-// for (const day of allDays) {
-//   daysCount++;
-//   const dayEvents = [];
-//   const dayElement = new DayComponent(new Date(), 1);
-//   const eventListElement = dayElement.getElement().querySelector(`.trip-events__list`);
-//   for (const event of sortedEvents) {
-//     const date = `${event.dateStart.getFullYear()}.${event.dateStart.getMonth()}.${event.dateStart.getDate()}`;
-//     if (day === date) {
-//       renderEvent(eventListElement, event);
-//     }
-//   }
-//   // const dayTripEventsList = dayEvents.map((dayEvent) => (console.log(new EventComponent(dayEvent)))).join(`\n`);
-//   // const date = dayEvents[0][`dateStart`];
-//   // render(new DayComponent(date, dayTripEventsList, daysCount), tripDays, `beforeend`);
-// }
-
-
-// const tripEventsList = tripDays.querySelector(`.trip-events__list`);
-// const tripEventsListElem = tripEventsList.querySelector(`.trip-events__item`);
-// tripEventsListElem.innerHTML = createEventEditTemplate(sortedEvents[0], false, 1);
 

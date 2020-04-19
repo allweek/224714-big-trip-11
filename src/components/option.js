@@ -1,8 +1,8 @@
 import {createElement} from "../utils";
 
-const createOptionsMarkup = (events) => {
-  if (events && events.length) {
-    const options = events
+const createOptionsMarkup = (options) => {
+  if (options && options.length) {
+    const optionsMarkup = options
       .slice(0, 3)
       .map((event) =>
         `<li class="event__offer">
@@ -16,7 +16,7 @@ const createOptionsMarkup = (events) => {
     return (
       `<h4 class="visually-hidden">Offers:</h4>
        <ul class="event__selected-offers">
-         ${options}
+         ${optionsMarkup}
        </ul>`
     );
   } else {

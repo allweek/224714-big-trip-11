@@ -1,4 +1,3 @@
-import {createOptionsMarkup} from "./option";
 import {cities} from "../const";
 import {eventTypes} from "../const";
 import {castTimeFormat, createElement, formatTime} from "../utils";
@@ -106,7 +105,9 @@ const createEventEditTemplate = (event, isNew, index) => {
 
   const eventTypesGroupsMarkup = createEventTypeGroupsMarkup(eventTypes, index);
 
-  const dateText = `${castTimeFormat(dateStart.getDate())}/${castTimeFormat(dateStart.getMonth() + 1)}/${(dateStart.getFullYear() % 1000)}`;
+  const getSlashedData = (date) => `${castTimeFormat(date.getDate())}/${castTimeFormat(date.getMonth() + 1)}/${(date.getFullYear() % 1000)}`;
+  const dateStartText = getSlashedData(dateStart);
+  const dateEndText = getSlashedData(dateEnd);
   const timeStartFormatted = formatTime(dateStart);
   const timeEndFormatted = formatTime(dateEnd);
 
@@ -139,12 +140,12 @@ const createEventEditTemplate = (event, isNew, index) => {
           <label class="visually-hidden" for="event-start-time-${index}">
             From
           </label>
-          <input class="event__input  event__input--time" id="event-start-time-${index}" type="text" name="event-start-time" value="${dateText} ${timeStartFormatted}">
+          <input class="event__input  event__input--time" id="event-start-time-${index}" type="text" name="event-start-time" value="${dateStartText} ${timeStartFormatted}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-${index}">
             To
           </label>
-          <input class="event__input  event__input--time" id="event-end-time-${index}" type="text" name="event-end-time" value="${dateText} ${timeEndFormatted}">
+          <input class="event__input  event__input--time" id="event-end-time-${index}" type="text" name="event-end-time" value="${dateEndText} ${timeEndFormatted}">
         </div>
 
         <div class="event__field-group  event__field-group--price">

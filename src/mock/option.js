@@ -62,8 +62,7 @@ const offersByEventsType = {
 };
 
 
-const generateOptions = (event) => {
+export const generateOptions = (event) => {
   return offersByEventsType[event] || null;
 };
 
-export {generateOptions};
