@@ -73,4 +73,6 @@ export const eventTypes = [
   }
 ];
 
+export const monthShortNames = [`JAN`, `FEB`, `MAR`, `APR`, `MAY`, `JUN`, `JUL`, `AUG`, `SEP`, `OCT`, `NOV`, `DEC`];
+
 

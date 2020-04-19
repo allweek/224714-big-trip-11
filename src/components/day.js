@@ -1,9 +1,12 @@
-import {createElement} from "../utils.js";
+import {createElement, castTimeFormat} from "../utils.js";
+import {monthShortNames} from "../const";
 
-const createTripDay = (date, eventsList, index) => {
-  const monthShortName = date.toLocaleString(`en`, {month: `short`});
-  const dateTime = date.toISOString().slice(0, 10);
+const createTripDay = (date, index) => {
+  const monthShortName = monthShortNames[date.getMonth()];
+  const dateTime = `${date.getFullYear()}-${castTimeFormat(date.getMonth() + 1)}-${castTimeFormat(date.getDate())}`;
   const dayOfMonth = date.getDate();
+  console.log(dateTime);
+  console.log(date);
   return (
     `<li class="trip-days__item  day">
       <div class="day__info">
@@ -11,24 +14,22 @@ const createTripDay = (date, eventsList, index) => {
         <time class="day__date" datetime="${dateTime}">${monthShortName} ${dayOfMonth}</time>
       </div>
 
-      <ul class="trip-events__list">    
-        ${eventsList}
+      <ul class="trip-events__list">       
       </ul>
     </li>`
   );
 };
 
 export default class Day {
-  constructor(date, eventsList, index) {
+  constructor(date, index) {
     this._date = date;
-    this._eventsList = eventsList;
     this._index = index;
 
     this._element = null;
   }
 
   getTemplate() {
-    return createTripDay(this._date, this._eventsList, this._index);
+    return createTripDay(this._date, this._index);
   }
 
   getElement() {

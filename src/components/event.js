@@ -32,7 +32,7 @@ const createEventMarkup = (event) => {
             &euro;&nbsp;<span class="event__price-value">${price}</span>
           </p>
 
-          ${new OptionsComponent(eventOptions)}          
+          ${(new OptionsComponent(eventOptions)).getTemplate()}          
 
           <button class="event__rollup-btn" type="button">
             <span class="visually-hidden">Open event</span>
