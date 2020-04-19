@@ -1,5 +1,6 @@
+import AbstractComponent from "./abstract-component";
 import OptionsComponent from "./option";
-import {createElement, formatTime, formatTimeFromMs} from "../utils.js";
+import {formatTime, formatTimeFromMs} from "../utils.js";
 
 
 const createEventMarkup = (event) => {
@@ -43,26 +44,14 @@ const createEventMarkup = (event) => {
 };
 
 
-export default class Event {
+export default class Event extends AbstractComponent {
   constructor(event) {
-    this._event = event;
+    super();
 
-    this._element = null;
+    this._event = event;
   }
 
   getTemplate() {
     return createEventMarkup(this._event);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
