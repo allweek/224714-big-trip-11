@@ -1,5 +1,5 @@
 import {filterNames} from "./const";
-import {render, RenderPosition} from "./utils.js";
+import {render, RenderPosition} from "./utils/render";
 import InfoComponent from "./components/trip-info";
 import InfoMainComponent from "./components/trip-info-main";
 import InfoCostComponent from "./components/trip-info-cost";
