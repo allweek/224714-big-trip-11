@@ -1,6 +1,6 @@
 import AbstractComponent from "./abstract-component";
 import OptionsComponent from "./option";
-import {formatTime, formatTimeFromMs} from "../utils.js";
+import {formatTime, formatTimeFromMs} from "../utils/common.js";
 
 
 const createEventMarkup = (event) => {

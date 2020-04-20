@@ -1,7 +1,7 @@
 import AbstractComponent from "./abstract-component";
 import {cities} from "../const";
 import {eventTypes} from "../const";
-import {castTimeFormat, formatTime} from "../utils";
+import {castTimeFormat, formatTime} from "../utils/common.js";
 
 const createCitiesListElem = (citiesList) => {
   return citiesList

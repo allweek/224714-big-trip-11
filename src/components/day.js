@@ -1,5 +1,5 @@
 import AbstractComponent from "./abstract-component";
-import {castTimeFormat} from "../utils.js";
+import {castTimeFormat} from "../utils/common.js";
 import {monthShortNames} from "../const";
 
 const createTripDay = (date, index) => {
