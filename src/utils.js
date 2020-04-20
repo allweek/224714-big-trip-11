@@ -26,11 +26,19 @@ export const formatTimeFromMs = (ms) => {
   return `${days} ${hours} ${mins}`;
 };
 
-export const createElement = (template) => {
-  const newElement = document.createElement(`div`);
-  newElement.innerHTML = template;
+export const createElement = (template, isMultiTag) => {
+  if (isMultiTag) {
+    const newElement = document.createElement(`template`);
+    newElement.innerHTML = template;
 
-  return newElement.firstChild;
+    return newElement.content;
+
+  } else {
+    const newElement = document.createElement(`div`);
+    newElement.innerHTML = template;
+
+    return newElement.firstChild;
+  }
 };
 
 export const render = (element, container, place) => {
@@ -39,7 +47,7 @@ export const render = (element, container, place) => {
       container.prepend(element);
       break;
     case RenderPosition.BEFOREEND:
-      container.append(element);
+      container.prepend(element);
       break;
   }
 };

@@ -21,7 +21,7 @@ export default class InfoMain {
 
   getElement() {
     if (!this._element) {
-      this._element = createElement(this.getTemplate());
+      this._element = createElement(this.getTemplate(), true);
     }
 
     return this._element;
