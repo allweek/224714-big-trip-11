@@ -19,7 +19,7 @@ export default class Info {
 
   getElement() {
     if (!this._element) {
-      this._element = createElement(this.getTemplate(), false);
+      this._element = createElement(this.getTemplate());
     }
 
     return this._element;
