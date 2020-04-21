@@ -1,6 +1,6 @@
 import {cities} from "../const";
 import {eventTypes} from "../const";
-import {castTimeFormat, formatTime} from "../utils";
+import {castTimeFormat, createElement, formatTime} from "../utils";
 
 const createCitiesListElem = (citiesList) => {
   return citiesList
@@ -90,10 +90,13 @@ const createEventTypeGroupsMarkup = (events, index) => {
 };
 
 
-export const createEventEditTemplate = (event, isNew, index) => {
+const createEventEditTemplate = (event, isNew, index) => {
   const {eventType, city, eventOptions, destination, price, dateStart, dateEnd} = event;
 
   const citiesList = createCitiesListElem(cities);
+
+  const isNewFormClass = isNew ? `trip-events__item` : ``;
+  const eventNameLowerCase = eventType.name.toLowerCase();
 
   const preposition = eventType.group === `Transfer` ? `to` : `in`;
 
@@ -102,17 +105,19 @@ export const createEventEditTemplate = (event, isNew, index) => {
 
   const eventTypesGroupsMarkup = createEventTypeGroupsMarkup(eventTypes, index);
 
-  const dateText = `${castTimeFormat(dateStart.getDate())}/${castTimeFormat(dateStart.getMonth() + 1)}/${(dateStart.getFullYear() % 1000)}`;
+  const getSlashedData = (date) => `${castTimeFormat(date.getDate())}/${castTimeFormat(date.getMonth() + 1)}/${(date.getFullYear() % 1000)}`;
+  const dateStartText = getSlashedData(dateStart);
+  const dateEndText = getSlashedData(dateEnd);
   const timeStartFormatted = formatTime(dateStart);
   const timeEndFormatted = formatTime(dateEnd);
 
   return (
-    `<form class="${isNew ? `trip-events__item` : ``} event  event--edit" action="#" method="post">
+    `<form class="${isNewFormClass} event  event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-${index}">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${eventType.name.toLowerCase()}.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${eventNameLowerCase}.png" alt="Event type icon">
           </label>
           <input class="event__type-toggle visually-hidden" id="event-type-toggle-${index}" type="checkbox">
 
@@ -135,12 +140,12 @@ export const createEventEditTemplate = (event, isNew, index) => {
           <label class="visually-hidden" for="event-start-time-${index}">
             From
           </label>
-          <input class="event__input  event__input--time" id="event-start-time-${index}" type="text" name="event-start-time" value="${dateText} ${timeStartFormatted}">
+          <input class="event__input  event__input--time" id="event-start-time-${index}" type="text" name="event-start-time" value="${dateStartText} ${timeStartFormatted}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-${index}">
             To
           </label>
-          <input class="event__input  event__input--time" id="event-end-time-${index}" type="text" name="event-end-time" value="${dateText} ${timeEndFormatted}">
+          <input class="event__input  event__input--time" id="event-end-time-${index}" type="text" name="event-end-time" value="${dateEndText} ${timeEndFormatted}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -154,22 +159,21 @@ export const createEventEditTemplate = (event, isNew, index) => {
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
         <button class="event__reset-btn" type="reset">Delete</button>
 
-        <input id="event-favorite-${index}" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" checked>
+        ${!isNew ? `<input id="event-favorite-${index}" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" checked>
         <label class="event__favorite-btn" for="event-favorite-${index}">
           <span class="visually-hidden">Add to favorite</span>
           <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
             <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
           </svg>
-        </label>
+        </label>` : ``}
+        
 
         <button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
         </button>
       </header>
       
-      ${
-    isOffersShown ?
-      `<section class="event__details">
+      ${isOffersShown ? `<section class="event__details">
         <section class="event__section  event__section--offers">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
@@ -177,13 +181,9 @@ export const createEventEditTemplate = (event, isNew, index) => {
             ${offersMarkup}
           </div>
         </section>
-      </section>`
-      : ``
-    }
+      </section>` : ``}
       
-      ${
-    isNew ?
-      `<section class="event__section  event__section--destination">
+      ${isNew ? `<section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
           <p class="event__destination-description">${destination.description}</p>
   
@@ -193,9 +193,34 @@ export const createEventEditTemplate = (event, isNew, index) => {
             </div>
           </div>
         </section>
-      </section>`
-      : ``
-    }
+      </section>` : ``}
     </form>`
   );
 };
+
+
+export default class EventEdit {
+  constructor(event, isNew, index) {
+    this._event = event;
+    this._isNew = isNew;
+    this._index = index;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEventEditTemplate(this._event, this._isNew, this._index);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

@@ -19,7 +19,7 @@ const generateEvent = () => {
   dateEnd.setMinutes(dateEnd.getMinutes() + durationMinutes);
 
 
-  const price = Math.floor(getRandomIntegerNumber(20, 600) / 10) * 10;
+  const price = getRandomIntegerNumber(2, 60) * 10;
 
   return {
     eventType: type,

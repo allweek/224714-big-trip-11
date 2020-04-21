@@ -1,3 +1,4 @@
+import {createElement} from "../utils";
 import {sortItems} from "../const";
 
 const createSortItemMarkup = (sortItem, isChecked) => {
@@ -32,13 +33,36 @@ const createSortItemMarkup = (sortItem, isChecked) => {
   }
 };
 
-export const createTripSort = () => {
+const createTripSort = () => {
   const getRandomCheck = () => {
     return Math.random() < 0.5;
   };
   return (
     `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
-      ${sortItems.map((it) => createSortItemMarkup(it, getRandomCheck())).join(`\n`)}
+      ${sortItems.map((sortItem) => createSortItemMarkup(sortItem, getRandomCheck())).join(`\n`)}
     </form>`
   );
 };
+
+export default class Sort {
+  constructor() {
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripSort();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+

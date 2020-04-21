@@ -1,15 +1,20 @@
-const castTimeFormat = (value) => {
+export const RenderPosition = {
+  AFTERBEGIN: `afterbegin`,
+  BEFOREEND: `beforeend`
+};
+
+export const castTimeFormat = (value) => {
   return value < 10 ? `0${value}` : String(value);
 };
 
-const formatTime = (date) => {
+export const formatTime = (date) => {
   const hours = castTimeFormat(date.getHours());
   const minutes = castTimeFormat(date.getMinutes());
 
   return `${hours}:${minutes}`;
 };
 
-const formatTimeFromMs = (ms) => {
+export const formatTimeFromMs = (ms) => {
   const minutes = ms / 1000 / 60;
   let days = castTimeFormat(Math.floor(minutes / 60 / 24));
   let hours = castTimeFormat(Math.floor(minutes / 60) % 24);
@@ -21,7 +26,26 @@ const formatTimeFromMs = (ms) => {
   return `${days} ${hours} ${mins}`;
 };
 
+export const createElement = (template) => {
+  const newElement = document.createElement(`div`);
+  newElement.innerHTML = template;
+  if (newElement.childElementCount > 1) {
+    const newTemplate = document.createElement(`template`);
+    newTemplate.innerHTML = template;
 
-export {formatTime, formatTimeFromMs, castTimeFormat};
+    return newTemplate.content;
+  } else {
+    return newElement.firstChild;
+  }
+};
 
-
+export const render = (element, container, place) => {
+  switch (place) {
+    case RenderPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFOREEND:
+      container.append(element);
+      break;
+  }
+};
