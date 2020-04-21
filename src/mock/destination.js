@@ -7,8 +7,8 @@ const DESCRIPTION_SENTENCES_COUNT = 5;
 const generateDestinationDescription = () => {
   const descriptions = destinationDescriptions
     .split(`.`)
-    .map((decription) => decription.trim())
-    .filter((decription) => decription !== ``);
+    .map((description) => description.trim())
+    .filter((description) => description !== ``);
   const count = getRandomIntegerNumber(1, DESCRIPTION_SENTENCES_COUNT);
   let destinationDescription = ``;
   for (let i = 1; i <= count; i++) {
