@@ -6,8 +6,14 @@ export const RenderPosition = {
 export const createElement = (template) => {
   const newElement = document.createElement(`div`);
   newElement.innerHTML = template;
+  if (newElement.childElementCount > 1) {
+    const newTemplate = document.createElement(`template`);
+    newTemplate.innerHTML = template;
 
-  return newElement.firstChild;
+    return newTemplate.content;
+  } else {
+    return newElement.firstChild;
+  }
 };
 
 export const render = (component, container, place) => {
