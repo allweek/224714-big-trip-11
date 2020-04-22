@@ -1,4 +1,5 @@
-import {createElement, castTimeFormat} from "../utils.js";
+import AbstractComponent from "./abstract-component";
+import {castTimeFormat} from "../utils/common.js";
 import {monthShortNames} from "../const";
 
 const createTripDay = (date, index) => {
@@ -18,27 +19,15 @@ const createTripDay = (date, index) => {
   );
 };
 
-export default class Day {
+export default class Day extends AbstractComponent {
   constructor(date, index) {
+    super();
+
     this._date = date;
     this._index = index;
-
-    this._element = null;
   }
 
   getTemplate() {
     return createTripDay(this._date, this._index);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

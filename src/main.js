@@ -1,5 +1,5 @@
 import {filterNames} from "./const";
-import {render, RenderPosition} from "./utils.js";
+import {render, remove, replace, RenderPosition} from "./utils/render";
 import InfoComponent from "./components/trip-info";
 import InfoMainComponent from "./components/trip-info-main";
 import InfoCostComponent from "./components/trip-info-cost";
@@ -14,13 +14,21 @@ import {generateEvents} from "./mock/event";
 
 
 const renderEvent = (eventListElement, event, index) => {
+  const replaceEventToEdit = () => {
+    replace(eventEditComponent, eventComponent);
+  };
+
+  const replaceEditToEvent = () => {
+    replace(eventComponent, eventEditComponent);
+  };
+
   const onEditButtonClick = () => {
-    eventListElement.replaceChild(eventEditComponent.getElement(), eventComponent.getElement());
+    replaceEventToEdit();
   };
 
   const onEditFormSubmit = (evt) => {
     evt.preventDefault();
-    eventListElement.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
+    replaceEditToEvent();
   };
 
   const eventComponent = new EventComponent(event);
@@ -31,7 +39,7 @@ const renderEvent = (eventListElement, event, index) => {
   const editForm = eventEditComponent.getElement();
   editForm.addEventListener(`submit`, onEditFormSubmit);
 
-  render(eventComponent.getElement(), eventListElement, RenderPosition.BEFOREEND);
+  render(eventComponent, eventListElement, RenderPosition.BEFOREEND);
 };
 
 
@@ -40,20 +48,20 @@ const EVENT_COUNT = 15;
 const events = generateEvents(EVENT_COUNT);
 
 const tripMain = document.querySelector(`.trip-main`);
-render(new InfoComponent().getElement(), tripMain, RenderPosition.AFTERBEGIN);
+render(new InfoComponent(), tripMain, RenderPosition.AFTERBEGIN);
 
 const tripInfo = tripMain.querySelector(`.trip-info`);
-render(new InfoMainComponent().getElement(), tripInfo, RenderPosition.AFTERBEGIN);
-render(new InfoCostComponent().getElement(), tripInfo, RenderPosition.BEFOREEND);
+render(new InfoMainComponent(), tripInfo, RenderPosition.AFTERBEGIN);
+render(new InfoCostComponent(), tripInfo, RenderPosition.BEFOREEND);
 
 const tripControls = tripMain.querySelector(`.trip-controls`);
-render(new MenuComponent().getElement(), tripControls, RenderPosition.AFTERBEGIN);
+render(new MenuComponent(), tripControls, RenderPosition.AFTERBEGIN);
 
-render(new FilterComponent(filterNames).getElement(), tripControls, RenderPosition.BEFOREEND);
+render(new FilterComponent(filterNames), tripControls, RenderPosition.BEFOREEND);
 
 const tripEvents = document.querySelector(`.trip-events`);
-render(new SortComponent().getElement(), tripEvents, RenderPosition.BEFOREEND);
-render(new DaysComponent().getElement(), tripEvents, RenderPosition.BEFOREEND);
+render(new SortComponent(), tripEvents, RenderPosition.BEFOREEND);
+render(new DaysComponent(), tripEvents, RenderPosition.BEFOREEND);
 
 
 const sortEvents = (eventsArray) => {
@@ -77,7 +85,7 @@ sortedEvents
   .forEach((eventsByDay, index) => {
     const date = eventsByDay.events[0].dateStart;
     const day = new DayComponent(date, index + 1);
-    render(day.getElement(), dayList, RenderPosition.BEFOREEND);
+    render(day, dayList, RenderPosition.BEFOREEND);
     const eventsList = day.getElement().querySelector(`.trip-events__list`);
     eventsByDay.events
       .forEach((event) => {

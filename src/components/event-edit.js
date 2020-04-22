@@ -1,6 +1,7 @@
+import AbstractComponent from "./abstract-component";
 import {cities} from "../const";
 import {eventTypes} from "../const";
-import {castTimeFormat, createElement, formatTime} from "../utils";
+import {castTimeFormat, formatTime} from "../utils/common.js";
 
 const createCitiesListElem = (citiesList) => {
   return citiesList
@@ -199,28 +200,16 @@ const createEventEditTemplate = (event, isNew, index) => {
 };
 
 
-export default class EventEdit {
+export default class EventEdit extends AbstractComponent {
   constructor(event, isNew, index) {
+    super();
+
     this._event = event;
     this._isNew = isNew;
     this._index = index;
-
-    this._element = null;
   }
 
   getTemplate() {
     return createEventEditTemplate(this._event, this._isNew, this._index);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
