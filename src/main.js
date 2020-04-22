@@ -1,5 +1,5 @@
 import {filterNames} from "./const";
-import {render, remove, replace, RenderPosition} from "./utils/render";
+import {render, replace, RenderPosition} from "./utils/render";
 import InfoComponent from "./components/trip-info";
 import InfoMainComponent from "./components/trip-info-main";
 import InfoCostComponent from "./components/trip-info-cost";
@@ -11,6 +11,7 @@ import DaysComponent from "./components/days";
 import DayComponent from "./components/day";
 import EventComponent from "./components/event";
 import {generateEvents} from "./mock/event";
+import BoardComponent from "./components/board";
 
 
 const renderEvent = (eventListElement, event, index) => {
@@ -22,22 +23,16 @@ const renderEvent = (eventListElement, event, index) => {
     replace(eventComponent, eventEditComponent);
   };
 
-  const onEditButtonClick = () => {
+  const eventComponent = new EventComponent(event);
+  const eventEditComponent = new EventEditComponent(event, false, index);
+  eventComponent.setEditButtonClickHandler(() => {
     replaceEventToEdit();
-  };
+  });
 
-  const onEditFormSubmit = (evt) => {
+  eventEditComponent.setSubmitHandler((evt) => {
     evt.preventDefault();
     replaceEditToEvent();
-  };
-
-  const eventComponent = new EventComponent(event);
-  const editButton = eventComponent.getElement().querySelector(`.event__rollup-btn`);
-  editButton.addEventListener(`click`, onEditButtonClick);
-
-  const eventEditComponent = new EventEditComponent(event, false, index);
-  const editForm = eventEditComponent.getElement();
-  editForm.addEventListener(`submit`, onEditFormSubmit);
+  });
 
   render(eventComponent, eventListElement, RenderPosition.BEFOREEND);
 };
@@ -45,7 +40,41 @@ const renderEvent = (eventListElement, event, index) => {
 
 const EVENT_COUNT = 15;
 
-const events = generateEvents(EVENT_COUNT);
+const renderBoard = (boardComponent, events) => {
+
+  render(new SortComponent(), boardComponent.getElement(), RenderPosition.BEFOREEND);
+  render(new DaysComponent(), boardComponent.getElement(), RenderPosition.BEFOREEND);
+
+  const sortEvents = (eventsArray) => {
+    const sortedEvents = [...eventsArray];
+    return sortedEvents.sort((a, b)=> a.dateStart.getTime() - b.dateStart.getTime());
+  };
+  const sortedEvents = sortEvents(events);
+  const dayList = boardComponent.getElement().querySelector(`.trip-days`);
+  sortedEvents
+    .reduce((eventsByDay, event) => {
+      const date = new Date(event.dateStart);
+      const lastDay = eventsByDay.length ? eventsByDay[eventsByDay.length - 1] : null;
+      date.setHours(0, 0, 0, 0);
+      if (!lastDay || lastDay.date.getTime() !== date.getTime()) {
+        eventsByDay.push({date, events: [event]});
+      } else {
+        lastDay.events.push(event);
+      }
+      return eventsByDay;
+    }, [])
+    .forEach((eventsByDay, index) => {
+      const date = eventsByDay.events[0].dateStart;
+      const day = new DayComponent(date, index + 1);
+      render(day, dayList, RenderPosition.BEFOREEND);
+      const eventsList = day.getElement().querySelector(`.trip-events__list`);
+      eventsByDay.events
+        .forEach((event) => {
+          renderEvent(eventsList, event, index + 1);
+        });
+    });
+};
+
 
 const tripMain = document.querySelector(`.trip-main`);
 render(new InfoComponent(), tripMain, RenderPosition.AFTERBEGIN);
@@ -59,38 +88,12 @@ render(new MenuComponent(), tripControls, RenderPosition.AFTERBEGIN);
 
 render(new FilterComponent(filterNames), tripControls, RenderPosition.BEFOREEND);
 
-const tripEvents = document.querySelector(`.trip-events`);
-render(new SortComponent(), tripEvents, RenderPosition.BEFOREEND);
-render(new DaysComponent(), tripEvents, RenderPosition.BEFOREEND);
+const events = generateEvents(EVENT_COUNT);
 
+const boardComponent = new BoardComponent();
+const container = document.querySelectorAll(`.page-body__container`)[1];
 
-const sortEvents = (eventsArray) => {
-  const sortedEvents = [...eventsArray];
-  return sortedEvents.sort((a, b)=> a.dateStart.getTime() - b.dateStart.getTime());
-};
-const sortedEvents = sortEvents(events);
-const dayList = tripEvents.querySelector(`.trip-days`);
-sortedEvents
-  .reduce((eventsByDay, event) => {
-    const date = new Date(event.dateStart);
-    const lastDay = eventsByDay.length ? eventsByDay[eventsByDay.length - 1] : null;
-    date.setHours(0, 0, 0, 0);
-    if (!lastDay || lastDay.date.getTime() !== date.getTime()) {
-      eventsByDay.push({date, events: [event]});
-    } else {
-      lastDay.events.push(event);
-    }
-    return eventsByDay;
-  }, [])
-  .forEach((eventsByDay, index) => {
-    const date = eventsByDay.events[0].dateStart;
-    const day = new DayComponent(date, index + 1);
-    render(day, dayList, RenderPosition.BEFOREEND);
-    const eventsList = day.getElement().querySelector(`.trip-events__list`);
-    eventsByDay.events
-      .forEach((event) => {
-        renderEvent(eventsList, event, index + 1);
-      });
-  });
+render(boardComponent, container, RenderPosition.BEFOREEND);
+renderBoard(boardComponent, events);
 
-
+// const tripController = new TripController(boardComponent);
