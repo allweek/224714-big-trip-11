@@ -1,7 +1,7 @@
 import BoardComponent from "./components/board.js";
 import TripController from "./controllers/trip-controller.js";
 import FilterComponent from "./components/filter.js";
-import {generateEvent} from "./mock/event.js";
+import {generateEvents} from "./mock/event.js";
 import {render, RenderPosition} from "./utils/render.js";
 import InfoComponent from "./components/trip-info";
 import InfoMainComponent from "./components/trip-info-main";
@@ -25,7 +25,7 @@ render(new MenuComponent(), tripControls, RenderPosition.AFTERBEGIN);
 
 render(new FilterComponent(filterNames), tripControls, RenderPosition.BEFOREEND);
 
-const events = generateEvent(EVENT_COUNT);
+const events = generateEvents(EVENT_COUNT);
 
 const boardComponent = new BoardComponent();
 const tripController = new TripController(boardComponent);
