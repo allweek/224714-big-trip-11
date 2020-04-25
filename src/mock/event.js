@@ -28,7 +28,8 @@ const generateEvent = () => {
     destination: generateDestination(),
     price,
     dateStart,
-    dateEnd
+    dateEnd,
+    isFavorite: Math.random() > 0.5
   };
 };
 

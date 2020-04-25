@@ -2,9 +2,10 @@ import EventComponent from "../components/event";
 import EventEditComponent from "../components/event-edit";
 import {render, RenderPosition, replace} from "../utils/render";
 
-export default class PointController {
+export default class EventController {
   constructor(container, onDataChange) {
     this._container = container;
+    this._onDataChange = onDataChange;
 
     this._eventComponent = null;
     this._eventEditComponent = null;
@@ -25,7 +26,7 @@ export default class PointController {
     this._eventEditComponent.setFavoritesButtonClickHandler((evt) => {
       evt.preventDefault();
       evt.stopPropagation();
-      console.log(111)
+      console.log(event);
       this._onDataChange(this, event, Object.assign({}, event, {
         isFavorite: !event.isFavorite,
       }));

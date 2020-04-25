@@ -92,7 +92,7 @@ const createEventTypeGroupsMarkup = (events, index) => {
 
 
 const createEventEditTemplate = (event, isNew, index) => {
-  const {eventType, city, eventOptions, destination, price, dateStart, dateEnd} = event;
+  const {eventType, city, eventOptions, destination, price, dateStart, dateEnd, isFavorite} = event;
 
   const citiesList = createCitiesListElem(cities);
 
@@ -103,7 +103,6 @@ const createEventEditTemplate = (event, isNew, index) => {
 
   const isOffersShown = eventOptions && eventOptions.length ? true : false;
   const offersMarkup = eventOptions ? createOfferMarkup(eventOptions, index) : ``;
-  const isFavorite = false;
 
   const eventTypesGroupsMarkup = createEventTypeGroupsMarkup(eventTypes, index);
 
@@ -161,7 +160,7 @@ const createEventEditTemplate = (event, isNew, index) => {
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
         <button class="event__reset-btn" type="reset">Delete</button>
 
-        ${!isNew ? `<input id="event-favorite-${index}" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" checked>
+        ${!isNew ? `<input id="event-favorite-${index}" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavorite ? `checked` : ``}>
         <label class="event__favorite-btn" for="event-favorite-${index}">
           <span class="visually-hidden">Add to favorite</span>
           <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
@@ -202,13 +201,12 @@ const createEventEditTemplate = (event, isNew, index) => {
 
 
 export default class EventEdit extends AbstractComponent {
-  constructor(event, isNew, index, onDataChange) {
+  constructor(event, isNew, index) {
     super();
 
     this._event = event;
     this._isNew = isNew;
     this._index = index;
-    this._onDataChange = onDataChange;
   }
 
   getTemplate() {
