@@ -103,6 +103,7 @@ const createEventEditTemplate = (event, isNew, index) => {
 
   const isOffersShown = eventOptions && eventOptions.length ? true : false;
   const offersMarkup = eventOptions ? createOfferMarkup(eventOptions, index) : ``;
+  const isFavorite = false;
 
   const eventTypesGroupsMarkup = createEventTypeGroupsMarkup(eventTypes, index);
 
@@ -201,12 +202,13 @@ const createEventEditTemplate = (event, isNew, index) => {
 
 
 export default class EventEdit extends AbstractComponent {
-  constructor(event, isNew, index) {
+  constructor(event, isNew, index, onDataChange) {
     super();
 
     this._event = event;
     this._isNew = isNew;
     this._index = index;
+    this._onDataChange = onDataChange;
   }
 
   getTemplate() {
@@ -215,5 +217,10 @@ export default class EventEdit extends AbstractComponent {
 
   setSubmitHandler(handler) {
     this.getElement().addEventListener(`click`, handler);
+  }
+
+  setFavoritesButtonClickHandler(handler) {
+    this.getElement().querySelector(`.event__favorite-btn`)
+      .addEventListener(`click`, handler);
   }
 }

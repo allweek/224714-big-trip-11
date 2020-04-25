@@ -1,33 +1,8 @@
-import {render, RenderPosition, replace} from "../utils/render";
-import EventComponent from "../components/event";
-import EventEditComponent from "../components/event-edit";
+import {render, RenderPosition} from "../utils/render";
+import PointController from "../controllers/event"
 import SortComponent from "../components/sort";
 import DaysComponent from "../components/days";
 import DayComponent from "../components/day";
-
-
-const renderEvent = (eventListElement, event, index) => {
-  const replaceEventToEdit = () => {
-    replace(eventEditComponent, eventComponent);
-  };
-
-  const replaceEditToEvent = () => {
-    replace(eventComponent, eventEditComponent);
-  };
-
-  const eventComponent = new EventComponent(event);
-  const eventEditComponent = new EventEditComponent(event, false, index);
-  eventComponent.setEditButtonClickHandler(() => {
-    replaceEventToEdit();
-  });
-
-  eventEditComponent.setSubmitHandler((evt) => {
-    evt.preventDefault();
-    replaceEditToEvent();
-  });
-
-  render(eventComponent, eventListElement, RenderPosition.BEFOREEND);
-};
 
 
 export default class TripController {
@@ -39,6 +14,8 @@ export default class TripController {
   }
 
   render(events) {
+    this._events = events;
+
     const container = this._container.getElement();
 
     render(this._sortComponent, container, RenderPosition.BEFOREEND);
@@ -48,7 +25,7 @@ export default class TripController {
       const sortedEvents = [...eventsArray];
       return sortedEvents.sort((a, b)=> a.dateStart.getTime() - b.dateStart.getTime());
     };
-    const sortedEvents = sortEvents(events);
+    const sortedEvents = sortEvents(this._events);
     const dayList = container.querySelector(`.trip-days`);
     sortedEvents
       .reduce((eventsByDay, event) => {
@@ -68,9 +45,25 @@ export default class TripController {
         render(day, dayList, RenderPosition.BEFOREEND);
         const eventsList = day.getElement().querySelector(`.trip-events__list`);
         eventsByDay.events
-          .forEach((event) => {
-            renderEvent(eventsList, event, index + 1);
+          .map((event) => {
+            const pointController = new PointController(eventsList, this._onDataChange);
+
+            pointController.render(event, index + 1);
+
+            return pointController; // зачем return ? работает и без него вроде
           });
       });
+  }
+
+  _onDataChange(eventController, oldData, newData) {
+    const index = this._events.findIndex((event) => event === oldData);
+
+    if (index === -1) {
+      return;
+    }
+
+    this._events = [].concat(this._events.slice(0, index), newData, this._events.slice(index + 1));
+
+    eventController.render(this._events[index]);
   }
 }
