@@ -45,6 +45,8 @@ export default class TripController {
   constructor(container) {
     this._container = container;
 
+    this._events = [];
+    this._showedEventControllers = [];
     this._sortComponent = new SortComponent();
     this._daysComponent = new DaysComponent();
     this._onDataChange = this._onDataChange.bind(this);
@@ -61,7 +63,8 @@ export default class TripController {
 
     const dayList = container.querySelector(`.trip-days`);
 
-    renderEvents(dayList, this._events, this._onDataChange);
+    const newEvents = renderEvents(dayList, this._events, this._onDataChange);
+    this._showedEventControllers = this._showedEventControllers.concat(newEvents); // по идее в учебном это для loadmore button
   }
 
   _onDataChange(eventController, oldData, newData) {
