@@ -26,9 +26,7 @@ export default class EventController {
       evt.preventDefault();
       this._replaceEditToEvent();
     });
-    this._eventEditComponent.setFavoritesButtonClickHandler((evt) => {
-      evt.preventDefault();
-      evt.stopPropagation();
+    this._eventEditComponent.setFavoritesButtonClickHandler(() => {
       this._onDataChange(this, event, Object.assign({}, event, {
         isFavorite: !event.isFavorite,
       }));

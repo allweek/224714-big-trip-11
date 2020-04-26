@@ -234,7 +234,7 @@ export default class EventEdit extends AbstractSmartComponent {
   _subscribeOnEvents() {
     const element = this.getElement();
 
-    element.querySelectorAll(`.event__type-group`).forEach((fieldset) => {
+    Array.from(element.querySelectorAll(`.event__type-group`)).forEach((fieldset) => {
       fieldset.addEventListener(`change`, (evt) => {
         this._event.eventType.name = evt.target.value;
 
@@ -245,7 +245,7 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   setFavoritesButtonClickHandler(handler) {
-    this.getElement().querySelector(`.event__favorite-btn`)
-      .addEventListener(`click`, handler);
+    this.getElement().querySelector(`.event__favorite-checkbox`)
+      .addEventListener(`change`, handler);
   }
 }

@@ -11,7 +11,7 @@ const renderEvents = (dayList, events, onDataChange) => {
     return sortedEvents.sort((a, b)=> a.dateStart.getTime() - b.dateStart.getTime());
   };
   const sortedEvents = sortEvents(events);
-
+  let eventControllers = [];
   sortedEvents
     .reduce((eventsByDay, event) => {
       const date = new Date(event.dateStart);
@@ -30,14 +30,15 @@ const renderEvents = (dayList, events, onDataChange) => {
       render(day, dayList, RenderPosition.BEFOREEND);
       const eventsList = day.getElement().querySelector(`.trip-events__list`);
       eventsByDay.events
-        .map((event) => {
+        .forEach((event) => {
           const eventController = new EventController(eventsList, onDataChange);
 
           eventController.render(event, index + 1);
 
-          return eventController; // зачем return ? работает и без него вроде
+          eventControllers.push(eventController); // зачем return ? работает и без него вроде
         });
     });
+  return eventControllers;
 };
 
 
@@ -64,6 +65,7 @@ export default class TripController {
     const dayList = container.querySelector(`.trip-days`);
 
     const newEvents = renderEvents(dayList, this._events, this._onDataChange);
+    console.log(newEvents);
     this._showedEventControllers = this._showedEventControllers.concat(newEvents); // по идее в учебном это для loadmore button
   }
 
