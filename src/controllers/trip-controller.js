@@ -76,8 +76,6 @@ export default class TripController {
 
     this._events = [].concat(this._events.slice(0, index), newData, this._events.slice(index + 1));
 
-    console.log(this._showedEventControllers);
-    eventController.render(this._events[index]);
-    console.log(newData);
+    eventController.render(this._events[index], 1);
   }
 }

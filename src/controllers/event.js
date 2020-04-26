@@ -12,8 +12,11 @@ export default class EventController {
   }
 
   render(event, index) {
+    const oldEventComponent = this._eventComponent;
+    const oldEventEditComponent = this._eventEditComponent;
+
     this._eventComponent = new EventComponent(event);
-    this._eventEditComponent = new EventEditComponent(event, false, index);
+    this._eventEditComponent = new EventEditComponent(event, index);
 
     this._eventComponent.setEditButtonClickHandler(() => {
       this._replaceEventToEdit();
@@ -26,13 +29,17 @@ export default class EventController {
     this._eventEditComponent.setFavoritesButtonClickHandler((evt) => {
       evt.preventDefault();
       evt.stopPropagation();
-      console.log(event);
       this._onDataChange(this, event, Object.assign({}, event, {
         isFavorite: !event.isFavorite,
       }));
     });
 
-    render(this._eventComponent, this._container, RenderPosition.BEFOREEND);
+    if (oldEventComponent && oldEventEditComponent) {
+      replace(this._eventComponent, oldEventComponent);
+      replace(this._eventEditComponent, oldEventEditComponent);
+    } else {
+      render(this._eventComponent, this._container, RenderPosition.BEFOREEND);
+    }
   }
 
   _replaceEventToEdit() {
