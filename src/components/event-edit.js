@@ -214,6 +214,7 @@ export default class EventEdit extends AbstractSmartComponent {
     return createEventEditTemplate(this._event, this._index);
   }
 
+  // восстановить слушатели после rerender
   recoveryListeners() {
     this.setSubmitHandler(this._submitHandler);
     this._subscribeOnEvents();
@@ -233,13 +234,14 @@ export default class EventEdit extends AbstractSmartComponent {
   _subscribeOnEvents() {
     const element = this.getElement();
 
-    element.querySelectorAll(`.event__type-input`).forEach((input) => {
-      input.addEventListener(`change`, (evt) => {
+    element.querySelectorAll(`.event__type-group`).forEach((fieldset) => {
+      fieldset.addEventListener(`change`, (evt) => {
         this._event.eventType.name = evt.target.value;
 
         this.rerender();
       });
     });
+
   }
 
   setFavoritesButtonClickHandler(handler) {
