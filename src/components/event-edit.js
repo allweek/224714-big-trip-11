@@ -2,6 +2,8 @@ import AbstractSmartComponent from "./abstract-smart-component.js";
 import {cities} from "../const";
 import {eventTypes} from "../const";
 import {castTimeFormat, formatTime} from "../utils/common.js";
+import {generateOptions} from "../mock/option";
+import {generateDestination} from "../mock/destination";
 
 const createCitiesListElem = (citiesList) => {
   return citiesList
@@ -90,9 +92,31 @@ const createEventTypeGroupsMarkup = (events, index) => {
   return fieldSetsMarkup.join(`\n`);
 };
 
+const createDestinationMarkup = () => {
+  const destination = generateDestination();
+  return (
+    `<section class="event__section  event__section--destination">
+          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+          <p class="event__destination-description">${destination.description}</p>
+  
+          <div class="event__photos-container">
+            <div class="event__photos-tape">
+              <img class="event__photo" src="${destination.photo}" alt="Event photo">           
+            </div>
+          </div>
+        </section>
+      </section>`
+  );
+};
+
+// const matchGroupByEventType = (eventTypeName) => {
+//   eventTypes.filter((x) => x.name === eventTypeName);
+// };
 
 const createEventEditTemplate = (event, index) => {
-  const {eventType, city, eventOptions, destination, price, dateStart, dateEnd, isFavorite} = event;
+  const {eventType, city, price, dateStart, dateEnd, isFavorite} = event;
+
+  // console.log(matchGroupByEventType(eventType.name));
 
   const citiesList = createCitiesListElem(cities);
 
@@ -100,8 +124,10 @@ const createEventEditTemplate = (event, index) => {
 
   const preposition = eventType.group === `Transfer` ? `to` : `in`;
 
+  const eventOptions = generateOptions(eventType.name.toLowerCase());
   const isOffersShown = eventOptions && eventOptions.length ? true : false;
   const offersMarkup = eventOptions ? createOfferMarkup(eventOptions, index) : ``;
+
 
   const eventTypesGroupsMarkup = createEventTypeGroupsMarkup(eventTypes, index);
 
@@ -110,6 +136,8 @@ const createEventEditTemplate = (event, index) => {
   const dateEndText = getSlashedData(dateEnd);
   const timeStartFormatted = formatTime(dateStart);
   const timeEndFormatted = formatTime(dateEnd);
+
+  const destination = createDestinationMarkup();
 
   return (
     `<form class="trip-events__item event  event--edit" action="#" method="post">
@@ -183,17 +211,8 @@ const createEventEditTemplate = (event, index) => {
         </section>
       </section>` : ``}
       
-      <section class="event__section  event__section--destination">
-          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${destination.description}</p>
-  
-          <div class="event__photos-container">
-            <div class="event__photos-tape">
-              <img class="event__photo" src="${destination.photo}" alt="Event photo">           
-            </div>
-          </div>
-        </section>
-      </section>
+      ${destination}
+      
     </form>`
   );
 };
@@ -238,8 +257,14 @@ export default class EventEdit extends AbstractSmartComponent {
       fieldset.addEventListener(`change`, (evt) => {
         this._event.eventType.name = evt.target.value;
 
+
         this.rerender();
       });
+    });
+
+    element.querySelector(`.event__input--destination`).addEventListener(`change`, () => {
+      // в дальнейшем скорее всего в зависимости от города, будет меняться объект destination
+      this.rerender();
     });
 
   }

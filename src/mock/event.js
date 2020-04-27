@@ -1,7 +1,5 @@
 import {getRandomIntegerNumber, getRandomArrayElem} from "./temporary-functions-for-mocks";
 import {eventTypes, cities} from "../const";
-import {generateOptions} from "./option";
-import {generateDestination} from "./destination";
 
 
 const generateEvent = () => {
@@ -24,8 +22,6 @@ const generateEvent = () => {
   return {
     eventType: type,
     city: getRandomArrayElem(cities),
-    eventOptions: generateOptions(type.name.toLowerCase()),
-    destination: generateDestination(),
     price,
     dateStart,
     dateEnd,

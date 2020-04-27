@@ -19,11 +19,9 @@ const generateDestinationDescription = () => {
   return destinationDescription.trim();
 };
 
-const generateDestination = () => {
+export const generateDestination = () => {
   return {
     description: generateDestinationDescription(),
     photo: `http://picsum.photos/248/152?r=${Math.random()}`
   };
 };
-
-export {generateDestination};
