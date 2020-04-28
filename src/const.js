@@ -32,43 +32,43 @@ export const sortItems = [
 
 export const eventTypes = [
   {
-    name: `Taxi`,
+    name: `taxi`,
     group: `Transfer`
   },
   {
-    name: `Bus`,
+    name: `bus`,
     group: `Transfer`
   },
   {
-    name: `Train`,
+    name: `train`,
     group: `Transfer`
   },
   {
-    name: `Ship`,
+    name: `ship`,
     group: `Transfer`
   },
   {
-    name: `Transport`,
+    name: `transport`,
     group: `Transfer`
   },
   {
-    name: `Drive`,
+    name: `drive`,
     group: `Transfer`
   },
   {
-    name: `Flight`,
+    name: `flight`,
     group: `Transfer`
   },
   {
-    name: `Check-in`,
+    name: `check-in`,
     group: `Activity`
   },
   {
-    name: `Sightseeing`,
+    name: `sightseeing`,
     group: `Activity`
   },
   {
-    name: `Restaurant`,
+    name: `restaurant`,
     group: `Activity`
   }
 ];

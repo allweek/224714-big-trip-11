@@ -52,20 +52,22 @@ const getAllEventTypes = (types) => {
 
 const eventTypesGroups = getAllEventTypes(eventTypes);
 
+const capitalizeWord = (string) => string.charAt(0).toUpperCase() + string.slice(1);
+
 const createEventTypeMarkup = (eventType, index) => {
   return (
     `<div class="event__type-item">
       <input
-        id="event-type-${eventType.name.toLowerCase()}-${index}"
+        id="event-type-${eventType.name}-${index}"
         class="event__type-input  visually-hidden"
         type="radio"
         name="event-type"
-        value="${eventType.name.toLowerCase()}"
+        value="${eventType.name}"
       />
       <label
         class="event__type-label
-        event__type-label--${eventType.name.toLowerCase()}"
-        for="event-type-${eventType.name.toLowerCase()}-${index}">${eventType.name}
+        event__type-label--${eventType.name}"
+        for="event-type-${eventType.name}-${index}">${capitalizeWord(eventType.name)}
       </label>
     </div>`
   );
@@ -109,27 +111,22 @@ const createDestinationMarkup = () => {
   );
 };
 
-// const matchGroupByEventType = (eventTypeName) => {
-//   eventTypes.filter((x) => x.name === eventTypeName);
-// };
-
 const createEventEditTemplate = (event, index) => {
   const {eventType, city, price, dateStart, dateEnd, isFavorite} = event;
 
-  // console.log(matchGroupByEventType(eventType.name));
-
   const citiesList = createCitiesListElem(cities);
 
-  const eventNameLowerCase = eventType.name.toLowerCase();
+  const eventNameToCapitalize = capitalizeWord(eventType.name);
 
   const preposition = eventType.group === `Transfer` ? `to` : `in`;
 
-  const eventOptions = generateOptions(eventType.name.toLowerCase());
+  const eventOptions = generateOptions(eventType.name);
   const isOffersShown = eventOptions && eventOptions.length ? true : false;
   const offersMarkup = eventOptions ? createOfferMarkup(eventOptions, index) : ``;
 
 
   const eventTypesGroupsMarkup = createEventTypeGroupsMarkup(eventTypes, index);
+
 
   const getSlashedData = (date) => `${castTimeFormat(date.getDate())}/${castTimeFormat(date.getMonth() + 1)}/${(date.getFullYear() % 1000)}`;
   const dateStartText = getSlashedData(dateStart);
@@ -145,7 +142,7 @@ const createEventEditTemplate = (event, index) => {
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-${index}">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${eventNameLowerCase}.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${eventType.name}.png" alt="Event type icon">
           </label>
           <input class="event__type-toggle visually-hidden" id="event-type-toggle-${index}" type="checkbox">
 
@@ -156,7 +153,7 @@ const createEventEditTemplate = (event, index) => {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-${index}">
-            ${eventType.name} ${preposition}
+            ${eventNameToCapitalize} ${preposition}
           </label>
           <input class="event__input  event__input--destination" id="event-destination-${index}" type="text" name="event-destination" value="${city}" list="destination-list-${index}">
           <datalist id="destination-list-${index}">
@@ -243,6 +240,11 @@ export default class EventEdit extends AbstractSmartComponent {
     super.rerender();
   }
 
+  reset() {
+    this.rerender();
+  }
+
+
   setSubmitHandler(handler) {
     this.getElement()
       .addEventListener(`submit`, handler);
@@ -255,8 +257,12 @@ export default class EventEdit extends AbstractSmartComponent {
 
     Array.from(element.querySelectorAll(`.event__type-group`)).forEach((fieldset) => {
       fieldset.addEventListener(`change`, (evt) => {
-        this._event.eventType.name = evt.target.value;
-
+        const eventName = evt.target.value;
+        const eventTypeObj = eventTypes.find((event) => event.name === eventName);
+        this._event.eventType = {
+          name: eventName,
+          group: eventTypeObj.group
+        };
 
         this.rerender();
       });

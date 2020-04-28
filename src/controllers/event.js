@@ -2,11 +2,17 @@ import EventComponent from "../components/event";
 import EventEditComponent from "../components/event-edit";
 import {render, RenderPosition, replace} from "../utils/render";
 
+const Mode = {
+  DEFAULT: `default`,
+  EDIT: `edit`,
+};
+
 export default class EventController {
-  constructor(container, onDataChange) {
+  constructor(container, onDataChange, onViewChange) {
     this._container = container;
     this._onDataChange = onDataChange;
-
+    this._onViewChange = onViewChange;
+    this._mode = Mode.DEFAULT;
     this._eventComponent = null;
     this._eventEditComponent = null;
   }
@@ -40,11 +46,21 @@ export default class EventController {
     }
   }
 
+  setDefaultView() {
+    if (this._mode !== Mode.DEFAULT) {
+      this._replaceEditToEvent();
+    }
+  }
+
   _replaceEventToEdit() {
+    this._onViewChange();
     replace(this._eventEditComponent, this._eventComponent);
+    this._mode = Mode.EDIT;
   }
 
   _replaceEditToEvent() {
+    this._eventEditComponent.reset();
     replace(this._eventComponent, this._eventEditComponent);
+    this._mode = Mode.DEFAULT;
   }
 }

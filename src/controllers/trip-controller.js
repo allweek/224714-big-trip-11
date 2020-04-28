@@ -5,7 +5,7 @@ import DaysComponent from "../components/days";
 import DayComponent from "../components/day";
 
 
-const renderEvents = (dayList, events, onDataChange) => {
+const renderEvents = (dayList, events, onDataChange, onViewChange) => {
   const sortEvents = (eventsArray) => {
     const sortedEvents = [...eventsArray];
     return sortedEvents.sort((a, b)=> a.dateStart.getTime() - b.dateStart.getTime());
@@ -29,14 +29,15 @@ const renderEvents = (dayList, events, onDataChange) => {
       const day = new DayComponent(date, index + 1);
       render(day, dayList, RenderPosition.BEFOREEND);
       const eventsList = day.getElement().querySelector(`.trip-events__list`);
-      eventsByDay.events
-        .forEach((event) => {
-          const eventController = new EventController(eventsList, onDataChange);
+      eventControllers = [...eventControllers,
+        ...(eventsByDay.events
+          .map((event) => {
+            const eventController = new EventController(eventsList, onDataChange, onViewChange);
 
-          eventController.render(event, index + 1);
+            eventController.render(event, index + 1);
 
-          eventControllers.push(eventController); // зачем return ? работает и без него вроде
-        });
+            return eventController;
+          }))];
     });
   return eventControllers;
 };
@@ -51,6 +52,7 @@ export default class TripController {
     this._sortComponent = new SortComponent();
     this._daysComponent = new DaysComponent();
     this._onDataChange = this._onDataChange.bind(this);
+    this._onViewChange = this._onViewChange.bind(this);
   }
 
   render(events) {
@@ -64,9 +66,12 @@ export default class TripController {
 
     const dayList = container.querySelector(`.trip-days`);
 
-    const newEvents = renderEvents(dayList, this._events, this._onDataChange);
-    console.log(newEvents);
-    this._showedEventControllers = this._showedEventControllers.concat(newEvents); // по идее в учебном это для loadmore button
+    const newEvents = renderEvents(dayList, this._events, this._onDataChange, this._onViewChange);
+    this._showedEventControllers = this._showedEventControllers.concat(newEvents);
+  }
+
+  _onViewChange() {
+    this._showedEventControllers.forEach((eventController) => eventController.setDefaultView());
   }
 
   _onDataChange(eventController, oldData, newData) {

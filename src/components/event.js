@@ -6,7 +6,7 @@ import {generateOptions} from "../mock/option";
 
 const createEventMarkup = (event) => {
   const {eventType, city, price, dateStart, dateEnd} = event;
-  const eventNameLowerCase = eventType.name.toLowerCase();
+  const eventNameToCapitalize = eventType.name.charAt(0).toUpperCase() + eventType.name.slice(1);
   const timeStartFormatted = formatTime(dateStart);
   const timeEndFormatted = formatTime(dateEnd);
   const durationFormatted = formatTimeFromMs(dateEnd - dateStart);
@@ -18,9 +18,9 @@ const createEventMarkup = (event) => {
     `<li class="trip-events__item">
       <div class="event">
         <div class="event__type">
-                 <img class="event__type-icon" width="42" height="42" src="img/icons/${eventNameLowerCase}.png" alt="Event type icon">
+                 <img class="event__type-icon" width="42" height="42" src="img/icons/${eventType.name}.png" alt="Event type icon">
                </div>
-        <h3 class="event__title">${eventType.name} ${preposition} ${city}</h3>
+        <h3 class="event__title">${eventNameToCapitalize} ${preposition} ${city}</h3>
 
         <div class="event__schedule">
           <p class="event__time">
