@@ -8,7 +8,7 @@ import InfoMainComponent from "./components/trip-info-main";
 import InfoCostComponent from "./components/trip-info-cost";
 import MenuComponent from "./components/menu";
 import {filterNames} from "./const";
-
+import EventsModel from "./models/events.js";
 
 const EVENT_COUNT = 15;
 
@@ -26,9 +26,11 @@ render(new MenuComponent(), tripControls, RenderPosition.AFTERBEGIN);
 render(new FilterComponent(filterNames), tripControls, RenderPosition.BEFOREEND);
 
 const events = generateEvents(EVENT_COUNT);
+const eventsModel = new EventsModel();
+eventsModel.setTasks(events);
 
 const boardComponent = new BoardComponent();
-const tripController = new TripController(boardComponent);
+const tripController = new TripController(boardComponent, eventsModel);
 const container = document.querySelectorAll(`.page-body__container`)[1];
 
 render(boardComponent, container, RenderPosition.BEFOREEND);

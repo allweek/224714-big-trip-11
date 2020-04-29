@@ -44,8 +44,9 @@ const renderEvents = (dayList, events, onDataChange, onViewChange) => {
 
 
 export default class TripController {
-  constructor(container) {
+  constructor(container, eventsModel) {
     this._container = container;
+    this._eventsModel = eventsModel;
 
     this._events = [];
     this._showedEventControllers = [];
@@ -55,18 +56,19 @@ export default class TripController {
     this._onViewChange = this._onViewChange.bind(this);
   }
 
-  render(events) {
-    this._events = events;
+  render() {
+
 
     const container = this._container.getElement();
 
+    const events = this._eventsModel.getEvents();
     render(this._sortComponent, container, RenderPosition.BEFOREEND);
     render(this._daysComponent, container, RenderPosition.BEFOREEND);
 
 
     const dayList = container.querySelector(`.trip-days`);
 
-    const newEvents = renderEvents(dayList, this._events, this._onDataChange, this._onViewChange);
+    const newEvents = renderEvents(dayList, events, this._onDataChange, this._onViewChange);
     this._showedEventControllers = this._showedEventControllers.concat(newEvents);
   }
 
@@ -75,14 +77,10 @@ export default class TripController {
   }
 
   _onDataChange(eventController, oldData, newData) {
-    const index = this._events.findIndex((event) => event === oldData);
+    const isSuccess = this._eventsModel.updateEvent(oldData.id, newData);
 
-    if (index === -1) {
-      return;
+    if (isSuccess) {
+      eventController.render(newData);
     }
-
-    this._events = [].concat(this._events.slice(0, index), newData, this._events.slice(index + 1));
-
-    eventController.render(this._events[index], 1);
   }
 }

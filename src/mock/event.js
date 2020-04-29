@@ -20,6 +20,7 @@ const generateEvent = () => {
   const price = getRandomIntegerNumber(2, 60) * 10;
 
   return {
+    id: String(new Date() + Math.random()),
     eventType: type,
     city: getRandomArrayElem(cities),
     price,
