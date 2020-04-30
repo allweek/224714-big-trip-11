@@ -1,24 +1,26 @@
 import AbstractComponent from "./abstract-component";
 import OptionsComponent from "./option";
 import {formatTime, formatTimeFromMs} from "../utils/common.js";
+import {generateOptions} from "../mock/option";
 
 
 const createEventMarkup = (event) => {
-  const {eventType, city, eventOptions, price, dateStart, dateEnd} = event;
-  const eventNameLowerCase = eventType.name.toLowerCase();
+  const {eventType, city, price, dateStart, dateEnd} = event;
+  const eventNameToCapitalize = eventType.name.charAt(0).toUpperCase() + eventType.name.slice(1);
   const timeStartFormatted = formatTime(dateStart);
   const timeEndFormatted = formatTime(dateEnd);
   const durationFormatted = formatTimeFromMs(dateEnd - dateStart);
   const preposition = eventType.group === `Transfer` ? `to` : `in`;
   const dateTimeStart = dateStart.toISOString().slice(0, 13);
   const dateTimeEnd = dateEnd.toISOString().slice(0, 13);
+  const eventOptions = generateOptions(eventType.name.toLowerCase());
   return (
     `<li class="trip-events__item">
       <div class="event">
         <div class="event__type">
-                 <img class="event__type-icon" width="42" height="42" src="img/icons/${eventNameLowerCase}.png" alt="Event type icon">
+                 <img class="event__type-icon" width="42" height="42" src="img/icons/${eventType.name}.png" alt="Event type icon">
                </div>
-        <h3 class="event__title">${eventType.name} ${preposition} ${city}</h3>
+        <h3 class="event__title">${eventNameToCapitalize} ${preposition} ${city}</h3>
 
         <div class="event__schedule">
           <p class="event__time">
