@@ -15,21 +15,21 @@ const createCitiesListElem = (citiesList) => {
     .join(`\n`);
 };
 
-const createOfferMarkup = (eventOptions, index) => {
+const createOfferMarkup = (eventOptions, dayCount) => {
   return eventOptions
     .map((option) => {
       return (
         `<div class="event__offer-selector">
           <input 
             class="event__offer-checkbox visually-hidden" 
-            id="event-offer-${option.name}-${index}" 
+            id="event-offer-${option.name}-${dayCount}" 
             type="checkbox" 
             name="event-offer-${option.name}" 
             ${Math.random() > 0.5 ? `checked` : ``} 
           /> 
           <label 
             class="event__offer-label" 
-            for="event-offer-${option.name}-${index}">
+            for="event-offer-${option.name}-${dayCount}">
             <span class="event__offer-title">${option.title}</span>
             &plus;
             &euro;&nbsp;<span class="event__offer-price">${option.price}</span>
@@ -54,11 +54,11 @@ const eventTypesGroups = getAllEventTypes(eventTypes);
 
 const capitalizeWord = (string) => string.charAt(0).toUpperCase() + string.slice(1);
 
-const createEventTypeMarkup = (eventType, index) => {
+const createEventTypeMarkup = (eventType, dayCount) => {
   return (
     `<div class="event__type-item">
       <input
-        id="event-type-${eventType.name}-${index}"
+        id="event-type-${eventType.name}-${dayCount}"
         class="event__type-input  visually-hidden"
         type="radio"
         name="event-type"
@@ -67,20 +67,20 @@ const createEventTypeMarkup = (eventType, index) => {
       <label
         class="event__type-label
         event__type-label--${eventType.name}"
-        for="event-type-${eventType.name}-${index}">${capitalizeWord(eventType.name)}
+        for="event-type-${eventType.name}-${dayCount}">${capitalizeWord(eventType.name)}
       </label>
     </div>`
   );
 };
 
-const createEventTypeGroupsMarkup = (events, index) => {
+const createEventTypeGroupsMarkup = (events, dayCount) => {
   const fieldSetsMarkup = [];
   for (const group of eventTypesGroups) {
     const eventTypeMarkups = [];
     events.forEach((event) => {
       if (event.group === group) {
         eventTypeMarkups.push(
-            createEventTypeMarkup(event, index)
+            createEventTypeMarkup(event, dayCount)
         );
       }
     });
@@ -111,7 +111,7 @@ const createDestinationMarkup = () => {
   );
 };
 
-const createEventEditTemplate = (event, index) => {
+const createEventEditTemplate = (event, dayCount) => {
   const {eventType, city, price, dateStart, dateEnd, isFavorite} = event;
 
   const citiesList = createCitiesListElem(cities);
@@ -122,10 +122,10 @@ const createEventEditTemplate = (event, index) => {
 
   const eventOptions = generateOptions(eventType.name);
   const isOffersShown = eventOptions && eventOptions.length ? true : false;
-  const offersMarkup = eventOptions ? createOfferMarkup(eventOptions, index) : ``;
+  const offersMarkup = eventOptions ? createOfferMarkup(eventOptions, dayCount) : ``;
 
 
-  const eventTypesGroupsMarkup = createEventTypeGroupsMarkup(eventTypes, index);
+  const eventTypesGroupsMarkup = createEventTypeGroupsMarkup(eventTypes, dayCount);
 
 
   const getSlashedData = (date) => `${castTimeFormat(date.getDate())}/${castTimeFormat(date.getMonth() + 1)}/${(date.getFullYear() % 1000)}`;
@@ -140,11 +140,11 @@ const createEventEditTemplate = (event, index) => {
     `<form class="trip-events__item event  event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
-          <label class="event__type  event__type-btn" for="event-type-toggle-${index}">
+          <label class="event__type  event__type-btn" for="event-type-toggle-${dayCount}">
             <span class="visually-hidden">Choose event type</span>
             <img class="event__type-icon" width="17" height="17" src="img/icons/${eventType.name}.png" alt="Event type icon">
           </label>
-          <input class="event__type-toggle visually-hidden" id="event-type-toggle-${index}" type="checkbox">
+          <input class="event__type-toggle visually-hidden" id="event-type-toggle-${dayCount}" type="checkbox">
 
           <div class="event__type-list">
             ${eventTypesGroupsMarkup}
@@ -152,40 +152,40 @@ const createEventEditTemplate = (event, index) => {
         </div>
 
         <div class="event__field-group  event__field-group--destination">
-          <label class="event__label  event__type-output" for="event-destination-${index}">
+          <label class="event__label  event__type-output" for="event-destination-${dayCount}">
             ${eventNameToCapitalize} ${preposition}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-${index}" type="text" name="event-destination" value="${city}" list="destination-list-${index}">
-          <datalist id="destination-list-${index}">
+          <input class="event__input  event__input--destination" id="event-destination-${dayCount}" type="text" name="event-destination" value="${city}" list="destination-list-${dayCount}">
+          <datalist id="destination-list-${dayCount}">
             ${citiesList}
           </datalist>
         </div>
 
         <div class="event__field-group  event__field-group--time">
-          <label class="visually-hidden" for="event-start-time-${index}">
+          <label class="visually-hidden" for="event-start-time-${dayCount}">
             From
           </label>
-          <input class="event__input  event__input--time" id="event-start-time-${index}" type="text" name="event-start-time" value="${dateStartText} ${timeStartFormatted}">
+          <input class="event__input  event__input--time" id="event-start-time-${dayCount}" type="text" name="event-start-time" value="${dateStartText} ${timeStartFormatted}">
           &mdash;
-          <label class="visually-hidden" for="event-end-time-${index}">
+          <label class="visually-hidden" for="event-end-time-${dayCount}">
             To
           </label>
-          <input class="event__input  event__input--time" id="event-end-time-${index}" type="text" name="event-end-time" value="${dateEndText} ${timeEndFormatted}">
+          <input class="event__input  event__input--time" id="event-end-time-${dayCount}" type="text" name="event-end-time" value="${dateEndText} ${timeEndFormatted}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
-          <label class="event__label" for="event-price-${index}">
+          <label class="event__label" for="event-price-${dayCount}">
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-${index}" type="text" name="event-price" value="${price}">
+          <input class="event__input  event__input--price" id="event-price-${dayCount}" type="text" name="event-price" value="${price}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
         <button class="event__reset-btn" type="reset">Delete</button>
 
-        <input id="event-favorite-${index}" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavorite ? `checked` : ``}>
-        <label class="event__favorite-btn" for="event-favorite-${index}">
+        <input id="event-favorite-${dayCount}" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavorite ? `checked` : ``}>
+        <label class="event__favorite-btn" for="event-favorite-${dayCount}">
           <span class="visually-hidden">Add to favorite</span>
           <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
             <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
@@ -216,18 +216,18 @@ const createEventEditTemplate = (event, index) => {
 
 
 export default class EventEdit extends AbstractSmartComponent {
-  constructor(event, index) {
+  constructor(event, dayCount) {
     super();
 
     this._event = event;
-    this._index = index;
+    this._dayCount = dayCount;
     this._submitHandler = null;
 
     this._subscribeOnEvents();
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._event, this._index);
+    return createEventEditTemplate(this._event, this._dayCount);
   }
 
   // восстановить слушатели после rerender

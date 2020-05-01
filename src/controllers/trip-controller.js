@@ -32,9 +32,9 @@ const renderEvents = (dayList, events, onDataChange, onViewChange) => {
       eventControllers = [...eventControllers,
         ...(eventsByDay.events
           .map((event) => {
-            const eventController = new EventController(eventsList, onDataChange, onViewChange);
+            const eventController = new EventController(eventsList, onDataChange, onViewChange, index + 1);
 
-            eventController.render(event, index + 1);
+            eventController.render(event);
 
             return eventController;
           }))];
@@ -48,7 +48,6 @@ export default class TripController {
     this._container = container;
     this._eventsModel = eventsModel;
 
-    this._events = [];
     this._showedEventControllers = [];
     this._sortComponent = new SortComponent();
     this._daysComponent = new DaysComponent();

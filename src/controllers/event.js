@@ -8,8 +8,9 @@ const Mode = {
 };
 
 export default class EventController {
-  constructor(container, onDataChange, onViewChange) {
+  constructor(container, onDataChange, onViewChange, dayCount) {
     this._container = container;
+    this._dayCount = dayCount;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
     this._mode = Mode.DEFAULT;
@@ -17,12 +18,12 @@ export default class EventController {
     this._eventEditComponent = null;
   }
 
-  render(event, index) {
+  render(event) {
     const oldEventComponent = this._eventComponent;
     const oldEventEditComponent = this._eventEditComponent;
 
     this._eventComponent = new EventComponent(event);
-    this._eventEditComponent = new EventEditComponent(event, index);
+    this._eventEditComponent = new EventEditComponent(event, this._dayCount);
 
     this._eventComponent.setEditButtonClickHandler(() => {
       this._replaceEventToEdit();

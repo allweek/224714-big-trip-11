@@ -34,4 +34,4 @@ const tripController = new TripController(boardComponent, eventsModel);
 const container = document.querySelectorAll(`.page-body__container`)[1];
 
 render(boardComponent, container, RenderPosition.BEFOREEND);
-tripController.render(events);
+tripController.render();
