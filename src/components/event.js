@@ -13,7 +13,7 @@ const createEventMarkup = (event) => {
   const preposition = eventType.group === `Transfer` ? `to` : `in`;
   const dateTimeStart = dateStart.toISOString().slice(0, 13);
   const dateTimeEnd = dateEnd.toISOString().slice(0, 13);
-  const eventOptions = generateOptions(eventType.name.toLowerCase());
+  const eventOptions = generateOptions(eventType.name);
   return (
     `<li class="trip-events__item">
       <div class="event">
@@ -49,7 +49,6 @@ const createEventMarkup = (event) => {
 export default class Event extends AbstractComponent {
   constructor(event) {
     super();
-
     this._event = event;
   }
 
@@ -57,7 +56,7 @@ export default class Event extends AbstractComponent {
     return createEventMarkup(this._event);
   }
 
-  setEditButtonClickHandler(handler) {
+  setRollupButtonClickHandler(handler) {
     this.getElement().querySelector(`.event__rollup-btn`)
       .addEventListener(`click`, handler);
   }

@@ -1,6 +1,6 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
-import {cities} from "../const";
-import {eventTypes} from "../const";
+import {Cities} from "../const";
+import {EventTypes} from "../const";
 import {castTimeFormat, formatTime} from "../utils/common.js";
 import {generateOptions} from "../mock/option";
 import {generateDestination} from "../mock/destination";
@@ -50,7 +50,7 @@ const getAllEventTypes = (types) => {
   return eventTypesGroups;
 };
 
-const eventTypesGroups = getAllEventTypes(eventTypes);
+const eventTypesGroups = getAllEventTypes(EventTypes);
 
 const capitalizeWord = (string) => string.charAt(0).toUpperCase() + string.slice(1);
 
@@ -114,7 +114,7 @@ const createDestinationMarkup = () => {
 const createEventEditTemplate = (event, dayCount) => {
   const {eventType, city, price, dateStart, dateEnd, isFavorite} = event;
 
-  const citiesList = createCitiesListElem(cities);
+  const citiesList = createCitiesListElem(Cities);
 
   const eventNameToCapitalize = capitalizeWord(eventType.name);
 
@@ -125,7 +125,7 @@ const createEventEditTemplate = (event, dayCount) => {
   const offersMarkup = eventOptions ? createOfferMarkup(eventOptions, dayCount) : ``;
 
 
-  const eventTypesGroupsMarkup = createEventTypeGroupsMarkup(eventTypes, dayCount);
+  const eventTypesGroupsMarkup = createEventTypeGroupsMarkup(EventTypes, dayCount);
 
 
   const getSlashedData = (date) => `${castTimeFormat(date.getDate())}/${castTimeFormat(date.getMonth() + 1)}/${(date.getFullYear() % 1000)}`;
@@ -258,7 +258,7 @@ export default class EventEdit extends AbstractSmartComponent {
     Array.from(element.querySelectorAll(`.event__type-group`)).forEach((fieldset) => {
       fieldset.addEventListener(`change`, (evt) => {
         const eventName = evt.target.value;
-        const eventTypeObj = eventTypes.find((event) => event.name === eventName);
+        const eventTypeObj = EventTypes.find((event) => event.name === eventName);
         this._event.eventType = {
           name: eventName,
           group: eventTypeObj.group
@@ -273,6 +273,11 @@ export default class EventEdit extends AbstractSmartComponent {
       this.rerender();
     });
 
+  }
+
+  setRollupButtonClickHandler(handler) {
+    this.getElement().querySelector(`.event__rollup-btn`)
+      .addEventListener(`click`, handler);
   }
 
   setFavoritesButtonClickHandler(handler) {

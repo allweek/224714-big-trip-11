@@ -1,9 +1,9 @@
 import AbstractComponent from "./abstract-component";
 import {castTimeFormat} from "../utils/common.js";
-import {monthShortNames} from "../const";
+import {MonthShortNames} from "../const";
 
 const createTripDay = (date, index) => {
-  const monthShortName = monthShortNames[date.getMonth()];
+  const monthShortName = MonthShortNames[date.getMonth()];
   const dateTime = `${date.getFullYear()}-${castTimeFormat(date.getMonth() + 1)}-${castTimeFormat(date.getDate())}`;
   const dayOfMonth = date.getDate();
   return (

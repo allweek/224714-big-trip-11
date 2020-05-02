@@ -53,6 +53,9 @@ export default class TripController {
     this._daysComponent = new DaysComponent();
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
+    this._onFilterChange = this._onFilterChange.bind(this);
+
+    this._eventsModel.setFilterChangeHandler(this._onFilterChange);
   }
 
   render() {
@@ -64,11 +67,21 @@ export default class TripController {
     render(this._sortComponent, container, RenderPosition.BEFOREEND);
     render(this._daysComponent, container, RenderPosition.BEFOREEND);
 
+    this._renderEvents(events);
+  }
 
-    const dayList = container.querySelector(`.trip-days`);
-
+  _renderEvents(events) {
+    const dayList = this._container.getElement().querySelector(`.trip-days`);
+    if (dayList.querySelectorAll(`.trip-days__item`).length) {
+      dayList.innerHTML = ``;
+    }
     const newEvents = renderEvents(dayList, events, this._onDataChange, this._onViewChange);
     this._showedEventControllers = this._showedEventControllers.concat(newEvents);
+  }
+
+  _removeEvents() {
+    this._showedEventControllers.forEach((eventController) => eventController.destroy());
+    this._showedEventControllers = [];
   }
 
   _onViewChange() {
@@ -79,7 +92,12 @@ export default class TripController {
     const isSuccess = this._eventsModel.updateEvent(oldData.id, newData);
 
     if (isSuccess) {
-      eventController.render(newData);
+      eventController._renderEvents(newData);
     }
+  }
+
+  _onFilterChange() {
+    this._removeEvents();
+    this._renderEvents(this._eventsModel.getEvents());
   }
 }

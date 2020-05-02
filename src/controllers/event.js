@@ -1,11 +1,12 @@
 import EventComponent from "../components/event";
 import EventEditComponent from "../components/event-edit";
-import {render, RenderPosition, replace} from "../utils/render";
+import {render, RenderPosition, replace, remove} from "../utils/render";
 
 const Mode = {
   DEFAULT: `default`,
   EDIT: `edit`,
 };
+
 
 export default class EventController {
   constructor(container, onDataChange, onViewChange, dayCount) {
@@ -25,8 +26,12 @@ export default class EventController {
     this._eventComponent = new EventComponent(event);
     this._eventEditComponent = new EventEditComponent(event, this._dayCount);
 
-    this._eventComponent.setEditButtonClickHandler(() => {
+    this._eventComponent.setRollupButtonClickHandler(() => {
       this._replaceEventToEdit();
+    });
+
+    this._eventEditComponent.setRollupButtonClickHandler(() => {
+      this._replaceEditToEvent();
     });
 
     this._eventEditComponent.setSubmitHandler((evt) => {
@@ -51,6 +56,11 @@ export default class EventController {
     if (this._mode !== Mode.DEFAULT) {
       this._replaceEditToEvent();
     }
+  }
+
+  destroy() {
+    remove(this._eventEditComponent);
+    remove(this._eventComponent);
   }
 
   _replaceEventToEdit() {
