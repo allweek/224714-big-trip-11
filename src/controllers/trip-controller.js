@@ -97,6 +97,11 @@ export default class TripController {
     this._showedEventControllers.forEach((eventController) => eventController.setDefaultView());
   }
 
+  _updateEvents() {
+    this._removeEvents();
+    this._renderEvents(this._eventsModel.getEvents());
+  }
+
   _onDataChange(eventController, oldData, newData) {
     if (oldData === EmptyEvent) {
       this._creatingEvent = null;
