@@ -6,7 +6,6 @@ import InfoComponent from "./components/trip-info";
 import InfoMainComponent from "./components/trip-info-main";
 import InfoCostComponent from "./components/trip-info-cost";
 import MenuComponent from "./components/menu";
-import {FilterType} from "./const";
 import EventsModel from "./models/events.js";
 import FilterController from "./controllers/filter";
 
@@ -24,7 +23,8 @@ render(new InfoMainComponent(), tripInfo, RenderPosition.AFTERBEGIN);
 render(new InfoCostComponent(), tripInfo, RenderPosition.BEFOREEND);
 
 const tripControls = tripMain.querySelector(`.trip-controls`);
-render(new MenuComponent(), tripControls, RenderPosition.AFTERBEGIN);
+const menuComponent = new MenuComponent();
+render(menuComponent, tripControls, RenderPosition.AFTERBEGIN);
 
 const filterController = new FilterController(tripControls, eventsModel);
 filterController.render();
@@ -35,3 +35,8 @@ const container = document.querySelectorAll(`.page-body__container`)[1];
 
 render(boardComponent, container, RenderPosition.BEFOREEND);
 tripController.render();
+
+const newEventButton = tripMain.querySelector(`.trip-main__event-add-btn`);
+newEventButton.addEventListener(`click`, function () {
+  tripController.createEvent();
+});

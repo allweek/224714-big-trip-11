@@ -54,7 +54,7 @@ const eventTypesGroups = getAllEventTypes(EventTypes);
 
 const capitalizeWord = (string) => string.charAt(0).toUpperCase() + string.slice(1);
 
-const createEventTypeMarkup = (eventType, dayCount) => {
+const createEventTypeMarkup = (eventType, dayCount, isChecked) => {
   return (
     `<div class="event__type-item">
       <input
@@ -62,7 +62,7 @@ const createEventTypeMarkup = (eventType, dayCount) => {
         class="event__type-input  visually-hidden"
         type="radio"
         name="event-type"
-        value="${eventType.name}"
+        value="${eventType.name}" ${isChecked ? `checked` : ``}
       />
       <label
         class="event__type-label
@@ -73,14 +73,15 @@ const createEventTypeMarkup = (eventType, dayCount) => {
   );
 };
 
-const createEventTypeGroupsMarkup = (events, dayCount) => {
+const createEventTypeGroupsMarkup = (events, dayCount, checkedType) => {
   const fieldSetsMarkup = [];
   for (const group of eventTypesGroups) {
     const eventTypeMarkups = [];
     events.forEach((event) => {
+      const isChecked = checkedType === event.name;
       if (event.group === group) {
         eventTypeMarkups.push(
-            createEventTypeMarkup(event, dayCount)
+            createEventTypeMarkup(event, dayCount, isChecked)
         );
       }
     });
@@ -112,6 +113,7 @@ const createDestinationMarkup = () => {
 };
 
 const createEventEditTemplate = (event, dayCount) => {
+  console.log(event);
   const {eventType, city, price, dateStart, dateEnd, isFavorite} = event;
 
   const citiesList = createCitiesListElem(Cities);
@@ -125,7 +127,7 @@ const createEventEditTemplate = (event, dayCount) => {
   const offersMarkup = eventOptions ? createOfferMarkup(eventOptions, dayCount) : ``;
 
 
-  const eventTypesGroupsMarkup = createEventTypeGroupsMarkup(EventTypes, dayCount);
+  const eventTypesGroupsMarkup = createEventTypeGroupsMarkup(EventTypes, dayCount, eventType.name);
 
 
   const getSlashedData = (date) => `${castTimeFormat(date.getDate())}/${castTimeFormat(date.getMonth() + 1)}/${(date.getFullYear() % 1000)}`;
@@ -215,14 +217,22 @@ const createEventEditTemplate = (event, dayCount) => {
 };
 
 const parseFormData = (formData) => {
-  const startDate = formData.get(`event-start-time`);
-  const endDate = formData.get(`event-end-time`);
+  const dateStart = formData.get(`event-start-time`);
+  const dateEnd = formData.get(`event-end-time`);
+  console.log(formData.get(`event-type`));
+  const eventTypeName = formData.get(`event-type`);
+  const eventTypeObj = EventTypes.find((event) => event.name === eventTypeName);
+  const eventGroup = eventTypeObj.group;
   return {
-    eventType: ``,
-    destination: formData.get(`event-destination`),
-    startDate: startDate ? new Date(startDate) : null,
-    endDate: endDate ? new Date(endDate) : null,
-    price: formData.get(`price`)
+    eventType: {
+      name: eventTypeName,
+      group: eventGroup
+    },
+    city: formData.get(`event-destination`),
+    price: formData.get(`event-price`),
+    dateStart: dateStart ? new Date() : null,
+    dateEnd: dateEnd ? new Date() : null,
+    // isFavorite:
   };
 };
 
@@ -284,7 +294,8 @@ export default class EventEdit extends AbstractSmartComponent {
       });
     });
 
-    element.querySelector(`.event__input--destination`).addEventListener(`change`, () => {
+    element.querySelector(`.event__input--destination`).addEventListener(`change`, (evt) => {
+      console.log(evt.target.value)
       // в дальнейшем скорее всего в зависимости от города, будет меняться объект destination
       this.rerender();
     });

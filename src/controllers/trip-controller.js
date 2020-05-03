@@ -54,13 +54,22 @@ export default class TripController {
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
+    this._creatingEvent = null;
 
     this._eventsModel.setFilterChangeHandler(this._onFilterChange);
   }
 
+  createEvent() {
+    if (this._creatingEvent) {
+      return;
+    }
+
+    const dayListElement = this._container.getElement().querySelector(`.trip-days`);
+    this._creatingEvent = new EventController(dayListElement, this._onDataChange, this._onViewChange);
+    this._creatingEvent.render(EmptyEvent, EventControllerMode.ADDING);
+  }
+
   render() {
-
-
     const container = this._container.getElement();
 
     const events = this._eventsModel.getEvents();
