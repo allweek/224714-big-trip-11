@@ -38,6 +38,25 @@ export default class Events {
     return true;
   }
 
+  removeEvent(id) {
+    const index = this._events.findIndex((evt) => evt.id === id);
+
+    if (index === -1) {
+      return false;
+    }
+
+    this._events = [].concat(this._events.slice(0, index), this._events.slice(index + 1));
+
+    this._callHandlers(this._dataChangeHandlers);
+
+    return true;
+  }
+
+  addEvent(event) {
+    this._events = [].concat(event, this._events);
+    this._callHandlers(this._dataChangeHandlers);
+  }
+
   setFilterChangeHandler(handler) {
     this._filterChangeHandlers.push(handler);
   }

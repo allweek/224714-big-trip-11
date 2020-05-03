@@ -214,6 +214,17 @@ const createEventEditTemplate = (event, dayCount) => {
   );
 };
 
+const parseFormData = (formData) => {
+  const startDate = formData.get(`event-start-time`);
+  const endDate = formData.get(`event-end-time`);
+  return {
+    eventType: ``,
+    destination: formData.get(`event-destination`),
+    startDate: startDate ? new Date(startDate) : null,
+    endDate: endDate ? new Date(endDate) : null,
+    price: formData.get(`price`)
+  };
+};
 
 export default class EventEdit extends AbstractSmartComponent {
   constructor(event, dayCount) {
@@ -222,6 +233,9 @@ export default class EventEdit extends AbstractSmartComponent {
     this._event = event;
     this._dayCount = dayCount;
     this._submitHandler = null;
+    this._deleteButtonClickHandler = null;
+    this._rollupButtonClickHandler = null;
+    this._favoriteButtonHandler = null;
 
     this._subscribeOnEvents();
   }
@@ -233,6 +247,9 @@ export default class EventEdit extends AbstractSmartComponent {
   // восстановить слушатели после rerender
   recoveryListeners() {
     this.setSubmitHandler(this._submitHandler);
+    this.setRollupButtonClickHandler(this._rollupButtonClickHandler);
+    this.setDeleteButtonClickHandler(this._deleteButtonClickHandler);
+    this.setFavoritesButtonClickHandler(this._favoriteButtonHandler);
     this._subscribeOnEvents();
   }
 
@@ -244,12 +261,11 @@ export default class EventEdit extends AbstractSmartComponent {
     this.rerender();
   }
 
+  getData() {
+    const form = this.getElement();
+    const formData = new FormData(form);
 
-  setSubmitHandler(handler) {
-    this.getElement()
-      .addEventListener(`submit`, handler);
-
-    this._submitHandler = handler;
+    return parseFormData(formData);
   }
 
   _subscribeOnEvents() {
@@ -275,13 +291,31 @@ export default class EventEdit extends AbstractSmartComponent {
 
   }
 
+  setSubmitHandler(handler) {
+    this.getElement()
+      .addEventListener(`submit`, handler);
+
+    this._submitHandler = handler;
+  }
+
   setRollupButtonClickHandler(handler) {
     this.getElement().querySelector(`.event__rollup-btn`)
       .addEventListener(`click`, handler);
+
+    this._rollupButtonClickHandler = handler;
   }
 
   setFavoritesButtonClickHandler(handler) {
     this.getElement().querySelector(`.event__favorite-checkbox`)
       .addEventListener(`change`, handler);
+
+    this._favoriteButtonHandler = handler;
+  }
+
+  setDeleteButtonClickHandler(handler) {
+    this.getElement().querySelector(`.event__reset-btn`)
+      .addEventListener(`click`, handler);
+
+    this._deleteButtonClickHandler = handler;
   }
 }
