@@ -1,6 +1,7 @@
 import EventComponent from "../components/event";
 import EventEditComponent from "../components/event-edit";
 import {render, RenderPosition, replace, remove} from "../utils/render";
+import {defaultEventType} from "../const";
 
 export const Mode = {
   ADDING: `adding`,
@@ -8,12 +9,13 @@ export const Mode = {
   EDIT: `edit`,
 };
 
+
 export const EmptyEvent = {
-  eventType: ``,
+  eventType: defaultEventType,
   destination: ``,
   price: null,
-  dateStart: null,
-  dateEnd: null,
+  dateStart: new Date(),
+  dateEnd: new Date(),
   isFavorite: false
 };
 

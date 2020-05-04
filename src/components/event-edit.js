@@ -118,7 +118,7 @@ const createEventEditTemplate = (event, dayCount) => {
 
   const citiesList = createCitiesListElem(Cities);
 
-  const eventNameToCapitalize = capitalizeWord(eventType.name);
+  const eventNameToCapitalize = eventType.name ? capitalizeWord(eventType.name) : ``;
 
   const preposition = eventType.group === `Transfer` ? `to` : `in`;
 
@@ -137,6 +137,8 @@ const createEventEditTemplate = (event, dayCount) => {
   const timeEndFormatted = formatTime(dateEnd);
 
   const destination = createDestinationMarkup();
+  const isBlockSaveButton = !(city && city.length && (dateStart instanceof Date) && (dateEnd instanceof Date) && (price && price >= 0));
+  console.log(isBlockSaveButton);
 
   return (
     `<form class="trip-events__item event  event--edit" action="#" method="post">
@@ -157,7 +159,7 @@ const createEventEditTemplate = (event, dayCount) => {
           <label class="event__label  event__type-output" for="event-destination-${dayCount}">
             ${eventNameToCapitalize} ${preposition}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-${dayCount}" type="text" name="event-destination" value="${city}" list="destination-list-${dayCount}">
+          <input class="event__input  event__input--destination" id="event-destination-${dayCount}" type="text" name="event-destination" value="${city ? city : ``}" list="destination-list-${dayCount}">
           <datalist id="destination-list-${dayCount}">
             ${citiesList}
           </datalist>
@@ -180,10 +182,11 @@ const createEventEditTemplate = (event, dayCount) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-${dayCount}" type="text" name="event-price" value="${price}">
+          <input class="event__input  event__input--price" id="event-price-${dayCount}" type="text" name="event-price" value="${price ? price : ``}">
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${isBlockSaveButton ? `
+disabled` : ``}>Save</button>
         <button class="event__reset-btn" type="reset">Delete</button>
 
         <input id="event-favorite-${dayCount}" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavorite ? `checked` : ``}>

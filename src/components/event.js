@@ -6,7 +6,7 @@ import {generateOptions} from "../mock/option";
 
 const createEventMarkup = (event) => {
   const {eventType, city, price, dateStart, dateEnd} = event;
-  const eventNameToCapitalize = eventType.name.charAt(0).toUpperCase() + eventType.name.slice(1);
+  const eventNameToCapitalize = eventType.name ? eventType.name.charAt(0).toUpperCase() + eventType.name.slice(1) : ``;
   const timeStartFormatted = formatTime(dateStart);
   const timeEndFormatted = formatTime(dateEnd);
   const durationFormatted = formatTimeFromMs(dateEnd - dateStart);
