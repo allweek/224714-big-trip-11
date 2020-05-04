@@ -13,7 +13,6 @@ export const getFavoriteEvents = (events) => {
 };
 
 export const getEventsByFilter = (events, filter) => {
-  console.log(`getEventsByFilter in utils\filter.js`);
   switch (filter) {
     case FilterType.EVERYTHING:
       return events;

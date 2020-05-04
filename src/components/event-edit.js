@@ -1,9 +1,12 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
 import {Cities} from "../const";
 import {EventTypes} from "../const";
-import {castTimeFormat, formatTime} from "../utils/common.js";
+import {castTimeFormat, formatTime, formatDate, formatTimeWithSlash} from "../utils/common.js";
 import {generateOptions} from "../mock/option";
 import {generateDestination} from "../mock/destination";
+import flatpickr from "flatpickr";
+
+import "flatpickr/dist/flatpickr.min.css";
 
 const createCitiesListElem = (citiesList) => {
   return citiesList
@@ -113,7 +116,6 @@ const createDestinationMarkup = () => {
 };
 
 const createEventEditTemplate = (event, dayCount) => {
-  console.log(event);
   const {eventType, city, price, dateStart, dateEnd, isFavorite} = event;
 
   const citiesList = createCitiesListElem(Cities);
@@ -131,14 +133,16 @@ const createEventEditTemplate = (event, dayCount) => {
 
 
   const getSlashedData = (date) => `${castTimeFormat(date.getDate())}/${castTimeFormat(date.getMonth() + 1)}/${(date.getFullYear() % 1000)}`;
-  const dateStartText = getSlashedData(dateStart);
+  const dateStartText = formatTimeWithSlash(dateStart);
+  console.log(dateStartText);
   const dateEndText = getSlashedData(dateEnd);
   const timeStartFormatted = formatTime(dateStart);
   const timeEndFormatted = formatTime(dateEnd);
 
+  console.log(timeStartFormatted);
+
   const destination = createDestinationMarkup();
   const isBlockSaveButton = !(city && city.length && (dateStart instanceof Date) && (dateEnd instanceof Date) && (price && price >= 0));
-  console.log(isBlockSaveButton);
 
   return (
     `<form class="trip-events__item event  event--edit" action="#" method="post">
@@ -222,7 +226,6 @@ disabled` : ``}>Save</button>
 const parseFormData = (formData) => {
   const dateStart = formData.get(`event-start-time`);
   const dateEnd = formData.get(`event-end-time`);
-  console.log(formData.get(`event-type`));
   const eventTypeName = formData.get(`event-type`);
   const eventTypeObj = EventTypes.find((event) => event.name === eventTypeName);
   const eventGroup = eventTypeObj.group;
@@ -249,7 +252,9 @@ export default class EventEdit extends AbstractSmartComponent {
     this._deleteButtonClickHandler = null;
     this._rollupButtonClickHandler = null;
     this._favoriteButtonHandler = null;
+    this._flatpickr = null;
 
+    this._applyFlatpickr();
     this._subscribeOnEvents();
   }
 
@@ -268,10 +273,33 @@ export default class EventEdit extends AbstractSmartComponent {
 
   rerender() {
     super.rerender();
+
+    this._applyFlatpickr();
   }
 
   reset() {
     this.rerender();
+  }
+
+  _applyFlatpickr() {
+    if (this._flatpickr) {
+      this._flatpickr.destroy();
+      this._flatpickr = null;
+    }
+
+    const dateStartElement = this.getElement().querySelector(`[name="event-start-time"]`);
+    const dateEndElement = this.getElement().querySelector(`[name="event-end-time"]`);
+    this._flatpickr = flatpickr(dateStartElement, {
+      altInput: true,
+      allowInput: true,
+      defaultDate: this._event.dateStart || `today`,
+      dateFormat: `d/m/y i:H`,
+    });
+    this._flatpickr = flatpickr(dateEndElement, {
+      altInput: true,
+      allowInput: true,
+      defaultDate: this._event.dateEnd || `today`
+    });
   }
 
   getData() {
@@ -297,8 +325,7 @@ export default class EventEdit extends AbstractSmartComponent {
       });
     });
 
-    element.querySelector(`.event__input--destination`).addEventListener(`change`, (evt) => {
-      console.log(evt.target.value)
+    element.querySelector(`.event__input--destination`).addEventListener(`change`, () => {
       // в дальнейшем скорее всего в зависимости от города, будет меняться объект destination
       this.rerender();
     });

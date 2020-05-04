@@ -1,12 +1,15 @@
+import moment from "moment";
+
 export const castTimeFormat = (value) => {
   return value < 10 ? `0${value}` : String(value);
 };
 
 export const formatTime = (date) => {
-  const hours = castTimeFormat(date.getHours());
-  const minutes = castTimeFormat(date.getMinutes());
+  return moment(date).format(`hh:mm`);
+};
 
-  return `${hours}:${minutes}`;
+export const formatTimeWithSlash = (date) => {
+  return moment(date).format(`DD/MM/YY HH:MM`);
 };
 
 export const formatTimeFromMs = (ms) => {
