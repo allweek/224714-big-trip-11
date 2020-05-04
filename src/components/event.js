@@ -1,6 +1,6 @@
 import AbstractComponent from "./abstract-component";
 import OptionsComponent from "./option";
-import {formatTime, formatTimeFromMs} from "../utils/common.js";
+import {formatTime, formatDuraion} from "../utils/common.js";
 import {generateOptions} from "../mock/option";
 
 
@@ -9,7 +9,7 @@ const createEventMarkup = (event) => {
   const eventNameToCapitalize = eventType.name ? eventType.name.charAt(0).toUpperCase() + eventType.name.slice(1) : ``;
   const timeStartFormatted = formatTime(dateStart);
   const timeEndFormatted = formatTime(dateEnd);
-  const durationFormatted = formatTimeFromMs(dateEnd - dateStart);
+  const durationFormatted = formatDuraion(dateEnd - dateStart);
   const preposition = eventType.group === `Transfer` ? `to` : `in`;
   const dateTimeStart = dateStart.toISOString().slice(0, 13);
   const dateTimeEnd = dateEnd.toISOString().slice(0, 13);

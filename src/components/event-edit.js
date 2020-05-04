@@ -1,7 +1,7 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
 import {Cities} from "../const";
 import {EventTypes} from "../const";
-import {castTimeFormat, formatTime, formatDate, formatTimeWithSlash} from "../utils/common.js";
+import {formatDate} from "../utils/common.js";
 import {generateOptions} from "../mock/option";
 import {generateDestination} from "../mock/destination";
 import flatpickr from "flatpickr";
@@ -125,21 +125,12 @@ const createEventEditTemplate = (event, dayCount) => {
   const preposition = eventType.group === `Transfer` ? `to` : `in`;
 
   const eventOptions = generateOptions(eventType.name);
-  const isOffersShown = eventOptions && eventOptions.length ? true : false;
+  const isOffersShown = !!(eventOptions && eventOptions.length);
   const offersMarkup = eventOptions ? createOfferMarkup(eventOptions, dayCount) : ``;
 
 
   const eventTypesGroupsMarkup = createEventTypeGroupsMarkup(EventTypes, dayCount, eventType.name);
 
-
-  const getSlashedData = (date) => `${castTimeFormat(date.getDate())}/${castTimeFormat(date.getMonth() + 1)}/${(date.getFullYear() % 1000)}`;
-  const dateStartText = formatTimeWithSlash(dateStart);
-  console.log(dateStartText);
-  const dateEndText = getSlashedData(dateEnd);
-  const timeStartFormatted = formatTime(dateStart);
-  const timeEndFormatted = formatTime(dateEnd);
-
-  console.log(timeStartFormatted);
 
   const destination = createDestinationMarkup();
   const isBlockSaveButton = !(city && city.length && (dateStart instanceof Date) && (dateEnd instanceof Date) && (price && price >= 0));
@@ -173,12 +164,12 @@ const createEventEditTemplate = (event, dayCount) => {
           <label class="visually-hidden" for="event-start-time-${dayCount}">
             From
           </label>
-          <input class="event__input  event__input--time" id="event-start-time-${dayCount}" type="text" name="event-start-time" value="${dateStartText} ${timeStartFormatted}">
+          <input class="event__input  event__input--time" id="event-start-time-${dayCount}" type="text" name="event-start-time" value="">
           &mdash;
           <label class="visually-hidden" for="event-end-time-${dayCount}">
             To
           </label>
-          <input class="event__input  event__input--time" id="event-end-time-${dayCount}" type="text" name="event-end-time" value="${dateEndText} ${timeEndFormatted}">
+          <input class="event__input  event__input--time" id="event-end-time-${dayCount}" type="text" name="event-end-time" value="">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -290,15 +281,14 @@ export default class EventEdit extends AbstractSmartComponent {
     const dateStartElement = this.getElement().querySelector(`[name="event-start-time"]`);
     const dateEndElement = this.getElement().querySelector(`[name="event-end-time"]`);
     this._flatpickr = flatpickr(dateStartElement, {
-      altInput: true,
       allowInput: true,
       defaultDate: this._event.dateStart || `today`,
-      dateFormat: `d/m/y i:H`,
+      dateFormat: `d/m/y H:i`
     });
     this._flatpickr = flatpickr(dateEndElement, {
-      altInput: true,
       allowInput: true,
-      defaultDate: this._event.dateEnd || `today`
+      defaultDate: this._event.dateEnd || `today`,
+      dateFormat: `d/m/y H:i`
     });
   }
 

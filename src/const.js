@@ -78,7 +78,3 @@ export const EventTypes = [
 ];
 
 export const defaultEventType = EventTypes[0];
-
-export const MonthShortNames = [`JAN`, `FEB`, `MAR`, `APR`, `MAY`, `JUN`, `JUL`, `AUG`, `SEP`, `OCT`, `NOV`, `DEC`];
-
-
