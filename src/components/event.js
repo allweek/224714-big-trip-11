@@ -1,6 +1,6 @@
 import AbstractComponent from "./abstract-component";
 import OptionsComponent from "./option";
-import {formatTime, formatDuraion} from "../utils/common.js";
+import {formatTime, getDuration} from "../utils/common.js";
 import {generateOptions} from "../mock/option";
 
 
@@ -9,11 +9,13 @@ const createEventMarkup = (event) => {
   const eventNameToCapitalize = eventType.name ? eventType.name.charAt(0).toUpperCase() + eventType.name.slice(1) : ``;
   const timeStartFormatted = formatTime(dateStart);
   const timeEndFormatted = formatTime(dateEnd);
-  const durationFormatted = formatDuraion(dateEnd - dateStart);
+  const durationFormatted = getDuration(dateStart, dateEnd);
+
   const preposition = eventType.group === `Transfer` ? `to` : `in`;
   const dateTimeStart = dateStart.toISOString().slice(0, 13);
   const dateTimeEnd = dateEnd.toISOString().slice(0, 13);
   const eventOptions = generateOptions(eventType.name);
+
   return (
     `<li class="trip-events__item">
       <div class="event">

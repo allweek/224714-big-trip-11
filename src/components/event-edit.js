@@ -1,7 +1,7 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
 import {Cities} from "../const";
 import {EventTypes} from "../const";
-import {formatDate} from "../utils/common.js";
+import {formatFromStringToDate} from "../utils/common";
 import {generateOptions} from "../mock/option";
 import {generateDestination} from "../mock/destination";
 import flatpickr from "flatpickr";
@@ -133,7 +133,7 @@ const createEventEditTemplate = (event, dayCount) => {
 
 
   const destination = createDestinationMarkup();
-  const isBlockSaveButton = !(city && city.length && (dateStart instanceof Date) && (dateEnd instanceof Date) && (price && price >= 0));
+  const isBlockSaveButton = !(city && city.length && (dateStart instanceof Date) && (dateEnd instanceof Date) && (dateStart < dateEnd) && (price && price >= 0));
 
   return (
     `<form class="trip-events__item event  event--edit" action="#" method="post">
@@ -215,21 +215,18 @@ disabled` : ``}>Save</button>
 };
 
 const parseFormData = (formData) => {
-  const dateStart = formData.get(`event-start-time`);
-  const dateEnd = formData.get(`event-end-time`);
+  const dateStartString = formData.get(`event-start-time`);
+  const dateStart = formatFromStringToDate(dateStartString);
+  const dateEndString = formData.get(`event-end-time`);
+  const dateEnd = formatFromStringToDate(dateEndString);
   const eventTypeName = formData.get(`event-type`);
-  const eventTypeObj = EventTypes.find((event) => event.name === eventTypeName);
-  const eventGroup = eventTypeObj.group;
+  const eventType = EventTypes.find((event) => event.name === eventTypeName);
   return {
-    eventType: {
-      name: eventTypeName,
-      group: eventGroup
-    },
+    eventType,
     city: formData.get(`event-destination`),
     price: formData.get(`event-price`),
-    dateStart: dateStart ? new Date() : null,
-    dateEnd: dateEnd ? new Date() : null,
-    // isFavorite:
+    dateStart: dateStart ? dateStart : null,
+    dateEnd: dateEnd ? dateEnd : null
   };
 };
 
@@ -243,7 +240,8 @@ export default class EventEdit extends AbstractSmartComponent {
     this._deleteButtonClickHandler = null;
     this._rollupButtonClickHandler = null;
     this._favoriteButtonHandler = null;
-    this._flatpickr = null;
+    this._flatpickrFrom = null;
+    this._flatpickrTo = null;
 
     this._applyFlatpickr();
     this._subscribeOnEvents();
@@ -273,19 +271,23 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   _applyFlatpickr() {
-    if (this._flatpickr) {
-      this._flatpickr.destroy();
-      this._flatpickr = null;
+    if (this._flatpickrFrom) {
+      this._flatpickrFrom.destroy();
+      this._flatpickrFrom = null;
+    }
+    if (this._flatpickrTo) {
+      this._flatpickrTo.destroy();
+      this._flatpickrTo = null;
     }
 
     const dateStartElement = this.getElement().querySelector(`[name="event-start-time"]`);
     const dateEndElement = this.getElement().querySelector(`[name="event-end-time"]`);
-    this._flatpickr = flatpickr(dateStartElement, {
+    this._flatpickrFrom = flatpickr(dateStartElement, {
       allowInput: true,
       defaultDate: this._event.dateStart || `today`,
       dateFormat: `d/m/y H:i`
     });
-    this._flatpickr = flatpickr(dateEndElement, {
+    this._flatpickrTo = flatpickr(dateEndElement, {
       allowInput: true,
       defaultDate: this._event.dateEnd || `today`,
       dateFormat: `d/m/y H:i`
@@ -295,8 +297,7 @@ export default class EventEdit extends AbstractSmartComponent {
   getData() {
     const form = this.getElement();
     const formData = new FormData(form);
-
-    return parseFormData(formData);
+    return parseFormData(formData, this._flatpickrFrom._initialDate.getTime(), this._flatpickrTo._initialDate.getTime());
   }
 
   _subscribeOnEvents() {
@@ -305,11 +306,7 @@ export default class EventEdit extends AbstractSmartComponent {
     Array.from(element.querySelectorAll(`.event__type-group`)).forEach((fieldset) => {
       fieldset.addEventListener(`change`, (evt) => {
         const eventName = evt.target.value;
-        const eventTypeObj = EventTypes.find((event) => event.name === eventName);
-        this._event.eventType = {
-          name: eventName,
-          group: eventTypeObj.group
-        };
+        this._event.eventType = Object.assign({}, EventTypes.find((event) => event.name === eventName));
 
         this.rerender();
       });
@@ -348,5 +345,9 @@ export default class EventEdit extends AbstractSmartComponent {
       .addEventListener(`click`, handler);
 
     this._deleteButtonClickHandler = handler;
+  }
+
+  setEventTypeChangeHalndler(handler) {
+
   }
 }
