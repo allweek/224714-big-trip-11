@@ -1,7 +1,7 @@
 import {render, RenderPosition} from "../utils/render";
 import EventController, {Mode as EventControllerMode, EmptyEvent} from "../controllers/event";
 import SortComponent from "../components/sort";
-import DaysComponent from "../components/days";
+import DaysController from "../controllers/days";
 import DayComponent from "../components/day";
 
 
@@ -50,7 +50,6 @@ export default class TripController {
 
     this._showedEventControllers = [];
     this._sortComponent = new SortComponent();
-    this._daysComponent = new DaysComponent();
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
@@ -74,16 +73,16 @@ export default class TripController {
 
     const events = this._eventsModel.getEvents();
     render(this._sortComponent, container, RenderPosition.BEFOREEND);
-    render(this._daysComponent, container, RenderPosition.BEFOREEND);
+    this._daysController = new DaysController(container);
+    this._daysController.render();
 
     this._renderEvents(events);
   }
 
   _renderEvents(events) {
     const dayList = this._container.getElement().querySelector(`.trip-days`);
-    if (dayList.querySelectorAll(`.trip-days__item`).length) {
-      dayList.innerHTML = ``;
-    }
+
+    this._daysController.clear();
     const newEvents = renderEvents(dayList, events, this._onDataChange, this._onViewChange);
     this._showedEventControllers = this._showedEventControllers.concat(newEvents);
   }

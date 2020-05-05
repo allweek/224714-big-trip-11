@@ -62,10 +62,10 @@ export default class EventController {
       this._onDataChange(this, event, null, false);
     });
 
-    this._eventEditComponent.setFormDataChangeHandler(() => {
-      const data = this._eventEditComponent.getData();
-      this._onDataChange(this, event, data, true);
-    });
+    // this._eventEditComponent.setFormDataChangeHandler(() => {
+    //   const data = this._eventEditComponent.getData();
+    //   this._onDataChange(this, event, data, true);
+    // });
 
     switch (mode) {
       case Mode.DEFAULT:

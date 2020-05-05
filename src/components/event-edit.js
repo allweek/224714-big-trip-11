@@ -241,7 +241,7 @@ export default class EventEdit extends AbstractSmartComponent {
     this._deleteButtonClickHandler = null;
     this._rollupButtonClickHandler = null;
     this._favoriteButtonHandler = null;
-    this._formDataChangeHandler = null;
+    // this._formDataChangeHandler = null;
     this._flatpickrFrom = null;
     this._flatpickrTo = null;
 
@@ -259,7 +259,7 @@ export default class EventEdit extends AbstractSmartComponent {
     this.setRollupButtonClickHandler(this._rollupButtonClickHandler);
     this.setDeleteButtonClickHandler(this._deleteButtonClickHandler);
     this.setFavoritesButtonClickHandler(this._favoriteButtonHandler);
-    this.setFormDataChangeHandler(this._formDataChangeHandler);
+    // this.setFormDataChangeHandler(this._formDataChangeHandler);
     this._subscribeOnEvents();
   }
 
@@ -304,21 +304,21 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   _subscribeOnEvents() {
-    // const element = this.getElement();
+    const element = this.getElement();
 
-    // Array.from(element.querySelectorAll(`.event__type-group`)).forEach((fieldset) => {
-    //   fieldset.addEventListener(`change`, (evt) => {
-    //     const eventName = evt.target.value;
-    //     this._event.eventType = Object.assign({}, EventTypes.find((event) => event.name === eventName));
-    //
-    //     this.rerender();
-    //   });
-    // });
+    Array.from(element.querySelectorAll(`.event__type-group`)).forEach((fieldset) => {
+      fieldset.addEventListener(`change`, (evt) => {
+        const eventName = evt.target.value;
+        this._event.eventType = Object.assign({}, EventTypes.find((event) => event.name === eventName));
 
-    // element.querySelector(`.event__input--destination`).addEventListener(`change`, () => {
-    //   // в дальнейшем скорее всего в зависимости от города, будет меняться объект destination
-    //   this.rerender();
-    // });
+        this.rerender();
+      });
+    });
+
+    element.querySelector(`.event__input--destination`).addEventListener(`change`, () => {
+      // в дальнейшем скорее всего в зависимости от города, будет меняться объект destination
+      this.rerender();
+    });
 
   }
 
@@ -350,17 +350,17 @@ export default class EventEdit extends AbstractSmartComponent {
     this._deleteButtonClickHandler = handler;
   }
 
-  setFormDataChangeHandler(handler) {
-    const element = this.getElement();
-
-    Array.from(element.querySelectorAll(`.event__type-group`)).forEach((fieldset) => {
-      fieldset.addEventListener(`change`, () => {
-        handler();
-      });
-    });
-
-    this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, handler);
-
-    this._formDataChangeHandler = handler;
-  }
+  // setFormDataChangeHandler(handler) {
+  //   const element = this.getElement();
+  //
+  //   Array.from(element.querySelectorAll(`.event__type-group`)).forEach((fieldset) => {
+  //     fieldset.addEventListener(`change`, () => {
+  //       handler();
+  //     });
+  //   });
+  //
+  //   this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, handler);
+  //
+  //   this._formDataChangeHandler = handler;
+  // }
 }
