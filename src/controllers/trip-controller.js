@@ -102,7 +102,7 @@ export default class TripController {
     this._renderEvents(this._eventsModel.getEvents());
   }
 
-  _onDataChange(eventController, oldData, newData) {
+  _onDataChange(eventController, oldData, newData, stayOnAddingMode) {
     if (oldData === EmptyEvent) {
       this._creatingEvent = null;
       if (newData === null) {
@@ -121,7 +121,11 @@ export default class TripController {
       const isSuccess = this._eventsModel.updateEvent(oldData.id, newData);
 
       if (isSuccess) {
-        eventController.render(newData, EventControllerMode.DEFAULT);
+        if (stayOnAddingMode) {
+          eventController.render(newData, EventControllerMode.ADDING);
+        } else {
+          eventController.render(newData, EventControllerMode.DEFAULT);
+        }
       }
     }
   }

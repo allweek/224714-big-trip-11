@@ -41,7 +41,7 @@ export default class EventController {
     this._eventEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
       const data = this._eventEditComponent.getData();
-      this._onDataChange(this, event, data);
+      this._onDataChange(this, event, data, false);
     });
 
     this._eventComponent.setRollupButtonClickHandler(() => {
@@ -55,11 +55,16 @@ export default class EventController {
     this._eventEditComponent.setFavoritesButtonClickHandler(() => {
       this._onDataChange(this, event, Object.assign({}, event, {
         isFavorite: !event.isFavorite,
-      }));
+      }), true);
     });
 
     this._eventEditComponent.setDeleteButtonClickHandler(() => {
-      this._onDataChange(this, event, null);
+      this._onDataChange(this, event, null, false);
+    });
+
+    this._eventEditComponent.setFormDataChangeHandler(() => {
+      const data = this._eventEditComponent.getData();
+      this._onDataChange(this, event, data, true);
     });
 
     switch (mode) {
