@@ -35,8 +35,10 @@ export default class EventController {
     const oldEventEditComponent = this._eventEditComponent;
     this._mode = mode;
 
+    const isCreatingNew = event === EmptyEvent;
+
     this._eventComponent = new EventComponent(event);
-    this._eventEditComponent = new EventEditComponent(event, this._dayCount);
+    this._eventEditComponent = new EventEditComponent(event, this._dayCount, isCreatingNew);
 
     this._eventEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
