@@ -1,4 +1,5 @@
 import {render, RenderPosition} from "../utils/render";
+import {isSameDate} from "../utils/common";
 import EventController, {Mode as EventControllerMode, EmptyEvent} from "../controllers/event";
 import SortComponent from "../components/sort";
 import DaysController from "../controllers/days";
@@ -105,25 +106,37 @@ export default class TripController {
     if (oldData === EmptyEvent) {
       this._creatingEvent = null;
       if (newData === null) {
+        // при создании нового event пришли пустые данные
         eventController.destroy();
         this._updateEvents();
       } else {
+        // добавление нового event
         this._eventsModel.addEvent(newData);
-        eventController.render(newData, EventControllerMode.DEFAULT);
-
-        this._showedEventControllers = [].concat(eventController, this._showedEventControllers);
+        this._updateEvents();
+        // eventController.render(newData, EventControllerMode.DEFAULT);
+        //
+        // this._showedEventControllers = [].concat(eventController, this._showedEventControllers);
       }
     } else if (newData === null) {
+      // удаление event
       this._eventsModel.removeEvent(oldData.id);
       this._updateEvents();
     } else {
+      // изменение
       const isSuccess = this._eventsModel.updateEvent(oldData.id, newData);
 
       if (isSuccess) {
         if (stayOnAddingMode) {
+          // изменение данных без закрытия формы, например добавление в избранное
           eventController.render(newData, EventControllerMode.ADDING);
         } else {
-          eventController.render(newData, EventControllerMode.DEFAULT);
+          // изменение данных с закрытием формы
+
+          if (isSameDate(oldData, newData)) {
+            eventController.render(newData, EventControllerMode.DEFAULT);
+          } else {
+            this._updateEvents();
+          }
         }
       }
     }

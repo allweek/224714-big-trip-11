@@ -230,7 +230,7 @@ const parseFormData = (formData) => {
     price: formData.get(`event-price`),
     dateStart: dateStart ? dateStart : null,
     dateEnd: dateEnd ? dateEnd : null,
-    isFavorite: formData.get(`event-favorite`)
+    isFavorite: !!formData.get(`event-favorite`)
   };
 };
 
