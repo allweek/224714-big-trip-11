@@ -12,4 +12,10 @@ export default class Days extends AbstractComponent {
   getTemplate() {
     return createTripDays();
   }
+
+  clearChildrenElements() {
+    if (this.getElement().querySelectorAll(`.trip-days__item`).length) {
+      this.getElement().innerHTML = ``;
+    }
+  }
 }

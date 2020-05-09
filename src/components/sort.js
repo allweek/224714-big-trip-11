@@ -1,5 +1,5 @@
 import AbstractComponent from "./abstract-component";
-import {sortItems} from "../const";
+import {SortItems} from "../const";
 
 const createSortItemMarkup = (sortItem, isChecked) => {
 
@@ -39,7 +39,7 @@ const createTripSort = () => {
   };
   return (
     `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
-      ${sortItems.map((sortItem) => createSortItemMarkup(sortItem, getRandomCheck())).join(`\n`)}
+      ${SortItems.map((sortItem) => createSortItemMarkup(sortItem, getRandomCheck())).join(`\n`)}
     </form>`
   );
 };

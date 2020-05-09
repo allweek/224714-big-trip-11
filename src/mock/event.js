@@ -1,9 +1,9 @@
 import {getRandomIntegerNumber, getRandomArrayElem} from "./temporary-functions-for-mocks";
-import {eventTypes, cities} from "../const";
+import {EventTypes, Cities} from "../const";
 
 
 const generateEvent = () => {
-  const type = getRandomArrayElem(eventTypes);
+  const type = getRandomArrayElem(EventTypes);
   const dateStart = new Date();
   const dayRange = getRandomIntegerNumber(-40, 40);
   const day = dateStart.getDate();
@@ -20,8 +20,9 @@ const generateEvent = () => {
   const price = getRandomIntegerNumber(2, 60) * 10;
 
   return {
+    id: String(Date.now() + Math.random()),
     eventType: type,
-    city: getRandomArrayElem(cities),
+    city: getRandomArrayElem(Cities),
     price,
     dateStart,
     dateEnd,

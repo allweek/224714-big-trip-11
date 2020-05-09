@@ -1,8 +1,12 @@
-export const cities = [`New York`, `Saint-Petersburg`, `Tokyo`, `Pisa`];
+export const Cities = [`New York`, `Saint-Petersburg`, `Tokyo`, `Pisa`];
 
-export const filterNames = [`everything`, `future`, `past`];
+export const FilterType = {
+  EVERYTHING: `everything`,
+  FUTURE: `future`,
+  PAST: `past`
+};
 
-export const sortItems = [
+export const SortItems = [
   {
     name: `Day`,
     sortable: false,
@@ -30,7 +34,7 @@ export const sortItems = [
   },
 ];
 
-export const eventTypes = [
+export const EventTypes = [
   {
     name: `taxi`,
     group: `Transfer`
@@ -73,6 +77,4 @@ export const eventTypes = [
   }
 ];
 
-export const monthShortNames = [`JAN`, `FEB`, `MAR`, `APR`, `MAY`, `JUN`, `JUL`, `AUG`, `SEP`, `OCT`, `NOV`, `DEC`];
-
-
+export const defaultEventType = EventTypes[0];
