@@ -10,11 +10,11 @@ export const formatDateWithHypen = (date) => {
 
 export const formatFromStringToDate = (date) => {
   return moment(date, `DD/MM/YY HH:mm`).toDate();
-}
+};
 
 export const isSameDate = (oldData, newData) => {
   return ((formatDateWithHypen(oldData.dateStart) === formatDateWithHypen(newData.dateStart)) && (formatDateWithHypen(oldData.dateEnd) === formatDateWithHypen(newData.dateEnd)));
-}
+};
 
 export const getDuration = (start, end) => {
   const diff = moment(end).diff(moment(start));

@@ -100,7 +100,6 @@ export default class TripController {
   }
 
   _updateEvents() {
-    this._creatingEvent = null;
     this._removeEvents();
     this._renderEvents(this._eventsModel.getEvents());
   }
@@ -146,7 +145,7 @@ export default class TripController {
   }
 
   _onFilterChange() {
-    console.log(`tripController updateEvents`);
+    this._creatingEvent = null;
     this._updateEvents();
   }
 }

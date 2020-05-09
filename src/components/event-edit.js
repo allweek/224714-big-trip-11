@@ -325,7 +325,7 @@ export default class EventEdit extends AbstractSmartComponent {
       if (Cities.indexOf(cityFromInput) === -1) {
         evt.target.value = ``;
       }
-      //TODO в дальнейшем скорее всего в зависимости от города, будет меняться объект destination
+      // TODO в дальнейшем скорее всего в зависимости от города, будет меняться объект destination
       // this.rerender();
     });
 
