@@ -13,8 +13,10 @@ export default class FilterController {
 
     this._onDataChange = this._onDataChange.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
+    this._setActiveFilterCheckbox = this._setActiveFilterCheckbox.bind(this);
 
     this._eventsModel.setDataChangeHandler(this._onDataChange);
+    this._eventsModel.setFilterChangeHandlerInComponent(this._setActiveFilterCheckbox);
   }
 
   render() {
@@ -42,7 +44,10 @@ export default class FilterController {
     this._activeFilterType = filterType;
   }
 
-
+  _setActiveFilterCheckbox() {
+    this._activeFilterType = this._eventsModel._activeFilterType;
+    this._filterComponent.setActiveFilterCheckbox(this._activeFilterType);
+  }
 
   _onDataChange() {
     this.render();

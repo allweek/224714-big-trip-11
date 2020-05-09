@@ -8,6 +8,7 @@ export default class Events {
 
     this._dataChangeHandlers = [];
     this._filterChangeHandlers = [];
+    this._changeComponentFilterCheckbox = [];
   }
 
   getEvents() {
@@ -22,6 +23,11 @@ export default class Events {
   setFilter(filterType) {
     this._activeFilterType = filterType;
     this._callHandlers(this._filterChangeHandlers);
+  }
+
+  setEverythingFilter() {
+    this.setFilter(FilterType.EVERYTHING);
+    this._callHandlers(this._changeComponentFilterCheckbox);
   }
 
   updateEvent(id, event) {
@@ -55,6 +61,11 @@ export default class Events {
   addEvent(event) {
     this._events = [].concat(event, this._events);
     this._callHandlers(this._dataChangeHandlers);
+  }
+
+  // обработчик при установке фильтра через модель, для сброса фильтров при создании новой точки
+  setFilterChangeHandlerInComponent(handler) {
+    this._changeComponentFilterCheckbox.push(handler);
   }
 
   setFilterChangeHandler(handler) {

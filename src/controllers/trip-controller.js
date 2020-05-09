@@ -64,6 +64,8 @@ export default class TripController {
       return;
     }
 
+    this._onViewChange(); // закрыть все открытые формы
+    this._eventsModel.setEverythingFilter(); // снять фильтры
     const dayListElement = this._container.getElement().querySelector(`.trip-days`);
     this._creatingEvent = new EventController(dayListElement, this._onDataChange, this._onViewChange);
     this._creatingEvent.render(EmptyEvent, EventControllerMode.ADDING);
@@ -98,6 +100,7 @@ export default class TripController {
   }
 
   _updateEvents() {
+    this._creatingEvent = null;
     this._removeEvents();
     this._renderEvents(this._eventsModel.getEvents());
   }
@@ -143,7 +146,7 @@ export default class TripController {
   }
 
   _onFilterChange() {
-    this._removeEvents();
-    this._renderEvents(this._eventsModel.getEvents());
+    console.log(`tripController updateEvents`);
+    this._updateEvents();
   }
 }

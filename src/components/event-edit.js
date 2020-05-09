@@ -320,11 +320,20 @@ export default class EventEdit extends AbstractSmartComponent {
       });
     });
 
-    element.querySelector(`.event__input--destination`).addEventListener(`change`, () => {
-      // в дальнейшем скорее всего в зависимости от города, будет меняться объект destination
+    element.querySelector(`.event__input--destination`).addEventListener(`change`, (evt) => {
+      const cityFromInput = evt.target.value;
+      if (Cities.indexOf(cityFromInput) === -1) {
+        evt.target.value = ``;
+      }
+      //TODO в дальнейшем скорее всего в зависимости от города, будет меняться объект destination
       // this.rerender();
     });
 
+    element.querySelector(`.event__input--price`).addEventListener(`change`, (evt) => {
+      if (isNaN(evt.target.value)) {
+        evt.target.value = ``;
+      }
+    });
 
     // валидация формы и активация кнопки save
     element.addEventListener(`change`, () => {

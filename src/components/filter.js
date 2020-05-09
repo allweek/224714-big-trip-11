@@ -1,4 +1,4 @@
-import AbstractComponent from "./abstract-component";
+import AbstractSmartComponent from "./abstract-smart-component";
 
 const FILTER_ID_PREFIX = `filter_`;
 
@@ -26,29 +26,40 @@ const createFilters = (filters) => {
   const filtersMarkup = Object.values(filters).map((filter) => createFilterMarkup(filter)).join(`\n`);
 
   return (
-    `<h2 class="visually-hidden">Filter events</h2>
-     <form class="trip-filters" action="#" method="get">
+    `<form class="trip-filters" action="#" method="get">
        ${filtersMarkup}  
        <button class="visually-hidden" type="submit">Accept filter</button>
      </form>`
   );
 };
 
-export default class Filter extends AbstractComponent {
+export default class Filter extends AbstractSmartComponent {
   constructor(filters) {
     super();
 
     this._filters = filters;
+    this._filterChangeHandler = null;
   }
 
   getTemplate() {
     return createFilters(this._filters);
   }
 
+  recoveryListeners() {
+    this.setFilterChangeHandler(this._filterChangeHandler);
+  }
+
   setFilterChangeHandler(handler) {
-    this.getElement().querySelector(`.trip-filters`).addEventListener(`change`, (evt) => {
+    const filtersForm = this.getElement();
+    filtersForm.addEventListener(`change`, (evt) => {
       const filterName = getFilterNameById(evt.target.id);
       handler(filterName);
     });
+    this._filterChangeHandler = handler;
+  }
+
+  setActiveFilterCheckbox(filterName) {
+    this.rerender();
+    this.getElement().querySelector(`#filter-${filterName}`).checked = true;
   }
 }
