@@ -185,7 +185,7 @@ const createEventEditTemplate = (event, dayCount, isCreatingNew) => {
 
         <button class="event__save-btn  btn  btn--blue" type="submit" ${isBlockSaveButton ? `
 disabled` : ``}>Save</button>
-        <button class="event__reset-btn" type="reset">Delete</button>
+        <button class="event__reset-btn" type="reset">${isCreatingNew ? `Cancel` : `Delete`}</button>
 
         ${!isCreatingNew ? `<input id="event-favorite-${dayCount}" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavorite ? `checked` : ``}>
         <label class="event__favorite-btn" for="event-favorite-${dayCount}">
