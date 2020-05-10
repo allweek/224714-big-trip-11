@@ -1,7 +1,9 @@
 import EventComponent from "../components/event";
 import EventEditComponent from "../components/event-edit";
+import EventModel from "../models/event";
+import {formatFromStringToDate} from "../utils/common";
 import {render, RenderPosition, replace, remove} from "../utils/render";
-import {defaultEventType} from "../const";
+import {defaultEventType, EventTypes} from "../const";
 
 export const Mode = {
   ADDING: `adding`,
@@ -9,6 +11,23 @@ export const Mode = {
   EDIT: `edit`,
 };
 
+const parseFormData = (formData) => {
+  const dateStartString = formData.get(`event-start-time`);
+  const dateStart = formatFromStringToDate(dateStartString);
+  const dateEndString = formData.get(`event-end-time`);
+  const dateEnd = formatFromStringToDate(dateEndString);
+  const eventTypeName = formData.get(`event-type`);
+  const eventType = EventTypes.find((event) => event.name === eventTypeName);
+  return new EventModel ({
+    "base_price": formData.get(`event-price`).toString(),
+    "date_from": dateStart ? dateStart : null,
+    "date_to": dateEnd ? dateEnd : null,
+    "destination": {},
+    "is_favorite": !!formData.get(`event-favorite`),
+    "offers": [],
+    "type": formData.get(`event-type`)
+  });
+};
 
 export const EmptyEvent = {
   eventType: defaultEventType,
@@ -42,7 +61,9 @@ export default class EventController {
 
     this._eventEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
-      const data = this._eventEditComponent.getData();
+      const formData = this._eventEditComponent.getData();
+      const data = parseFormData(formData);
+
       this._onDataChange(this, event, data, false);
     });
 
@@ -55,9 +76,10 @@ export default class EventController {
     });
 
     this._eventEditComponent.setFavoritesButtonClickHandler(() => {
-      this._onDataChange(this, event, Object.assign({}, event, {
-        isFavorite: !event.isFavorite,
-      }), true);
+      const newEvent = EventModel.clone(event);
+      newEvent.isFavorite = !newEvent.isFavorite;
+
+      this._onDataChange(this, event, newEvent, true);
     });
 
     this._eventEditComponent.setDeleteButtonClickHandler(() => {

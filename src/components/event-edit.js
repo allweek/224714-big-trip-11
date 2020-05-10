@@ -1,7 +1,6 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
 import {Cities} from "../const";
 import {EventTypes} from "../const";
-import {formatFromStringToDate} from "../utils/common";
 import {generateOptions} from "../mock/option";
 import {generateDestination} from "../mock/destination";
 import flatpickr from "flatpickr";
@@ -217,22 +216,6 @@ disabled` : ``}>Save</button>
   );
 };
 
-const parseFormData = (formData) => {
-  const dateStartString = formData.get(`event-start-time`);
-  const dateStart = formatFromStringToDate(dateStartString);
-  const dateEndString = formData.get(`event-end-time`);
-  const dateEnd = formatFromStringToDate(dateEndString);
-  const eventTypeName = formData.get(`event-type`);
-  const eventType = EventTypes.find((event) => event.name === eventTypeName);
-  return {
-    eventType,
-    city: formData.get(`event-destination`),
-    price: formData.get(`event-price`),
-    dateStart: dateStart ? dateStart : null,
-    dateEnd: dateEnd ? dateEnd : null,
-    isFavorite: !!formData.get(`event-favorite`)
-  };
-};
 
 export default class EventEdit extends AbstractSmartComponent {
   constructor(event, dayCount, isCreatingNew) {
@@ -304,8 +287,7 @@ export default class EventEdit extends AbstractSmartComponent {
 
   getData() {
     const form = this.getElement();
-    const formData = new FormData(form);
-    return parseFormData(formData);
+    return new FormData(form);
   }
 
   _subscribeOnEvents() {
