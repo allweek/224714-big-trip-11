@@ -43,12 +43,20 @@ const container = document.querySelectorAll(`.page-body__container`)[1];
 render(boardComponent, container, RenderPosition.BEFOREEND);
 // tripController.render();
 
-api.getEvents()
-  .then((events) => {
-    console.log(events);
-    eventsModel.setEvents(events);
-    tripController.render();
-    newEventButton.disabled = false;
+api.getOffers()
+  .then((offers) => {
+    eventsModel.setOffers(offers);
+    return api.getDestinations()
+      .then((destinations) => {
+        eventsModel.setDestinations(destinations)
+        return api.getEvents()
+          .then((events) => {
+            console.log(events);
+            eventsModel.setEvents(events);
+            tripController.render();
+            newEventButton.disabled = false;
+          });
+      });
   });
 
 

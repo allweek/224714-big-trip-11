@@ -7,7 +7,7 @@ import DayComponent from "../components/day";
 import Preloader from "../components/preloader";
 
 
-const renderEvents = (dayList, events, onDataChange, onViewChange) => {
+const renderEvents = (dayList, events, offers, destinations, onDataChange, onViewChange) => {
   const sortEvents = (eventsArray) => {
     const sortedEvents = [...eventsArray];
     return sortedEvents.sort((a, b)=> a.dateStart.getTime() - b.dateStart.getTime());
@@ -34,7 +34,7 @@ const renderEvents = (dayList, events, onDataChange, onViewChange) => {
       eventControllers = [...eventControllers,
         ...(eventsByDay.events
           .map((event) => {
-            const eventController = new EventController(eventsList, onDataChange, onViewChange, index + 1);
+            const eventController = new EventController(eventsList, offers, destinations, onDataChange, onViewChange, index + 1);
 
             eventController.render(event, EventControllerMode.DEFAULT);
 
@@ -49,6 +49,8 @@ export default class TripController {
   constructor(container, eventsModel, api) {
     this._container = container;
     this._eventsModel = eventsModel;
+    this._offers = [];
+    this._destinations = [];
     this._api = api;
 
     this._showedEventControllers = [];
@@ -94,7 +96,9 @@ export default class TripController {
     const dayList = this._container.getElement().querySelector(`.trip-days`);
 
     this._daysController.clear();
-    const newEvents = renderEvents(dayList, events, this._onDataChange, this._onViewChange);
+    this._offers = this._eventsModel.getOffers();
+    this._destinations = this._eventsModel.getDestinations();
+    const newEvents = renderEvents(dayList, events, this._offers, this._destinations, this._onDataChange, this._onViewChange);
     this._showedEventControllers = this._showedEventControllers.concat(newEvents);
   }
 

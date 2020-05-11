@@ -1,10 +1,8 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
 import {Cities} from "../const";
 import {EventTypes} from "../const";
-import {generateOptions} from "../mock/option";
-import {generateDestination} from "../mock/destination";
 import flatpickr from "flatpickr";
-
+import OffersComponent from "./offer";
 import "flatpickr/dist/flatpickr.min.css";
 
 const createCitiesListElem = (citiesList) => {
@@ -12,31 +10,6 @@ const createCitiesListElem = (citiesList) => {
     .map((city) => {
       return (
         `<option value="${city}"></option>`
-      );
-    })
-    .join(`\n`);
-};
-
-const createOfferMarkup = (eventOptions, dayCount) => {
-  return eventOptions
-    .map((option) => {
-      return (
-        `<div class="event__offer-selector">
-          <input 
-            class="event__offer-checkbox visually-hidden" 
-            id="event-offer-${option.name}-${dayCount}" 
-            type="checkbox" 
-            name="event-offer-${option.name}" 
-            ${Math.random() > 0.5 ? `checked` : ``} 
-          /> 
-          <label 
-            class="event__offer-label" 
-            for="event-offer-${option.name}-${dayCount}">
-            <span class="event__offer-title">${option.title}</span>
-            &plus;
-            &euro;&nbsp;<span class="event__offer-price">${option.price}</span>
-          </label>
-        </div>` // возможно изначально все офферы должны быть не выбраны (без checked)?
       );
     })
     .join(`\n`);
@@ -97,8 +70,14 @@ const createEventTypeGroupsMarkup = (events, dayCount, checkedType) => {
   return fieldSetsMarkup.join(`\n`);
 };
 
-const createDestinationMarkup = () => {
-  const destination = generateDestination();
+const createDestinationPhotoMarkup = (destinationPhotos) => {
+  return destinationPhotos
+    .map((photo) => {
+      return `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`;
+    }).join(`\n`);
+};
+
+const createDestinationMarkup = (destination) => {
   return (
     `<section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
@@ -106,7 +85,7 @@ const createDestinationMarkup = () => {
   
           <div class="event__photos-container">
             <div class="event__photos-tape">
-              <img class="event__photo" src="${destination.photo}" alt="Event photo">           
+              ${createDestinationPhotoMarkup(destination.pictures)}           
             </div>
           </div>
         </section>
@@ -117,8 +96,11 @@ const createDestinationMarkup = () => {
 const isValidFormData = (city, dateStart, dateEnd, price) => city && city.length && (dateStart instanceof Date) && (dateEnd instanceof Date) && (dateStart.getTime() <= dateEnd.getTime()) && (price && price >= 0);
 
 
-const createEventEditTemplate = (event, dayCount, isCreatingNew) => {
-  const {eventType, city, price, dateStart, dateEnd, isFavorite} = event;
+const createEventEditTemplate = (event, offers, destinations, dayCount, isCreatingNew) => {
+  const {eventType, city, price, dateStart, dateEnd, isFavorite, offersChecked, destination} = event;
+
+  console.log(dayCount);
+
 
   const citiesList = createCitiesListElem(Cities);
 
@@ -126,15 +108,26 @@ const createEventEditTemplate = (event, dayCount, isCreatingNew) => {
 
   const preposition = eventType.group === `Transfer` ? `to` : `in`;
 
-  const eventOptions = generateOptions(eventType.name);
-  const isOffersShown = !!(eventOptions && eventOptions.length);
-  const offersMarkup = eventOptions ? createOfferMarkup(eventOptions, dayCount) : ``;
+  const offerGroupByType = offers.find((offerGroup) => offerGroup.type === eventType.name);
+  const allOffers = offerGroupByType.offers;
+
+  const isOffersShown = !!(allOffers && allOffers.length);
+  const offersWithCheckedFlag = allOffers.map((offer) => {
+    const index = offersChecked.findIndex((offerChecked) => offerChecked.title === offer.title);
+    if (index !== -1) {
+      return {offer, checked: true};
+    } else {
+      return {offer, checked: false};
+    }
+  });
+  const offersComponent = new OffersComponent(offersWithCheckedFlag, dayCount);
+  const offersMarkup = allOffers ? offersComponent.getTemplate() : ``;
 
 
   const eventTypesGroupsMarkup = createEventTypeGroupsMarkup(EventTypes, dayCount, eventType.name);
 
 
-  const destination = createDestinationMarkup();
+  const destinationMarkup = destination ? createDestinationMarkup(destination) : ``;
   const isBlockSaveButton = !isValidFormData(city, dateStart, dateEnd, price);
 
   return (
@@ -210,7 +203,7 @@ disabled` : ``}>Save</button>
         </section>
       </section>` : ``}
       
-      ${destination}
+      ${destinationMarkup}
       
     </form>`
   );
@@ -218,10 +211,12 @@ disabled` : ``}>Save</button>
 
 
 export default class EventEdit extends AbstractSmartComponent {
-  constructor(event, dayCount, isCreatingNew) {
+  constructor(event, offers, destinations, dayCount, isCreatingNew) {
     super();
 
     this._event = event;
+    this._offers = offers;
+    this._destinations = destinations;
     this._dayCount = dayCount;
     this._submitHandler = null;
     this._deleteButtonClickHandler = null;
@@ -237,7 +232,7 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._event, this._dayCount, this._isCreatingNew);
+    return createEventEditTemplate(this._event, this._offers, this._destinations, this._dayCount, this._isCreatingNew);
   }
 
   // восстановить слушатели после rerender
@@ -288,6 +283,13 @@ export default class EventEdit extends AbstractSmartComponent {
   getData() {
     const form = this.getElement();
     return new FormData(form);
+  }
+
+  getOffersData() {
+    const offers = [];
+    Array.from(this.getElement().querySelectorAll(`.event__offer-selector`)).filter((offerSelector) => offerSelector.querySelector(`.event__offer-checkbox`).checked === true).forEach((offerSelector) => {
+      const title = offerSelector.querySelector(`.event__offer-checkbox`);
+    });
   }
 
   _subscribeOnEvents() {

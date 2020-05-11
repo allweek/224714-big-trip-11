@@ -9,7 +9,9 @@ export default class Event {
     this.price = data[`base_price`];
     this.dateStart = data[`date_from`] ? new Date(data[`date_from`]) : null;
     this.dateEnd = data[`date_to`] ? new Date(data[`date_to`]) : null;
+    this.destination = data[`destination`];
     this.isFavorite = Boolean(data[`is_favorite`]);
+    this.offersChecked = data[`offers`];
   }
 
   toRAW() {

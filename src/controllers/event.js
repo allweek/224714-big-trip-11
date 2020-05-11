@@ -11,20 +11,29 @@ export const Mode = {
   EDIT: `edit`,
 };
 
-const parseFormData = (formData) => {
+
+const parseFormData = (form, offersList) => {
+  const formData = form.getData();
   const dateStartString = formData.get(`event-start-time`);
   const dateStart = formatFromStringToDate(dateStartString);
   const dateEndString = formData.get(`event-end-time`);
   const dateEnd = formatFromStringToDate(dateEndString);
   const eventTypeName = formData.get(`event-type`);
   const eventType = EventTypes.find((event) => event.name === eventTypeName);
-  return new EventModel ({
+
+  const offersTitles = formData.getAll(`event-offer`);
+  offersTitles.forEach((offersTitle) => {
+    console.log(offersList.find((offer) => (offer.title === offersTitle)));
+  });
+
+  console.log(offers);
+  return new EventModel({
     "base_price": formData.get(`event-price`).toString(),
     "date_from": dateStart ? dateStart : null,
     "date_to": dateEnd ? dateEnd : null,
     "destination": {},
     "is_favorite": !!formData.get(`event-favorite`),
-    "offers": [],
+    "offers": formData,
     "type": formData.get(`event-type`)
   });
 };
@@ -39,9 +48,11 @@ export const EmptyEvent = {
 };
 
 export default class EventController {
-  constructor(container, onDataChange, onViewChange, dayCount) {
+  constructor(container, offers, destinations, onDataChange, onViewChange, dayCount) {
     this._container = container;
     this._dayCount = dayCount;
+    this._offers = offers;
+    this._destinations = destinations;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
     this._mode = Mode.DEFAULT;
@@ -57,12 +68,12 @@ export default class EventController {
     const isCreatingNew = event === EmptyEvent;
 
     this._eventComponent = new EventComponent(event);
-    this._eventEditComponent = new EventEditComponent(event, this._dayCount, isCreatingNew);
+    this._eventEditComponent = new EventEditComponent(event, this._offers, this._destinations, this._dayCount, isCreatingNew);
 
     this._eventEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
-      const formData = this._eventEditComponent.getData();
-      const data = parseFormData(formData);
+      const form = this._eventEditComponent;
+      const data = parseFormData(form, this._offers);
 
       this._onDataChange(this, event, data, false);
     });

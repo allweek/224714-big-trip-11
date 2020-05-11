@@ -4,6 +4,8 @@ import {FilterType} from "../const.js";
 export default class Events {
   constructor() {
     this._events = [];
+    this._offers = [];
+    this._destinations = [];
     this._activeFilterType = FilterType.EVERYTHING;
 
     this._dataChangeHandlers = [];
@@ -28,6 +30,22 @@ export default class Events {
   setEverythingFilter() {
     this.setFilter(FilterType.EVERYTHING);
     this._callHandlers(this._changeComponentFilterCheckbox);
+  }
+
+  setOffers(offers) {
+    this._offers = Array.from(offers);
+  }
+
+  getOffers() {
+    return this._offers;
+  }
+
+  setDestinations(destinations) {
+    this._destinations = Array.from(destinations);
+  }
+
+  getDestinations() {
+    return this._destinations;
   }
 
   updateEvent(id, event) {

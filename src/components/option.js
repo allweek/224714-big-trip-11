@@ -4,11 +4,11 @@ const createOptionsMarkup = (options) => {
   if (options && options.length) {
     const optionsMarkup = options
       .slice(0, 3)
-      .map((event) =>
+      .map((option) =>
         `<li class="event__offer">
-            <span class="event__offer-title">${event.title}</span>
+            <span class="event__offer-title">${option.title}</span>
             &plus;
-            &euro;&nbsp;<span class="event__offer-price">${event.price}</span>
+            &euro;&nbsp;<span class="event__offer-price">${option.price}</span>
         </li>`
       )
       .join(`\n`);
@@ -26,13 +26,13 @@ const createOptionsMarkup = (options) => {
 
 
 export default class Options extends AbstractComponent {
-  constructor(events) {
+  constructor(options) {
     super();
 
-    this._events = events;
+    this._options = options;
   }
 
   getTemplate() {
-    return createOptionsMarkup(this._events);
+    return createOptionsMarkup(this._options);
   }
 }
