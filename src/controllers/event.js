@@ -22,18 +22,24 @@ const parseFormData = (form, offersList) => {
   const eventType = EventTypes.find((event) => event.name === eventTypeName);
 
   const offersTitles = formData.getAll(`event-offer`);
-  offersTitles.forEach((offersTitle) => {
-    console.log(offersList.find((offer) => (offer.title === offersTitle)));
-  });
+  const aa = offersList
+    .reduce((checkedOffers, offer) => {
+      const offers = offer.offers;
+      offers.forEach((offer1) => {
+        const matchedOffer = offersTitles.find((offerTitle) => offerTitle === offer1.title);
+        offers.push(matchedOffer);
+      });
+      return checkedOffers;
+    }, []);
+  console.log(aa);
 
-  console.log(offers);
   return new EventModel({
     "base_price": formData.get(`event-price`).toString(),
     "date_from": dateStart ? dateStart : null,
     "date_to": dateEnd ? dateEnd : null,
     "destination": {},
     "is_favorite": !!formData.get(`event-favorite`),
-    "offers": formData,
+    // "offers": offers,
     "type": formData.get(`event-type`)
   });
 };

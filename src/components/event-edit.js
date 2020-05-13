@@ -99,7 +99,7 @@ const isValidFormData = (city, dateStart, dateEnd, price) => city && city.length
 const createEventEditTemplate = (event, offers, destinations, dayCount, isCreatingNew) => {
   const {eventType, city, price, dateStart, dateEnd, isFavorite, offersChecked, destination} = event;
 
-  console.log(dayCount);
+
 
 
   const citiesList = createCitiesListElem(Cities);
