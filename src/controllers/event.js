@@ -12,7 +12,7 @@ export const Mode = {
 };
 
 
-const parseFormData = (form, offersList) => {
+const parseFormData = (form, offersList, destinations) => {
   const formData = form.getData();
   const dateStartString = formData.get(`event-start-time`);
   const dateStart = formatFromStringToDate(dateStartString);
@@ -20,26 +20,34 @@ const parseFormData = (form, offersList) => {
   const dateEnd = formatFromStringToDate(dateEndString);
   const eventTypeName = formData.get(`event-type`);
   const eventType = EventTypes.find((event) => event.name === eventTypeName);
-
+  // const destination = {
+  //   description: `Valencia, with a beautiful old town, for those who value comfort and coziness, full of of cozy canteens where you can try the best coffee in the Middle East.`,
+  //   name: `Valencia`,
+  //   pictures: [{src: `http://picsum.photos/300/200?r=0.06630771408144698`, description: `Valencia park`}]
+  // };
+  const city = formData.get(`event-destination`);
+  const destination = destinations.find((destinationItem) => destinationItem.name === city);
+  console.log(destination);
   const offersTitles = formData.getAll(`event-offer`);
-  const aa = offersList
-    .reduce((checkedOffers, offer) => {
-      const offers = offer.offers;
-      offers.forEach((offer1) => {
-        const matchedOffer = offersTitles.find((offerTitle) => offerTitle === offer1.title);
-        offers.push(matchedOffer);
+  const checkedOffers = offersList
+    .reduce((checkedOffersArray, offersListItem) => {
+      const offers = offersListItem.offers;
+      offersTitles.forEach((offerTitle) => {
+        const matchedOffer = offers.find((offer) => offerTitle === offer.title);
+        if (matchedOffer) {
+          checkedOffersArray.push(matchedOffer);
+        }
       });
-      return checkedOffers;
+      return checkedOffersArray;
     }, []);
-  console.log(aa);
 
   return new EventModel({
-    "base_price": formData.get(`event-price`).toString(),
+    "base_price": Number(formData.get(`event-price`)),
     "date_from": dateStart ? dateStart : null,
     "date_to": dateEnd ? dateEnd : null,
-    "destination": {},
+    "destination": destination,
     "is_favorite": !!formData.get(`event-favorite`),
-    // "offers": offers,
+    "offers": checkedOffers ? checkedOffers : null,
     "type": formData.get(`event-type`)
   });
 };
@@ -79,7 +87,7 @@ export default class EventController {
     this._eventEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
       const form = this._eventEditComponent;
-      const data = parseFormData(form, this._offers);
+      const data = parseFormData(form, this._offers, this._destinations);
 
       this._onDataChange(this, event, data, false);
     });

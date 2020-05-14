@@ -4,6 +4,8 @@ import {EventTypes} from "../const";
 import flatpickr from "flatpickr";
 import OffersComponent from "./offer";
 import "flatpickr/dist/flatpickr.min.css";
+import {formatFromStringToDate} from "../utils/common";
+
 
 const createCitiesListElem = (citiesList) => {
   return citiesList
@@ -97,13 +99,11 @@ const isValidFormData = (city, dateStart, dateEnd, price) => city && city.length
 
 
 const createEventEditTemplate = (event, offers, destinations, dayCount, isCreatingNew) => {
-  const {eventType, city, price, dateStart, dateEnd, isFavorite, offersChecked, destination} = event;
+  const {eventType, price, dateStart, dateEnd, isFavorite, offersChecked, destination} = event;
 
-
-
-
-  const citiesList = createCitiesListElem(Cities);
-
+  const citiesList = destinations.map((destinationItem) => destinationItem.name);
+  const citiesListMarkup = createCitiesListElem(citiesList);
+  const city = destination.name;
   const eventNameToCapitalize = eventType.name ? capitalizeWord(eventType.name) : ``;
 
   const preposition = eventType.group === `Transfer` ? `to` : `in`;
@@ -151,7 +151,7 @@ const createEventEditTemplate = (event, offers, destinations, dayCount, isCreati
           </label>
           <input class="event__input  event__input--destination" id="event-destination-${dayCount}" type="text" name="event-destination" value="${city ? city : ``}" list="destination-list-${dayCount}">
           <datalist id="destination-list-${dayCount}">
-            ${citiesList}
+            ${citiesListMarkup}
           </datalist>
         </div>
 
@@ -285,13 +285,6 @@ export default class EventEdit extends AbstractSmartComponent {
     return new FormData(form);
   }
 
-  getOffersData() {
-    const offers = [];
-    Array.from(this.getElement().querySelectorAll(`.event__offer-selector`)).filter((offerSelector) => offerSelector.querySelector(`.event__offer-checkbox`).checked === true).forEach((offerSelector) => {
-      const title = offerSelector.querySelector(`.event__offer-checkbox`);
-    });
-  }
-
   _subscribeOnEvents() {
     const element = this.getElement();
 
@@ -309,8 +302,9 @@ export default class EventEdit extends AbstractSmartComponent {
       if (Cities.indexOf(cityFromInput) === -1) {
         evt.target.value = ``;
       }
-      // TODO в дальнейшем скорее всего в зависимости от города, будет меняться объект destination
-      // this.rerender();
+      this._event.destination = Object.assign({}, this._destinations.find((destination) => destination.name === cityFromInput));
+
+      this.rerender();
     });
 
     element.querySelector(`.event__input--price`).addEventListener(`change`, (evt) => {
@@ -321,7 +315,13 @@ export default class EventEdit extends AbstractSmartComponent {
 
     // валидация формы и активация кнопки save
     element.addEventListener(`change`, () => {
-      const {city, dateStart, dateEnd, price} = this.getData();
+      const formData = this.getData();
+      const city = formData.get(`event-destination`);
+      const dateStartString = formData.get(`event-start-time`);
+      const dateStart = formatFromStringToDate(dateStartString);
+      const dateEndString = formData.get(`event-end-time`);
+      const dateEnd = formatFromStringToDate(dateEndString);
+      const price = Number(formData.get(`event-price`));
       element.querySelector(`.event__save-btn`).disabled = !isValidFormData(city, dateStart, dateEnd, price);
     });
   }

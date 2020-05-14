@@ -15,14 +15,15 @@ export default class Event {
   }
 
   toRAW() {
+    console.log(typeof this.price);
     return {
       "base_price": this.price,
       "date_from": this.dateStart ? this.dateStart.toISOString() : null,
-      "date_to": this.dateStart ? this.dateStart.toISOString() : null,
-      "destination": `Destination`,
+      "date_to": this.dateEnd ? this.dateEnd.toISOString() : null,
+      "destination": this.destination,
       "id": this.id,
       "is_favorite": this.isFavorite,
-      "offers": `Offers`,
+      "offers": this.offersChecked,
       "type": this.eventType.name
     };
   }

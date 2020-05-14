@@ -31,7 +31,7 @@ const API = class {
   updateEvent(id, data) {
     const headers = this._headers;
     headers.append(`Content-Type`, `application/json`);
-
+    console.log(this._headers);
     return fetch(`https://11.ecmascript.pages.academy/big-trip/points/${id}`, {
       method: `PUT`,
       body: JSON.stringify(data.toRAW()),
