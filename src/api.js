@@ -1,5 +1,12 @@
 import Event from "./models/event";
 
+const Method = {
+  GET: `GET`,
+  POST: `POST`,
+  PUT: `PUT`,
+  DELETE: `DELETE`
+};
+
 const checkStatus = (response) => {
   if (response.status >= 200 && response.status < 300) {
     return response;
@@ -10,6 +17,7 @@ const checkStatus = (response) => {
 
 const API = class {
   constructor(authorization) {
+    // this._endPoint = endPoint;
     this._authorization = authorization;
     this._headers = this._createHeaders();
   }
@@ -28,10 +36,13 @@ const API = class {
       .then(Event.parseEvents);
   }
 
+
   updateEvent(id, data) {
-    const headers = this._headers;
+    const headers = new Headers();
+    headers.append(`Authorization`, this._authorization);
     headers.append(`Content-Type`, `application/json`);
-    console.log(this._headers);
+    // const headers = this._headers;
+    // headers.append(`Content-Type`, `application/json`);
     return fetch(`https://11.ecmascript.pages.academy/big-trip/points/${id}`, {
       method: `PUT`,
       body: JSON.stringify(data.toRAW()),

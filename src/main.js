@@ -9,7 +9,7 @@ import MenuComponent from "./components/menu";
 import {render, RenderPosition} from "./utils/render.js";
 import TripController from "./controllers/trip-controller.js";
 
-const AUTHORIZATION = `Basic eo0w590ik21389a=`;
+const AUTHORIZATION = `Basic eo0w590ik213891a=`;
 
 const api = new API(AUTHORIZATION);
 const eventsModel = new EventsModel();

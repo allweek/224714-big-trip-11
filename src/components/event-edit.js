@@ -299,6 +299,9 @@ export default class EventEdit extends AbstractSmartComponent {
 
     element.querySelector(`.event__input--destination`).addEventListener(`change`, (evt) => {
       const cityFromInput = evt.target.value;
+      if (!cityFromInput) {
+        return false;
+      }
       if (Cities.indexOf(cityFromInput) === -1) {
         evt.target.value = ``;
       }
