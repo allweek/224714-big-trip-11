@@ -52,7 +52,6 @@ api.getOffers()
         eventsModel.setDestinations(destinations)
         return api.getEvents()
           .then((events) => {
-            console.log(events);
             eventsModel.setEvents(events);
             tripController.render();
             newEventButton.disabled = false;

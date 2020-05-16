@@ -50,7 +50,7 @@ const API = class {
       .then(Event.parseEvent);
   }
 
-  deleteTask(id) {
+  deleteEvent(id) {
     return this._load({url: `points/${id}`, method: Method.DELETE});
   }
 

@@ -5,6 +5,8 @@ import OffersComponent from "./offer";
 import "flatpickr/dist/flatpickr.min.css";
 import {formatFromStringToDate} from "../utils/common";
 
+const SHAKE_ANIMATION_TIMEOUT = 900;
+
 const DefaultData = {
   deleteButtonText: `Delete`,
   saveButtonText: `Save`,
@@ -269,6 +271,20 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   reset() {
+    const event = this._event;
+    console.log(event);
+    this._event.city = event.city;
+    this._event.eventType = event.eventType;
+    this._event.offers = event.offers;
+    this._event.destination = event.destination;
+    this._event.isFavorite = event.isFavorite;
+
+    // this._dayCount = null;
+    // this._
+    // this._isRepeatingTask = Object.values(task.repeatingDays).some(Boolean);
+    // this._activeRepeatingDays = Object.assign({}, task.repeatingDays);
+    // this._currentDescription = task.description;
+
     this.rerender();
   }
 
@@ -380,6 +396,20 @@ export default class EventEdit extends AbstractSmartComponent {
 
   setData(data) {
     this._externalData = Object.assign({}, DefaultData, data);
-    this.rerender();
+    // this.rerender();
+  }
+
+  shake() {
+    this.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this.getElement().style.border = `1px solid red`;
+    setTimeout(() => {
+      this.getElement().animation = ``;
+      this.getElement().border = ``;
+
+      this.setData({
+        saveButtonText: `Save`,
+        deleteButtonText: `Delete`,
+      });
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 }

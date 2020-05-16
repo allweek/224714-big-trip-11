@@ -70,7 +70,6 @@ export default class TripController {
     if (this._creatingEvent) {
       return;
     }
-
     this._onViewChange(); // закрыть все открытые формы
     this._eventsModel.setEverythingFilter(); // снять фильтры
     const dayListElement = this._container.getElement().querySelector(`.trip-days`);
@@ -140,7 +139,7 @@ export default class TripController {
       }
     } else if (newData === null) {
       // удаление event
-      this._api.deleteTask(oldData.id)
+      this._api.deleteEvent(oldData.id)
         .then(() => {
           this._eventsModel.removeEvent(oldData.id);
           this._updateEvents();

@@ -3,9 +3,7 @@ import EventEditComponent from "../components/event-edit";
 import EventModel from "../models/event";
 import {formatFromStringToDate} from "../utils/common";
 import {render, RenderPosition, replace, remove} from "../utils/render";
-import {defaultEventType, EventTypes} from "../const";
-
-const SHAKE_ANIMATION_TIMEOUT = 600;
+import {defaultEventType} from "../const";
 
 export const Mode = {
   ADDING: `adding`,
@@ -22,8 +20,7 @@ const parseFormData = (form, offersList, destinations) => {
   const dateEnd = formatFromStringToDate(dateEndString);
 
   const city = formData.get(`event-destination`);
-  const destination = destinations.find((destinationItem) => destinationItem.name === city);
-  console.log(destination);
+  const destination = Object.assign({}, destinations.find((destinationItem) => destinationItem.name === city));
   const offersTitles = formData.getAll(`event-offer`);
   const checkedOffers = offersList
     .reduce((checkedOffersArray, offersListItem) => {
@@ -69,7 +66,6 @@ export default class EventController {
     this._eventComponent = null;
     this._eventEditComponent = null;
   }
-
   render(event, mode) {
     const oldEventComponent = this._eventComponent;
     const oldEventEditComponent = this._eventEditComponent;
@@ -135,6 +131,7 @@ export default class EventController {
   }
 
   setDefaultView() {
+    console.log(this._mode);
     if (this._mode !== Mode.DEFAULT) {
       this._replaceEditToEvent();
     }
@@ -146,21 +143,7 @@ export default class EventController {
   }
 
   shake() {
-    console.log(`shake`)
-    this._eventEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
-    this._eventComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
-    this._eventComponent.getElement().style.border = `1px solid red`;
-
-    setTimeout(() => {
-      this._eventEditComponent.getElement().style.animation = ``;
-      this._eventComponent.getElement().style.animation = ``;
-      this._eventEditComponent.getElement().style.border = ``;
-    }, SHAKE_ANIMATION_TIMEOUT);
-
-    this._eventEditComponent.setData({
-      saveButtonText: `Save`,
-      deleteButtonText: `Delete`,
-    });
+    this._eventEditComponent.shake();
   }
 
   _replaceEventToEdit() {
@@ -176,7 +159,6 @@ export default class EventController {
       replace(this._eventComponent, this._eventEditComponent);
     }
 
-    replace(this._eventComponent, this._eventEditComponent);
     this._mode = Mode.DEFAULT;
   }
 }

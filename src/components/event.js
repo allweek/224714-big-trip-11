@@ -4,7 +4,6 @@ import {formatTime, getDuration, formatDateWithHyphenTime} from "../utils/common
 
 
 const createEventMarkup = (event) => {
-  console.log(event);
   const {eventType, city, price, dateStart, dateEnd, offersChecked} = event;
   const eventNameToCapitalize = eventType.name ? eventType.name.charAt(0).toUpperCase() + eventType.name.slice(1) : ``;
   const timeStartFormatted = formatTime(dateStart);
