@@ -5,6 +5,8 @@ import {formatFromStringToDate} from "../utils/common";
 import {render, RenderPosition, replace, remove} from "../utils/render";
 import {defaultEventType, EventTypes} from "../const";
 
+const SHAKE_ANIMATION_TIMEOUT = 600;
+
 export const Mode = {
   ADDING: `adding`,
   DEFAULT: `default`,
@@ -83,6 +85,10 @@ export default class EventController {
       const form = this._eventEditComponent;
       const data = parseFormData(form, this._offers, this._destinations);
 
+      this._eventEditComponent.setData({
+        saveButtonText: `Saving...`,
+      });
+
       this._onDataChange(this, event, data, false);
     });
 
@@ -102,13 +108,11 @@ export default class EventController {
     });
 
     this._eventEditComponent.setDeleteButtonClickHandler(() => {
+      this._eventEditComponent.setData({
+        deleteButtonText: `Deleting...`,
+      });
       this._onDataChange(this, event, null, false);
     });
-
-    // this._eventEditComponent.setFormDataChangeHandler(() => {
-    //   const data = this._eventEditComponent.getData();
-    //   this._onDataChange(this, event, data, true);
-    // });
 
     switch (mode) {
       case Mode.DEFAULT:
@@ -139,6 +143,24 @@ export default class EventController {
   destroy() {
     remove(this._eventEditComponent);
     remove(this._eventComponent);
+  }
+
+  shake() {
+    console.log(`shake`)
+    this._eventEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this._eventComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this._eventComponent.getElement().style.border = `1px solid red`;
+
+    setTimeout(() => {
+      this._eventEditComponent.getElement().style.animation = ``;
+      this._eventComponent.getElement().style.animation = ``;
+      this._eventEditComponent.getElement().style.border = ``;
+    }, SHAKE_ANIMATION_TIMEOUT);
+
+    this._eventEditComponent.setData({
+      saveButtonText: `Save`,
+      deleteButtonText: `Delete`,
+    });
   }
 
   _replaceEventToEdit() {

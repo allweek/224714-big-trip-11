@@ -28,13 +28,14 @@ const renderEvents = (dayList, events, offers, destinations, onDataChange, onVie
     }, [])
     .forEach((eventsByDay, index) => {
       const date = eventsByDay.events[0].dateStart;
-      const day = new DayComponent(date, index + 1);
+      const dayCount = index + 1;
+      const day = new DayComponent(date, dayCount);
       render(day, dayList, RenderPosition.BEFOREEND);
       const eventsList = day.getElement().querySelector(`.trip-events__list`);
       eventControllers = [...eventControllers,
         ...(eventsByDay.events
           .map((event) => {
-            const eventController = new EventController(eventsList, offers, destinations, onDataChange, onViewChange, index + 1);
+            const eventController = new EventController(eventsList, offers, destinations, onDataChange, onViewChange, dayCount);
 
             eventController.render(event, EventControllerMode.DEFAULT);
 
@@ -73,7 +74,7 @@ export default class TripController {
     this._onViewChange(); // закрыть все открытые формы
     this._eventsModel.setEverythingFilter(); // снять фильтры
     const dayListElement = this._container.getElement().querySelector(`.trip-days`);
-    this._creatingEvent = new EventController(dayListElement, this._onDataChange, this._onViewChange);
+    this._creatingEvent = new EventController(dayListElement, this._offers, this._destinations, this._onDataChange, this._onViewChange, 0);
     this._creatingEvent.render(EmptyEvent, EventControllerMode.ADDING);
   }
 
@@ -125,20 +126,32 @@ export default class TripController {
         this._updateEvents();
       } else {
         // добавление нового event
-        this._eventsModel.addEvent(newData);
-        this._updateEvents();
+        this._api.createEvent(newData)
+          .then((eventModel) => {
+            this._eventsModel.addEvent(eventModel);
+            this._updateEvents();
+          })
+          .catch(() => {
+            eventController.shake();
+          });
+
         // eventController.render(newData, EventControllerMode.DEFAULT);
-        //
         // this._showedEventControllers = [].concat(eventController, this._showedEventControllers);
       }
     } else if (newData === null) {
       // удаление event
-      this._eventsModel.removeEvent(oldData.id);
-      this._updateEvents();
+      this._api.deleteTask(oldData.id)
+        .then(() => {
+          this._eventsModel.removeEvent(oldData.id);
+          this._updateEvents();
+        })
+        .catch(() => {
+          eventController.shake();
+        });
     } else {
       // изменение
       if (stayOnAddingMode) {
-        // изменение данных без закрытия формы, например добавление в избранное
+        // изменение данных без закрытия и сохранение формы, например добавление в избранное
         eventController.render(newData, EventControllerMode.ADDING);
       } else {
         // изменение данных с закрытием формы
@@ -147,11 +160,16 @@ export default class TripController {
             const isSuccess = this._eventsModel.updateEvent(oldData.id, eventModel);
             if (isSuccess) {
               if (isSameDate(oldData, newData)) {
+                // если дата не меняется перерисовываем только данное событие
                 eventController.render(eventModel, EventControllerMode.DEFAULT);
               } else {
+                // если дата меняется, пересовываем весь список
                 this._updateEvents();
               }
             }
+          })
+          .catch(() => {
+            eventController.shake();
           });
       }
     }

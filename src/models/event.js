@@ -3,7 +3,7 @@ export default class Event {
     this.id = data[`id`];
     this.eventType = {
       name: data[`type`],
-      group: `Transfer`
+      group: `Transfer` // ToDo make group variable
     };
     this.city = data[`destination`][`name`];
     this.price = data[`base_price`];
@@ -15,7 +15,6 @@ export default class Event {
   }
 
   toRAW() {
-    console.log(typeof this.price);
     return {
       "base_price": this.price,
       "date_from": this.dateStart ? this.dateStart.toISOString() : null,

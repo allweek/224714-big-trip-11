@@ -10,8 +10,9 @@ import {render, RenderPosition} from "./utils/render.js";
 import TripController from "./controllers/trip-controller.js";
 
 const AUTHORIZATION = `Basic eo0w590ik213891a=`;
+const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
 
-const api = new API(AUTHORIZATION);
+const api = new API(END_POINT, AUTHORIZATION);
 const eventsModel = new EventsModel();
 
 
@@ -41,7 +42,7 @@ newEventButton.disabled = true;
 
 const container = document.querySelectorAll(`.page-body__container`)[1];
 render(boardComponent, container, RenderPosition.BEFOREEND);
-// tripController.render();
+
 
 api.getOffers()
   .then((offers) => {

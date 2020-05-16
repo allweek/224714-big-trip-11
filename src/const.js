@@ -1,5 +1,3 @@
-export const Cities = [`New York`, `Saint-Petersburg`, `Tokyo`, `Pisa`];
-
 export const FilterType = {
   EVERYTHING: `everything`,
   FUTURE: `future`,
