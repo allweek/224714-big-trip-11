@@ -18,13 +18,7 @@ const parseFormData = (form, offersList, destinations) => {
   const dateStart = formatFromStringToDate(dateStartString);
   const dateEndString = formData.get(`event-end-time`);
   const dateEnd = formatFromStringToDate(dateEndString);
-  const eventTypeName = formData.get(`event-type`);
-  const eventType = EventTypes.find((event) => event.name === eventTypeName);
-  // const destination = {
-  //   description: `Valencia, with a beautiful old town, for those who value comfort and coziness, full of of cozy canteens where you can try the best coffee in the Middle East.`,
-  //   name: `Valencia`,
-  //   pictures: [{src: `http://picsum.photos/300/200?r=0.06630771408144698`, description: `Valencia park`}]
-  // };
+
   const city = formData.get(`event-destination`);
   const destination = destinations.find((destinationItem) => destinationItem.name === city);
   console.log(destination);

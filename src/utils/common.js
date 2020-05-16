@@ -8,6 +8,10 @@ export const formatDateWithHypen = (date) => {
   return moment(date).format(`YYYY-MM-DD`);
 };
 
+export const formatDateWithHyphenTime = (date) => {
+  return moment(date).format(`YYYY-MM-DDTHH:mm`);
+};
+
 export const formatFromStringToDate = (date) => {
   return moment(date, `DD/MM/YY HH:mm`).toDate();
 };

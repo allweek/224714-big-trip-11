@@ -1,8 +1,8 @@
 import AbstractComponent from "./abstract-component";
 
-const createOptionsMarkup = (options) => {
-  if (options && options.length) {
-    const optionsMarkup = options
+const createOptionsMarkup = (offersChecked) => {
+  if (offersChecked && offersChecked.length) {
+    const optionsMarkup = offersChecked
       .slice(0, 3)
       .map((option) =>
         `<li class="event__offer">

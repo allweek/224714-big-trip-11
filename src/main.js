@@ -13,7 +13,7 @@ const AUTHORIZATION = `Basic eo0w590ik213891a=`;
 
 const api = new API(AUTHORIZATION);
 const eventsModel = new EventsModel();
-// const events = generateEvents(EVENT_COUNT);
+
 
 const tripMain = document.querySelector(`.trip-main`);
 render(new InfoComponent(), tripMain, RenderPosition.AFTERBEGIN);
