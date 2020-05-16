@@ -1,7 +1,9 @@
 import EventComponent from "../components/event";
 import EventEditComponent from "../components/event-edit";
+import EventModel from "../models/event";
+import {formatFromStringToDate} from "../utils/common";
 import {render, RenderPosition, replace, remove} from "../utils/render";
-import {defaultEventType} from "../const";
+import {defaultEventType, EventTypes} from "../const";
 
 export const Mode = {
   ADDING: `adding`,
@@ -9,6 +11,40 @@ export const Mode = {
   EDIT: `edit`,
 };
 
+
+const parseFormData = (form, offersList, destinations) => {
+  const formData = form.getData();
+  const dateStartString = formData.get(`event-start-time`);
+  const dateStart = formatFromStringToDate(dateStartString);
+  const dateEndString = formData.get(`event-end-time`);
+  const dateEnd = formatFromStringToDate(dateEndString);
+
+  const city = formData.get(`event-destination`);
+  const destination = destinations.find((destinationItem) => destinationItem.name === city);
+  console.log(destination);
+  const offersTitles = formData.getAll(`event-offer`);
+  const checkedOffers = offersList
+    .reduce((checkedOffersArray, offersListItem) => {
+      const offers = offersListItem.offers;
+      offersTitles.forEach((offerTitle) => {
+        const matchedOffer = offers.find((offer) => offerTitle === offer.title);
+        if (matchedOffer) {
+          checkedOffersArray.push(matchedOffer);
+        }
+      });
+      return checkedOffersArray;
+    }, []);
+
+  return new EventModel({
+    "base_price": Number(formData.get(`event-price`)),
+    "date_from": dateStart ? dateStart : null,
+    "date_to": dateEnd ? dateEnd : null,
+    "destination": destination,
+    "is_favorite": !!formData.get(`event-favorite`),
+    "offers": checkedOffers ? checkedOffers : null,
+    "type": formData.get(`event-type`)
+  });
+};
 
 export const EmptyEvent = {
   eventType: defaultEventType,
@@ -20,9 +56,11 @@ export const EmptyEvent = {
 };
 
 export default class EventController {
-  constructor(container, onDataChange, onViewChange, dayCount) {
+  constructor(container, offers, destinations, onDataChange, onViewChange, dayCount) {
     this._container = container;
     this._dayCount = dayCount;
+    this._offers = offers;
+    this._destinations = destinations;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
     this._mode = Mode.DEFAULT;
@@ -38,11 +76,13 @@ export default class EventController {
     const isCreatingNew = event === EmptyEvent;
 
     this._eventComponent = new EventComponent(event);
-    this._eventEditComponent = new EventEditComponent(event, this._dayCount, isCreatingNew);
+    this._eventEditComponent = new EventEditComponent(event, this._offers, this._destinations, this._dayCount, isCreatingNew);
 
     this._eventEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
-      const data = this._eventEditComponent.getData();
+      const form = this._eventEditComponent;
+      const data = parseFormData(form, this._offers, this._destinations);
+
       this._onDataChange(this, event, data, false);
     });
 
@@ -55,9 +95,10 @@ export default class EventController {
     });
 
     this._eventEditComponent.setFavoritesButtonClickHandler(() => {
-      this._onDataChange(this, event, Object.assign({}, event, {
-        isFavorite: !event.isFavorite,
-      }), true);
+      const newEvent = EventModel.clone(event);
+      newEvent.isFavorite = !newEvent.isFavorite;
+
+      this._onDataChange(this, event, newEvent, true);
     });
 
     this._eventEditComponent.setDeleteButtonClickHandler(() => {

@@ -1,43 +1,17 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
 import {Cities} from "../const";
 import {EventTypes} from "../const";
-import {formatFromStringToDate} from "../utils/common";
-import {generateOptions} from "../mock/option";
-import {generateDestination} from "../mock/destination";
 import flatpickr from "flatpickr";
-
+import OffersComponent from "./offer";
 import "flatpickr/dist/flatpickr.min.css";
+import {formatFromStringToDate} from "../utils/common";
+
 
 const createCitiesListElem = (citiesList) => {
   return citiesList
     .map((city) => {
       return (
         `<option value="${city}"></option>`
-      );
-    })
-    .join(`\n`);
-};
-
-const createOfferMarkup = (eventOptions, dayCount) => {
-  return eventOptions
-    .map((option) => {
-      return (
-        `<div class="event__offer-selector">
-          <input 
-            class="event__offer-checkbox visually-hidden" 
-            id="event-offer-${option.name}-${dayCount}" 
-            type="checkbox" 
-            name="event-offer-${option.name}" 
-            ${Math.random() > 0.5 ? `checked` : ``} 
-          /> 
-          <label 
-            class="event__offer-label" 
-            for="event-offer-${option.name}-${dayCount}">
-            <span class="event__offer-title">${option.title}</span>
-            &plus;
-            &euro;&nbsp;<span class="event__offer-price">${option.price}</span>
-          </label>
-        </div>` // возможно изначально все офферы должны быть не выбраны (без checked)?
       );
     })
     .join(`\n`);
@@ -98,8 +72,14 @@ const createEventTypeGroupsMarkup = (events, dayCount, checkedType) => {
   return fieldSetsMarkup.join(`\n`);
 };
 
-const createDestinationMarkup = () => {
-  const destination = generateDestination();
+const createDestinationPhotoMarkup = (destinationPhotos) => {
+  return destinationPhotos
+    .map((photo) => {
+      return `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`;
+    }).join(`\n`);
+};
+
+const createDestinationMarkup = (destination) => {
   return (
     `<section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
@@ -107,7 +87,7 @@ const createDestinationMarkup = () => {
   
           <div class="event__photos-container">
             <div class="event__photos-tape">
-              <img class="event__photo" src="${destination.photo}" alt="Event photo">           
+              ${createDestinationPhotoMarkup(destination.pictures)}           
             </div>
           </div>
         </section>
@@ -118,24 +98,36 @@ const createDestinationMarkup = () => {
 const isValidFormData = (city, dateStart, dateEnd, price) => city && city.length && (dateStart instanceof Date) && (dateEnd instanceof Date) && (dateStart.getTime() <= dateEnd.getTime()) && (price && price >= 0);
 
 
-const createEventEditTemplate = (event, dayCount, isCreatingNew) => {
-  const {eventType, city, price, dateStart, dateEnd, isFavorite} = event;
+const createEventEditTemplate = (event, offers, destinations, dayCount, isCreatingNew) => {
+  const {eventType, price, dateStart, dateEnd, isFavorite, offersChecked, destination} = event;
 
-  const citiesList = createCitiesListElem(Cities);
-
+  const citiesList = destinations.map((destinationItem) => destinationItem.name);
+  const citiesListMarkup = createCitiesListElem(citiesList);
+  const city = destination.name;
   const eventNameToCapitalize = eventType.name ? capitalizeWord(eventType.name) : ``;
 
   const preposition = eventType.group === `Transfer` ? `to` : `in`;
 
-  const eventOptions = generateOptions(eventType.name);
-  const isOffersShown = !!(eventOptions && eventOptions.length);
-  const offersMarkup = eventOptions ? createOfferMarkup(eventOptions, dayCount) : ``;
+  const offerGroupByType = offers.find((offerGroup) => offerGroup.type === eventType.name);
+  const allOffers = offerGroupByType.offers;
+
+  const isOffersShown = !!(allOffers && allOffers.length);
+  const offersWithCheckedFlag = allOffers.map((offer) => {
+    const index = offersChecked.findIndex((offerChecked) => offerChecked.title === offer.title);
+    if (index !== -1) {
+      return {offer, checked: true};
+    } else {
+      return {offer, checked: false};
+    }
+  });
+  const offersComponent = new OffersComponent(offersWithCheckedFlag, dayCount);
+  const offersMarkup = allOffers ? offersComponent.getTemplate() : ``;
 
 
   const eventTypesGroupsMarkup = createEventTypeGroupsMarkup(EventTypes, dayCount, eventType.name);
 
 
-  const destination = createDestinationMarkup();
+  const destinationMarkup = destination ? createDestinationMarkup(destination) : ``;
   const isBlockSaveButton = !isValidFormData(city, dateStart, dateEnd, price);
 
   return (
@@ -159,7 +151,7 @@ const createEventEditTemplate = (event, dayCount, isCreatingNew) => {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-${dayCount}" type="text" name="event-destination" value="${city ? city : ``}" list="destination-list-${dayCount}">
           <datalist id="destination-list-${dayCount}">
-            ${citiesList}
+            ${citiesListMarkup}
           </datalist>
         </div>
 
@@ -211,34 +203,20 @@ disabled` : ``}>Save</button>
         </section>
       </section>` : ``}
       
-      ${destination}
+      ${destinationMarkup}
       
     </form>`
   );
 };
 
-const parseFormData = (formData) => {
-  const dateStartString = formData.get(`event-start-time`);
-  const dateStart = formatFromStringToDate(dateStartString);
-  const dateEndString = formData.get(`event-end-time`);
-  const dateEnd = formatFromStringToDate(dateEndString);
-  const eventTypeName = formData.get(`event-type`);
-  const eventType = EventTypes.find((event) => event.name === eventTypeName);
-  return {
-    eventType,
-    city: formData.get(`event-destination`),
-    price: formData.get(`event-price`),
-    dateStart: dateStart ? dateStart : null,
-    dateEnd: dateEnd ? dateEnd : null,
-    isFavorite: !!formData.get(`event-favorite`)
-  };
-};
 
 export default class EventEdit extends AbstractSmartComponent {
-  constructor(event, dayCount, isCreatingNew) {
+  constructor(event, offers, destinations, dayCount, isCreatingNew) {
     super();
 
     this._event = event;
+    this._offers = offers;
+    this._destinations = destinations;
     this._dayCount = dayCount;
     this._submitHandler = null;
     this._deleteButtonClickHandler = null;
@@ -254,7 +232,7 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._event, this._dayCount, this._isCreatingNew);
+    return createEventEditTemplate(this._event, this._offers, this._destinations, this._dayCount, this._isCreatingNew);
   }
 
   // восстановить слушатели после rerender
@@ -304,8 +282,7 @@ export default class EventEdit extends AbstractSmartComponent {
 
   getData() {
     const form = this.getElement();
-    const formData = new FormData(form);
-    return parseFormData(formData);
+    return new FormData(form);
   }
 
   _subscribeOnEvents() {
@@ -322,11 +299,15 @@ export default class EventEdit extends AbstractSmartComponent {
 
     element.querySelector(`.event__input--destination`).addEventListener(`change`, (evt) => {
       const cityFromInput = evt.target.value;
+      if (!cityFromInput) {
+        return false;
+      }
       if (Cities.indexOf(cityFromInput) === -1) {
         evt.target.value = ``;
       }
-      // TODO в дальнейшем скорее всего в зависимости от города, будет меняться объект destination
-      // this.rerender();
+      this._event.destination = Object.assign({}, this._destinations.find((destination) => destination.name === cityFromInput));
+
+      this.rerender();
     });
 
     element.querySelector(`.event__input--price`).addEventListener(`change`, (evt) => {
@@ -337,7 +318,13 @@ export default class EventEdit extends AbstractSmartComponent {
 
     // валидация формы и активация кнопки save
     element.addEventListener(`change`, () => {
-      const {city, dateStart, dateEnd, price} = this.getData();
+      const formData = this.getData();
+      const city = formData.get(`event-destination`);
+      const dateStartString = formData.get(`event-start-time`);
+      const dateStart = formatFromStringToDate(dateStartString);
+      const dateEndString = formData.get(`event-end-time`);
+      const dateEnd = formatFromStringToDate(dateEndString);
+      const price = Number(formData.get(`event-price`));
       element.querySelector(`.event__save-btn`).disabled = !isValidFormData(city, dateStart, dateEnd, price);
     });
   }

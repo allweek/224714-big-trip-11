@@ -8,10 +8,6 @@ export const getFutureEvents = (events) => {
   return events.filter((event) => event.dateStart.getTime() > Date.now());
 };
 
-export const getFavoriteEvents = (events) => {
-  return events.filter((event) => event.isFavorite);
-};
-
 export const getEventsByFilter = (events, filter) => {
   switch (filter) {
     case FilterType.EVERYTHING:

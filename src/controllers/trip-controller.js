@@ -1,12 +1,13 @@
-import {render, RenderPosition} from "../utils/render";
+import {render, remove, RenderPosition} from "../utils/render";
 import {isSameDate} from "../utils/common";
 import EventController, {Mode as EventControllerMode, EmptyEvent} from "../controllers/event";
 import SortComponent from "../components/sort";
 import DaysController from "../controllers/days";
 import DayComponent from "../components/day";
+import Preloader from "../components/preloader";
 
 
-const renderEvents = (dayList, events, onDataChange, onViewChange) => {
+const renderEvents = (dayList, events, offers, destinations, onDataChange, onViewChange) => {
   const sortEvents = (eventsArray) => {
     const sortedEvents = [...eventsArray];
     return sortedEvents.sort((a, b)=> a.dateStart.getTime() - b.dateStart.getTime());
@@ -33,7 +34,7 @@ const renderEvents = (dayList, events, onDataChange, onViewChange) => {
       eventControllers = [...eventControllers,
         ...(eventsByDay.events
           .map((event) => {
-            const eventController = new EventController(eventsList, onDataChange, onViewChange, index + 1);
+            const eventController = new EventController(eventsList, offers, destinations, onDataChange, onViewChange, index + 1);
 
             eventController.render(event, EventControllerMode.DEFAULT);
 
@@ -45,16 +46,21 @@ const renderEvents = (dayList, events, onDataChange, onViewChange) => {
 
 
 export default class TripController {
-  constructor(container, eventsModel) {
+  constructor(container, eventsModel, api) {
     this._container = container;
     this._eventsModel = eventsModel;
+    this._offers = [];
+    this._destinations = [];
+    this._api = api;
 
     this._showedEventControllers = [];
     this._sortComponent = new SortComponent();
+    this._preloader = new Preloader();
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
     this._creatingEvent = null;
+    this._showingPreloader = null;
 
     this._eventsModel.setFilterChangeHandler(this._onFilterChange);
   }
@@ -73,8 +79,12 @@ export default class TripController {
 
   render() {
     const container = this._container.getElement();
-
     const events = this._eventsModel.getEvents();
+
+    if (this._showingPreloader) {
+      remove(this._preloader);
+    }
+
     render(this._sortComponent, container, RenderPosition.BEFOREEND);
     this._daysController = new DaysController(container);
     this._daysController.render();
@@ -86,7 +96,9 @@ export default class TripController {
     const dayList = this._container.getElement().querySelector(`.trip-days`);
 
     this._daysController.clear();
-    const newEvents = renderEvents(dayList, events, this._onDataChange, this._onViewChange);
+    this._offers = this._eventsModel.getOffers();
+    this._destinations = this._eventsModel.getDestinations();
+    const newEvents = renderEvents(dayList, events, this._offers, this._destinations, this._onDataChange, this._onViewChange);
     this._showedEventControllers = this._showedEventControllers.concat(newEvents);
   }
 
@@ -125,21 +137,22 @@ export default class TripController {
       this._updateEvents();
     } else {
       // изменение
-      const isSuccess = this._eventsModel.updateEvent(oldData.id, newData);
-
-      if (isSuccess) {
-        if (stayOnAddingMode) {
-          // изменение данных без закрытия формы, например добавление в избранное
-          eventController.render(newData, EventControllerMode.ADDING);
-        } else {
-          // изменение данных с закрытием формы
-
-          if (isSameDate(oldData, newData)) {
-            eventController.render(newData, EventControllerMode.DEFAULT);
-          } else {
-            this._updateEvents();
-          }
-        }
+      if (stayOnAddingMode) {
+        // изменение данных без закрытия формы, например добавление в избранное
+        eventController.render(newData, EventControllerMode.ADDING);
+      } else {
+        // изменение данных с закрытием формы
+        this._api.updateEvent(oldData.id, newData)
+          .then((eventModel) => {
+            const isSuccess = this._eventsModel.updateEvent(oldData.id, eventModel);
+            if (isSuccess) {
+              if (isSameDate(oldData, newData)) {
+                eventController.render(eventModel, EventControllerMode.DEFAULT);
+              } else {
+                this._updateEvents();
+              }
+            }
+          });
       }
     }
   }
@@ -147,5 +160,12 @@ export default class TripController {
   _onFilterChange() {
     this._creatingEvent = null;
     this._updateEvents();
+  }
+
+  showPreloader() {
+    const container = this._container.getElement();
+    this._showingPreloader = true;
+
+    render(this._preloader, container, RenderPosition.BEFOREEND);
   }
 }

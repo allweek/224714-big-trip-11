@@ -1,20 +1,19 @@
 import AbstractComponent from "./abstract-component";
 import OptionsComponent from "./option";
-import {formatTime, getDuration} from "../utils/common.js";
-import {generateOptions} from "../mock/option";
+import {formatTime, getDuration, formatDateWithHyphenTime} from "../utils/common.js";
 
 
 const createEventMarkup = (event) => {
-  const {eventType, city, price, dateStart, dateEnd} = event;
+  console.log(event);
+  const {eventType, city, price, dateStart, dateEnd, offersChecked} = event;
   const eventNameToCapitalize = eventType.name ? eventType.name.charAt(0).toUpperCase() + eventType.name.slice(1) : ``;
   const timeStartFormatted = formatTime(dateStart);
   const timeEndFormatted = formatTime(dateEnd);
   const durationFormatted = getDuration(dateStart, dateEnd);
 
   const preposition = eventType.group === `Transfer` ? `to` : `in`;
-  const dateTimeStart = dateStart.toISOString().slice(0, 13);
-  const dateTimeEnd = dateEnd.toISOString().slice(0, 13);
-  const eventOptions = generateOptions(eventType.name);
+  const dateTimeStart = formatDateWithHyphenTime(dateStart);
+  const dateTimeEnd = formatDateWithHyphenTime(dateEnd);
 
   return (
     `<li class="trip-events__item">
@@ -37,7 +36,7 @@ const createEventMarkup = (event) => {
             &euro;&nbsp;<span class="event__price-value">${price}</span>
           </p>
 
-          ${(new OptionsComponent(eventOptions)).getTemplate()}          
+          ${(new OptionsComponent(offersChecked)).getTemplate()}          
 
           <button class="event__rollup-btn" type="button">
             <span class="visually-hidden">Open event</span>
