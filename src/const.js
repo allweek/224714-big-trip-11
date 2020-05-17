@@ -6,29 +6,24 @@ export const FilterType = {
 
 export const SortItems = [
   {
-    name: `Day`,
-    sortable: false,
-    nonClickable: true
+    name: `day`,
+    sortable: false
   },
   {
-    name: `Event`,
-    sortable: false,
-    nonClickable: false
+    name: `event`,
+    sortable: true
   },
   {
-    name: `Time`,
-    sortable: true,
-    nonClickable: false
+    name: `time`,
+    sortable: true
   },
   {
-    name: `Price`,
-    sortable: true,
-    nonClickable: false
+    name: `price`,
+    sortable: true
   },
   {
-    name: `Offers`,
-    sortable: false,
-    nonClickable: true
+    name: `offers`,
+    sortable: false
   },
 ];
 

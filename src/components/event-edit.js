@@ -3,7 +3,7 @@ import {EventTypes} from "../const";
 import flatpickr from "flatpickr";
 import OffersComponent from "./offer";
 import "flatpickr/dist/flatpickr.min.css";
-import {formatFromStringToDate, matchEventType} from "../utils/common";
+import {formatFromStringToDate, matchEventType, capitalizeWord} from "../utils/common";
 
 const SHAKE_ANIMATION_TIMEOUT = 900;
 
@@ -34,8 +34,6 @@ const getAllEventTypes = (types) => {
 };
 
 const eventTypesGroups = getAllEventTypes(EventTypes);
-
-const capitalizeWord = (string) => string.charAt(0).toUpperCase() + string.slice(1);
 
 const createEventTypeMarkup = (eventType, dayCount, isChecked) => {
   return (

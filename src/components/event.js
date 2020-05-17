@@ -1,14 +1,14 @@
 import AbstractComponent from "./abstract-component";
 import OptionsComponent from "./option";
-import {formatTime, getDuration, formatDateWithHyphenTime} from "../utils/common.js";
+import {formatTime, getDurationFormatted, formatDateWithHyphenTime, capitalizeWord} from "../utils/common.js";
 
 
 const createEventMarkup = (event) => {
   const {eventType, city, price, dateStart, dateEnd, offersChecked} = event;
-  const eventNameToCapitalize = eventType.name ? eventType.name.charAt(0).toUpperCase() + eventType.name.slice(1) : ``;
+  const eventNameToCapitalize = eventType.name ? capitalizeWord(eventType.name) : ``;
   const timeStartFormatted = formatTime(dateStart);
   const timeEndFormatted = formatTime(dateEnd);
-  const durationFormatted = getDuration(dateStart, dateEnd);
+  const durationFormatted = getDurationFormatted(dateStart, dateEnd);
 
   const preposition = eventType.group === `Transfer` ? `to` : `in`;
   const dateTimeStart = formatDateWithHyphenTime(dateStart);

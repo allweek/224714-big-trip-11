@@ -1,25 +1,25 @@
 import AbstractComponent from "./abstract-component";
 import {SortItems} from "../const";
+import {capitalizeWord} from "../utils/common";
 
-const createSortItemMarkup = (sortItem, isChecked) => {
+const createSortItemMarkup = (sortItem) => {
 
-  if (sortItem[`nonClickable`]) {
+  if (!sortItem[`sortable`]) {
     return (
-      `<span class="trip-sort__item  trip-sort__item--${sortItem.name.toLowerCase()}">${sortItem.name}</span>`
+      `<span class="trip-sort__item  trip-sort__item--${sortItem.name}">${capitalizeWord(sortItem.name)}</span>`
     );
   } else {
     return (
-      `<div class="trip-sort__item  trip-sort__item--${sortItem.name.toLowerCase()}">
+      `<div class="trip-sort__item  trip-sort__item--${sortItem.name}">
           <input 
-            id="sort-${sortItem.name.toLowerCase()}" 
+            id="sort-${sortItem.name}" 
             class="trip-sort__input  visually-hidden" 
             type="radio" 
             name="trip-sort" 
-            value="sort-${sortItem.name.toLowerCase()}"
-            ${isChecked ? `checked` : ``}
+            value="sort-${sortItem.name}"            
           />
-          <label class="trip-sort__btn" for="sort-${sortItem.name.toLowerCase()}">
-            ${sortItem.name}
+          <label class="trip-sort__btn" for="sort-${sortItem.name}">
+            ${capitalizeWord(sortItem.name)}
             
             ${
       sortItem.sortable ?
@@ -34,19 +34,45 @@ const createSortItemMarkup = (sortItem, isChecked) => {
 };
 
 const createTripSort = () => {
-  const getRandomCheck = () => {
-    return Math.random() < 0.5;
-  };
   return (
     `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
-      ${SortItems.map((sortItem) => createSortItemMarkup(sortItem, getRandomCheck())).join(`\n`)}
+      ${SortItems.map((sortItem) => createSortItemMarkup(sortItem)).join(`\n`)}
     </form>`
   );
 };
 
 export default class Sort extends AbstractComponent {
+  constructor() {
+    super();
+
+    this._currenSortType = `sort-event`;
+  }
+
   getTemplate() {
     return createTripSort();
+  }
+
+  getSortType() {
+    return this._currenSortType;
+  }
+
+  setSortTypeChangeHandler(handler) {
+    this.getElement().addEventListener(`change`, (evt) => {
+      evt.preventDefault();
+
+      const sortType = evt.target.value;
+
+      console.log(sortType);
+
+      if (this._currenSortType === sortType) {
+        return;
+      }
+
+      this._currenSortType = sortType;
+
+
+      handler(this._currenSortType);
+    });
   }
 }
 

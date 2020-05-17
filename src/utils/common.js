@@ -23,6 +23,11 @@ export const isSameDate = (oldData, newData) => {
 
 export const getDuration = (start, end) => {
   const diff = moment(end).diff(moment(start));
+  return moment.duration(diff);
+};
+
+export const getDurationFormatted = (start, end) => {
+  const diff = moment(end).diff(moment(start));
   const duration = moment.duration(diff);
 
   const days = duration.days();
@@ -42,3 +47,5 @@ export const getMonthShortName = (date) => {
 export const matchEventType = (eventName) => {
   return Object.assign({}, EventTypes.find((event) => event.name === eventName));
 };
+
+export const capitalizeWord = (string) => string.charAt(0).toUpperCase() + string.slice(1);

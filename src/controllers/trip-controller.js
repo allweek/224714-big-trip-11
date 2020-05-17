@@ -1,5 +1,5 @@
 import {render, remove, RenderPosition} from "../utils/render";
-import {isSameDate} from "../utils/common";
+import {isSameDate, getDuration} from "../utils/common";
 import EventController, {Mode as EventControllerMode, EmptyEvent} from "../controllers/event";
 import SortComponent from "../components/sort";
 import DaysController from "../controllers/days";
@@ -7,11 +7,12 @@ import DayComponent from "../components/day";
 import Preloader from "../components/preloader";
 import NoEventsComponent from "../components/no-events";
 
-const renderEvents = (dayList, events, offers, destinations, onDataChange, onViewChange) => {
-  const sortEvents = (eventsArray) => {
-    const sortedEvents = [...eventsArray];
-    return sortedEvents.sort((a, b)=> a.dateStart.getTime() - b.dateStart.getTime());
-  };
+const sortEvents = (eventsArray) => {
+  const sortedEvents = [...eventsArray];
+  return sortedEvents.sort((a, b)=> a.dateStart.getTime() - b.dateStart.getTime());
+};
+
+const renderEventsWithDays = (dayList, events, offers, destinations, onDataChange, onViewChange) => {
   const sortedEvents = sortEvents(events);
   let eventControllers = [];
   sortedEvents
@@ -45,6 +46,34 @@ const renderEvents = (dayList, events, offers, destinations, onDataChange, onVie
   return eventControllers;
 };
 
+const renderEventsWithoutDays = (dayList, events, offers, destinations, onDataChange, onViewChange) => {
+  return events.forEach((event, index) => {
+    const dayCount = index + 1;
+    const eventController = new EventController(dayList, offers, destinations, onDataChange, onViewChange, dayCount);
+
+    eventController.render(event, EventControllerMode.DEFAULT);
+
+    return eventController;
+  });
+};
+
+const getSortedEvents = (events, sortType) => {
+  let sortedEvents = [];
+  console.log(sortType);
+  switch (sortType) {
+    case `sort-event`:
+      sortedEvents = events;
+      break;
+    case `sort-time`:
+      sortedEvents = events.sort((a, b) => (getDuration(b.dateStart, b.dateEnd)) - (getDuration(a.dateStart, a.dateEnd)));
+      break;
+    case `sort-price`:
+      sortedEvents = events.sort((a, b) => a.price - b.price);
+      break;
+  }
+
+  return sortedEvents;
+};
 
 export default class TripController {
   constructor(container, eventsModel, api) {
@@ -54,17 +83,19 @@ export default class TripController {
     this._destinations = [];
     this._api = api;
 
-    this._showedEventControllers = [];
+    this._eventControllers = [];
     this._sortComponent = new SortComponent();
     this._preloader = new Preloader();
     this._noEventsComponent = new NoEventsComponent();
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
+    this._onSortTypeChange = this._onSortTypeChange.bind(this);
     this._creatingEvent = null;
     this._showingPreloader = null;
     this._showingNoEvents = null;
 
+    this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
     this._eventsModel.setFilterChangeHandler(this._onFilterChange);
   }
 
@@ -104,7 +135,7 @@ export default class TripController {
       this.showNoEvents();
     } else {
       this.removeNoEvents();
-      render(this._sortComponent, container, RenderPosition.BEFOREEND);
+      render(this._sortComponent, container, RenderPosition.AFTERBEGIN);
 
       this._renderEvents(events);
     }
@@ -116,17 +147,24 @@ export default class TripController {
     this._daysController.clear();
     this._offers = this._eventsModel.getOffers();
     this._destinations = this._eventsModel.getDestinations();
-    const newEvents = renderEvents(dayList, events, this._offers, this._destinations, this._onDataChange, this._onViewChange);
-    this._showedEventControllers = this._showedEventControllers.concat(newEvents);
+
+    let newEvents;
+    if (this._sortComponent.getSortType() === `sort-event`) {
+      newEvents = renderEventsWithDays(dayList, events, this._offers, this._destinations, this._onDataChange, this._onViewChange);
+    } else {
+      newEvents = renderEventsWithoutDays(dayList, events, this._offers, this._destinations, this._onDataChange, this._onViewChange);
+    }
+
+    this._eventControllers = this._eventControllers.concat(newEvents);
   }
 
   _removeEvents() {
-    this._showedEventControllers.forEach((eventController) => eventController.destroy());
-    this._showedEventControllers = [];
+    this._eventControllers.forEach((eventController) => eventController.destroy());
+    this._eventControllers = [];
   }
 
   _onViewChange() {
-    this._showedEventControllers.forEach((eventController) => eventController.setDefaultView());
+    this._eventControllers.forEach((eventController) => eventController.setDefaultView());
   }
 
   _updateEvents() {
@@ -155,7 +193,7 @@ export default class TripController {
           });
 
         // eventController.render(newData, EventControllerMode.DEFAULT);
-        // this._showedEventControllers = [].concat(eventController, this._showedEventControllers);
+        // this._eventControllers = [].concat(eventController, this._eventControllers);
       }
     } else if (newData === null) {
       // удаление event
@@ -200,6 +238,13 @@ export default class TripController {
   _onFilterChange() {
     this._creatingEvent = null;
     this._updateEvents();
+  }
+
+  _onSortTypeChange(sortType) {
+    const sortedEvents = getSortedEvents(this._eventsModel.getEvents(), sortType);
+
+    this._removeEvents();
+    this._renderEvents(sortedEvents);
   }
 
   showPreloader() {
