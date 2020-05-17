@@ -1,4 +1,5 @@
 import moment from "moment";
+import {EventTypes} from "../const";
 
 export const formatTime = (date) => {
   return moment(date).format(`HH:mm`);
@@ -36,4 +37,8 @@ export const getDuration = (start, end) => {
 
 export const getMonthShortName = (date) => {
   return moment(date).format(`MMM`);
+};
+
+export const matchEventType = (eventName) => {
+  return Object.assign({}, EventTypes.find((event) => event.name === eventName));
 };

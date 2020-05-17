@@ -49,7 +49,7 @@ api.getOffers()
     eventsModel.setOffers(offers);
     return api.getDestinations()
       .then((destinations) => {
-        eventsModel.setDestinations(destinations)
+        eventsModel.setDestinations(destinations);
         return api.getEvents()
           .then((events) => {
             eventsModel.setEvents(events);

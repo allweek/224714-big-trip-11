@@ -131,7 +131,6 @@ export default class EventController {
   }
 
   setDefaultView() {
-    console.log(this._mode);
     if (this._mode !== Mode.DEFAULT) {
       this._replaceEditToEvent();
     }

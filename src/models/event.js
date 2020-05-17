@@ -1,10 +1,9 @@
+import {matchEventType} from "../utils/common";
+
 export default class Event {
   constructor(data) {
     this.id = data[`id`];
-    this.eventType = {
-      name: data[`type`],
-      group: `Transfer` // ToDo make group variable
-    };
+    this.eventType = matchEventType(data[`type`]);
     this.city = data[`destination`][`name`];
     this.price = data[`base_price`];
     this.dateStart = data[`date_from`] ? new Date(data[`date_from`]) : null;
