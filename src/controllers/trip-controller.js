@@ -47,9 +47,12 @@ const renderEventsWithDays = (dayList, events, offers, destinations, onDataChang
 };
 
 const renderEventsWithoutDays = (dayList, events, offers, destinations, onDataChange, onViewChange) => {
-  return events.forEach((event, index) => {
-    const dayCount = index + 1;
-    const eventController = new EventController(dayList, offers, destinations, onDataChange, onViewChange, dayCount);
+  const day = new DayComponent();
+  render(day, dayList, RenderPosition.BEFOREEND);
+  const eventsList = day.getElement().querySelector(`.trip-events__list`);
+
+  return events.forEach((event) => {
+    const eventController = new EventController(eventsList, offers, destinations, onDataChange, onViewChange, null);
 
     eventController.render(event, EventControllerMode.DEFAULT);
 
@@ -68,7 +71,7 @@ const getSortedEvents = (events, sortType) => {
       sortedEvents = events.sort((a, b) => (getDuration(b.dateStart, b.dateEnd)) - (getDuration(a.dateStart, a.dateEnd)));
       break;
     case `sort-price`:
-      sortedEvents = events.sort((a, b) => a.price - b.price);
+      sortedEvents = events.sort((a, b) => b.price - a.price);
       break;
   }
 

@@ -2,11 +2,12 @@ import AbstractComponent from "./abstract-component";
 import {getMonthShortName, formatDateWithHypen} from "../utils/common.js";
 
 const createTripDay = (date, dayCount) => {
-  const monthShortName = getMonthShortName(date);
-  const dateTime = formatDateWithHypen(date);
-  const dayOfMonth = date.getDate();
-  return (
-    `<li class="trip-days__item  day">
+  if (date) {
+    const monthShortName = getMonthShortName(date);
+    const dateTime = formatDateWithHypen(date);
+    const dayOfMonth = date.getDate();
+    return (
+      `<li class="trip-days__item  day">
       <div class="day__info">
         <span class="day__counter">${dayCount}</span>
         <time class="day__date" datetime="${dateTime}">${monthShortName} ${dayOfMonth}</time>
@@ -15,15 +16,27 @@ const createTripDay = (date, dayCount) => {
       <ul class="trip-events__list">       
       </ul>
     </li>`
-  );
+    );
+  } else {
+    return (
+      `<li class="trip-days__item  day">
+      <div class="day__info">        
+      </div>
+
+      <ul class="trip-events__list">       
+      </ul>
+    </li>`
+    );
+  }
+
 };
 
 export default class Day extends AbstractComponent {
   constructor(date, dayCount) {
     super();
 
-    this._date = date;
-    this._dayCount = dayCount;
+    this._date = date ? date : ``;
+    this._dayCount = dayCount ? dayCount : ``;
   }
 
   getTemplate() {
