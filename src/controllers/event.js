@@ -62,6 +62,7 @@ export default class EventController {
     this._destinations = destinations;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
+    this._onEscKeyDown = this._onEscKeyDown.bind(this);
     this._mode = Mode.DEFAULT;
     this._eventComponent = null;
     this._eventEditComponent = null;
@@ -90,10 +91,12 @@ export default class EventController {
 
     this._eventComponent.setRollupButtonClickHandler(() => {
       this._replaceEventToEdit();
+      document.addEventListener(`keydown`, this._onEscKeyDown);
     });
 
     this._eventEditComponent.setRollupButtonClickHandler(() => {
       this._replaceEditToEvent();
+      document.removeEventListener(`keydown`, this._onEscKeyDown);
     });
 
     this._eventEditComponent.setFavoritesButtonClickHandler(() => {
@@ -125,6 +128,7 @@ export default class EventController {
           remove(oldEventComponent);
           remove(oldEventEditComponent);
         }
+        document.addEventListener(`keydown`, this._onEscKeyDown);
         render(this._eventEditComponent, this._container, RenderPosition.AFTERBEGIN);
         break;
     }
@@ -139,6 +143,7 @@ export default class EventController {
   destroy() {
     remove(this._eventEditComponent);
     remove(this._eventComponent);
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
   shake() {
@@ -152,6 +157,7 @@ export default class EventController {
   }
 
   _replaceEditToEvent() {
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
     this._eventEditComponent.reset();
 
     if (document.contains(this._eventEditComponent.getElement())) {
@@ -159,5 +165,14 @@ export default class EventController {
     }
 
     this._mode = Mode.DEFAULT;
+  }
+
+  _onEscKeyDown(evt) {
+    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+
+    if (isEscKey) {
+      this._replaceEditToEvent();
+      document.removeEventListener(`keydown`, this._onEscKeyDown);
+    }
   }
 }

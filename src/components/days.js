@@ -14,8 +14,6 @@ export default class Days extends AbstractComponent {
   }
 
   clearChildrenElements() {
-    if (this.getElement().querySelectorAll(`.trip-days__item`).length) {
-      this.getElement().innerHTML = ``;
-    }
+    this.getElement().innerHTML = ``;
   }
 }
