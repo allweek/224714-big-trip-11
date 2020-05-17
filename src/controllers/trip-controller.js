@@ -51,7 +51,7 @@ const renderEventsWithoutDays = (dayList, events, offers, destinations, onDataCh
   render(day, dayList, RenderPosition.BEFOREEND);
   const eventsList = day.getElement().querySelector(`.trip-events__list`);
 
-  return events.forEach((event) => {
+  return events.map((event) => {
     const eventController = new EventController(eventsList, offers, destinations, onDataChange, onViewChange, null);
 
     eventController.render(event, EventControllerMode.DEFAULT);
@@ -157,6 +157,7 @@ export default class TripController {
     } else {
       newEvents = renderEventsWithoutDays(dayList, events, this._offers, this._destinations, this._onDataChange, this._onViewChange);
     }
+    console.log(newEvents);
 
     this._eventControllers = this._eventControllers.concat(newEvents);
   }
@@ -167,6 +168,7 @@ export default class TripController {
   }
 
   _onViewChange() {
+    console.log(this._eventControllers);
     this._eventControllers.forEach((eventController) => eventController.setDefaultView());
   }
 
