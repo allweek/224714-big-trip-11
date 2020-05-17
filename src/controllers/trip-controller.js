@@ -157,7 +157,6 @@ export default class TripController {
     } else {
       newEvents = renderEventsWithoutDays(dayList, events, this._offers, this._destinations, this._onDataChange, this._onViewChange);
     }
-    console.log(newEvents);
 
     this._eventControllers = this._eventControllers.concat(newEvents);
   }
