@@ -5,7 +5,7 @@ import SortComponent from "../components/sort";
 import DaysController from "../controllers/days";
 import DayComponent from "../components/day";
 import Preloader from "../components/preloader";
-
+import NoEventsComponent from "../components/no-events";
 
 const renderEvents = (dayList, events, offers, destinations, onDataChange, onViewChange) => {
   const sortEvents = (eventsArray) => {
@@ -57,11 +57,13 @@ export default class TripController {
     this._showedEventControllers = [];
     this._sortComponent = new SortComponent();
     this._preloader = new Preloader();
+    this._noEventsComponent = new NoEventsComponent();
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
     this._creatingEvent = null;
     this._showingPreloader = null;
+    this._showingNoEvents = null;
 
     this._eventsModel.setFilterChangeHandler(this._onFilterChange);
   }
@@ -70,11 +72,19 @@ export default class TripController {
     if (this._creatingEvent) {
       return;
     }
+    if (this._showingNoEvents) {
+      this.removeNoEvents();
+    }
+
     this._onViewChange(); // закрыть все открытые формы
     this._eventsModel.setEverythingFilter(); // снять фильтры
+
     const dayListElement = this._container.getElement().querySelector(`.trip-days`);
     this._creatingEvent = new EventController(dayListElement, this._offers, this._destinations, this._onDataChange, this._onViewChange, 0);
     this._creatingEvent.render(EmptyEvent, EventControllerMode.ADDING);
+    if (!document.contains(this._sortComponent.getElement())) {
+      render(this._sortComponent, this._container.getElement(), RenderPosition.AFTERBEGIN);
+    }
   }
 
   render() {
@@ -82,14 +92,20 @@ export default class TripController {
     const events = this._eventsModel.getEvents();
 
     if (this._showingPreloader) {
-      remove(this._preloader);
+      this.removePreloader();
     }
 
-    render(this._sortComponent, container, RenderPosition.BEFOREEND);
     this._daysController = new DaysController(container);
     this._daysController.render();
 
-    this._renderEvents(events);
+    if (!events.length) {
+      this.showNoEvents();
+    } else {
+      this.removeNoEvents();
+      render(this._sortComponent, container, RenderPosition.BEFOREEND);
+
+      this._renderEvents(events);
+    }
   }
 
   _renderEvents(events) {
@@ -189,5 +205,22 @@ export default class TripController {
     this._showingPreloader = true;
 
     render(this._preloader, container, RenderPosition.BEFOREEND);
+  }
+
+  removePreloader() {
+    remove(this._preloader);
+    this._showingPreloader = false;
+  }
+
+  showNoEvents() {
+    const container = this._container.getElement();
+    this._showingNoEvents = true;
+
+    render(this._noEventsComponent, container, RenderPosition.BEFOREEND);
+  }
+
+  removeNoEvents() {
+    remove(this._noEventsComponent);
+    this._showingNoEvents = false;
   }
 }
