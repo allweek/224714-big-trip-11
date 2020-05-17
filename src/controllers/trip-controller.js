@@ -82,6 +82,8 @@ export default class TripController {
     const dayListElement = this._container.getElement().querySelector(`.trip-days`);
     this._creatingEvent = new EventController(dayListElement, this._offers, this._destinations, this._onDataChange, this._onViewChange, 0);
     this._creatingEvent.render(EmptyEvent, EventControllerMode.ADDING);
+
+    // если список пуст и создается первый event
     if (!document.contains(this._sortComponent.getElement())) {
       render(this._sortComponent, this._container.getElement(), RenderPosition.AFTERBEGIN);
     }
