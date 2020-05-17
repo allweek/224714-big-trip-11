@@ -395,15 +395,33 @@ export default class EventEdit extends AbstractSmartComponent {
 
   shake() {
     this.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this.unblockEditForm();
     this.getElement().style.border = `1px solid red`;
     setTimeout(() => {
       this.getElement().animation = ``;
-      this.getElement().border = ``;
 
       this.setData({
         saveButtonText: `Save`,
         deleteButtonText: `Delete`,
       });
     }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
+  blockEditForm() {
+    Array.from(this.getElement().querySelectorAll(`input`)).forEach((input) => {
+      input.disabled = true;
+    });
+    this.getElement().querySelector(`.event__save-btn`).disabled = true;
+  }
+
+  unblockEditForm() {
+    Array.from(this.getElement().querySelectorAll(`input`)).forEach((input) => {
+      input.disabled = false;
+    });
+    this.getElement().querySelector(`.event__save-btn`).disabled = false;
+  }
+
+  removeFormErrorBorder() {
+    this.getElement().style.border = ``;
   }
 }

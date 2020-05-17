@@ -123,12 +123,14 @@ export default class TripController {
         // при создании нового event пришли пустые данные
         eventController.destroy();
         this._updateEvents();
+        eventController.unblockEditForm();
       } else {
         // добавление нового event
         this._api.createEvent(newData)
           .then((eventModel) => {
             this._eventsModel.addEvent(eventModel);
             this._updateEvents();
+            eventController.unblockEditForm();
           })
           .catch(() => {
             eventController.shake();
@@ -143,6 +145,7 @@ export default class TripController {
         .then(() => {
           this._eventsModel.removeEvent(oldData.id);
           this._updateEvents();
+          eventController.unblockEditForm();
         })
         .catch(() => {
           eventController.shake();
@@ -161,9 +164,11 @@ export default class TripController {
               if (isSameDate(oldData, newData)) {
                 // если дата не меняется перерисовываем только данное событие
                 eventController.render(eventModel, EventControllerMode.DEFAULT);
+                eventController.unblockEditForm();
               } else {
                 // если дата меняется, пересовываем весь список
                 this._updateEvents();
+                eventController.unblockEditForm();
               }
             }
           })

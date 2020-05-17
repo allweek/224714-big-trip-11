@@ -45,14 +45,25 @@ const parseFormData = (form, offersList, destinations) => {
   });
 };
 
+
 export const EmptyEvent = {
   eventType: defaultEventType,
-  destination: ``,
+  destination: null,
   price: null,
   dateStart: new Date(),
   dateEnd: new Date(),
   isFavorite: false
 };
+
+// const handler = {
+//   set(target, prop, value, receiver) {
+//     console.log(`property set: ` + prop + ` = ` + value);
+//     console.trace();
+//     return true;
+//   }
+// };
+
+// export const EmptyEvent = new Proxy(EmptyEvent0, handler);
 
 export default class EventController {
   constructor(container, offers, destinations, onDataChange, onViewChange, dayCount) {
@@ -78,12 +89,15 @@ export default class EventController {
 
     this._eventEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
+      this._eventEditComponent.removeFormErrorBorder();
       const form = this._eventEditComponent;
       const data = parseFormData(form, this._offers, this._destinations);
 
       this._eventEditComponent.setData({
         saveButtonText: `Saving...`,
       });
+
+      this._eventEditComponent.blockEditForm();
 
       this._onDataChange(this, event, data, false);
     });
@@ -107,6 +121,9 @@ export default class EventController {
       this._eventEditComponent.setData({
         deleteButtonText: `Deleting...`,
       });
+
+      this._eventEditComponent.blockEditForm();
+
       this._onDataChange(this, event, null, false);
     });
 
@@ -143,6 +160,10 @@ export default class EventController {
 
   shake() {
     this._eventEditComponent.shake();
+  }
+
+  unblockEditForm() {
+    this._eventEditComponent.unblockEditForm();
   }
 
   _replaceEventToEdit() {
