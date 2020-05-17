@@ -104,7 +104,7 @@ export default class TripController {
       this.showNoEvents();
     } else {
       this.removeNoEvents();
-      render(this._sortComponent, container, RenderPosition.BEFOREEND);
+      render(this._sortComponent, container, RenderPosition.AFTERBEGIN);
 
       this._renderEvents(events);
     }
