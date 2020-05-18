@@ -6,6 +6,7 @@ import DaysController from "../controllers/days";
 import DayComponent from "../components/day";
 import Preloader from "../components/preloader";
 import NoEventsComponent from "../components/no-events";
+import {SortType} from "../const";
 
 const sortEvents = (eventsArray) => {
   const sortedEvents = [...eventsArray];
@@ -62,15 +63,14 @@ const renderEventsWithoutDays = (dayList, events, offers, destinations, onDataCh
 
 const getSortedEvents = (events, sortType) => {
   let sortedEvents = [];
-  console.log(sortType);
   switch (sortType) {
-    case `sort-event`:
+    case SortType.EVENT:
       sortedEvents = events;
       break;
-    case `sort-time`:
+    case SortType.TIME:
       sortedEvents = events.sort((a, b) => (getDuration(b.dateStart, b.dateEnd)) - (getDuration(a.dateStart, a.dateEnd)));
       break;
-    case `sort-price`:
+    case SortType.PRICE:
       sortedEvents = events.sort((a, b) => b.price - a.price);
       break;
   }

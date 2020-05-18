@@ -4,28 +4,11 @@ export const FilterType = {
   PAST: `past`
 };
 
-export const SortItems = [
-  {
-    name: `day`,
-    sortable: false
-  },
-  {
-    name: `event`,
-    sortable: true
-  },
-  {
-    name: `time`,
-    sortable: true
-  },
-  {
-    name: `price`,
-    sortable: true
-  },
-  {
-    name: `offers`,
-    sortable: false
-  },
-];
+export const SortType = {
+  EVENT: `sort-event`,
+  TIME: `sort-time`,
+  PRICE: `sort-price`,
+};
 
 export const EventTypes = [
   {
