@@ -167,7 +167,6 @@ export default class TripController {
   }
 
   _onViewChange() {
-    console.log(this._eventControllers);
     this._eventControllers.forEach((eventController) => eventController.setDefaultView());
   }
 

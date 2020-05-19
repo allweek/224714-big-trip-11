@@ -17,7 +17,7 @@ const createTripDay = (date, dayCount) => {
       </ul>
     </li>`
   );
-}
+};
 
 export default class Day extends AbstractComponent {
   constructor(date, dayCount) {

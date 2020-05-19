@@ -9,7 +9,7 @@ import MenuComponent from "./components/menu";
 import {render, RenderPosition} from "./utils/render.js";
 import TripController from "./controllers/trip-controller.js";
 
-const AUTHORIZATION = `Basic eo0w590ik213891a=`;
+const AUTHORIZATION = `Basic eo0w590ik21389a=`;
 const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
 
 const api = new API(END_POINT, AUTHORIZATION);

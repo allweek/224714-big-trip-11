@@ -102,12 +102,14 @@ const createDestinationMarkup = (destination) => {
 const isValidFormData = (city, dateStart, dateEnd, price) => city && city.length && (dateStart instanceof Date) && (dateEnd instanceof Date) && (dateStart.getTime() <= dateEnd.getTime()) && (price && price >= 0);
 
 
-const createEventEditTemplate = (event, offers, destinations, externalData, dayCount, isCreatingNew) => {
-  const {eventType, price, dateStart, dateEnd, isFavorite, offersChecked, destination} = event;
+const createEventEditTemplate = (event, offers, destinations, externalData, dayCount, isCreatingNew, options) => {
+  const {price, dateStart, dateEnd, isFavorite} = event;
+  const {destination, eventType, offersChecked} = options;
+  const city = destination ? destination.name : ``;
 
   const citiesList = destinations.map((destinationItem) => destinationItem.name);
   const citiesListMarkup = createCitiesListElem(citiesList);
-  const city = destination ? destination.name : ``;
+
   const eventNameToCapitalize = eventType.name ? capitalizeWord(eventType.name) : ``;
 
   const preposition = eventType.group === `Transfer` ? `to` : `in`;
@@ -120,9 +122,9 @@ const createEventEditTemplate = (event, offers, destinations, externalData, dayC
   const cancelButtonText = externalData.cancelButtonText;
 
   let offersMarkup = ``;
-  if (offersChecked) {
+  if (offers) {
     const offersWithCheckedFlag = allOffers.map((offer) => {
-      const index = offersChecked.findIndex((offerChecked) => offerChecked.title === offer.title);
+      const index = offersChecked ? offersChecked.findIndex((offerChecked) => offerChecked.title === offer.title) : -1;
       if (index !== -1) {
         return {offer, checked: true};
       } else {
@@ -199,10 +201,9 @@ disabled` : ``}>${saveButtonText}</button>
           </svg>
         </label>` : ``}
         
-
-        <button class="event__rollup-btn" type="button">
+        ${!isCreatingNew ? `<button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
-        </button>
+        </button>` : ``}
       </header>
       
       ${offersMarkup ? `<section class="event__details">
@@ -238,6 +239,9 @@ export default class EventEdit extends AbstractSmartComponent {
     this._flatpickrFrom = null;
     this._flatpickrTo = null;
     this._isCreatingNew = isCreatingNew;
+    this._destination = event.destination ? event.destination : null;
+    this._eventType = event.eventType;
+    this._offersChecked = event.offersChecked;
 
     this._applyFlatpickr();
     this._subscribeOnEvents();
@@ -250,7 +254,11 @@ export default class EventEdit extends AbstractSmartComponent {
         this._destinations,
         this._externalData,
         this._dayCount,
-        this._isCreatingNew);
+        this._isCreatingNew, {
+          destination: this._destination,
+          eventType: this._eventType,
+          offersChecked: this._offersChecked
+        });
   }
 
   // восстановить слушатели после rerender
@@ -271,11 +279,10 @@ export default class EventEdit extends AbstractSmartComponent {
   reset() {
     const event = this._event;
 
-    this._event.city = event.city;
-    this._event.eventType = event.eventType;
-    this._event.offers = event.offers;
-    this._event.destination = event.destination;
-    this._event.isFavorite = event.isFavorite;
+    this._eventType = event.eventType;
+    this._offersChecked = event.offersChecked;
+    this._destination = event.destination;
+    // this._event.isFavorite = event.isFavorite;
 
     this.rerender();
   }
@@ -317,7 +324,7 @@ export default class EventEdit extends AbstractSmartComponent {
     Array.from(element.querySelectorAll(`.event__type-group`)).forEach((fieldset) => {
       fieldset.addEventListener(`change`, (evt) => {
         const eventName = evt.target.value;
-        this._event.eventType = matchEventType(eventName);
+        this._eventType = matchEventType(eventName);
 
         this.rerender();
       });
@@ -332,7 +339,7 @@ export default class EventEdit extends AbstractSmartComponent {
         evt.target.value = ``;
         return false;
       }
-      this._event.destination = Object.assign({}, this._destinations.find((destination) => destination.name === cityFromInput));
+      this._destination = Object.assign({}, this._destinations.find((destination) => destination.name === cityFromInput));
 
       this.rerender();
     });
@@ -364,10 +371,12 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   setRollupButtonClickHandler(handler) {
-    this.getElement().querySelector(`.event__rollup-btn`)
-      .addEventListener(`click`, handler);
+    if (!this._isCreatingNew) {
+      this.getElement().querySelector(`.event__rollup-btn`)
+        .addEventListener(`click`, handler);
 
-    this._rollupButtonClickHandler = handler;
+      this._rollupButtonClickHandler = handler;
+    }
   }
 
   setFavoritesButtonClickHandler(handler) {
