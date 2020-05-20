@@ -2,6 +2,7 @@ import AbstractSmartComponent from "./abstract-smart-component.js";
 import {EventTypes} from "../const";
 import flatpickr from "flatpickr";
 import OffersComponent from "./offer";
+import DestinationComponent from "./destination";
 import "flatpickr/dist/flatpickr.min.css";
 import {formatFromStringToDate, matchEventType, capitalizeWord} from "../utils/common";
 
@@ -76,29 +77,6 @@ const createEventTypeGroupsMarkup = (events, dayCount, checkedType) => {
   return fieldSetsMarkup.join(`\n`);
 };
 
-const createDestinationPhotoMarkup = (destinationPhotos) => {
-  return destinationPhotos
-    .map((photo) => {
-      return `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`;
-    }).join(`\n`);
-};
-
-const createDestinationMarkup = (destination) => {
-  return (
-    `<section class="event__section  event__section--destination">
-          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${destination.description}</p>
-  
-          <div class="event__photos-container">
-            <div class="event__photos-tape">
-              ${createDestinationPhotoMarkup(destination.pictures)}           
-            </div>
-          </div>
-        </section>
-      </section>`
-  );
-};
-
 const isValidFormData = (city, dateStart, dateEnd, price) => city && city.length && (dateStart instanceof Date) && (dateEnd instanceof Date) && (dateStart.getTime() <= dateEnd.getTime()) && (price && price >= 0);
 
 
@@ -141,7 +119,7 @@ const createEventEditTemplate = (event, offers, destinations, externalData, dayC
   const eventTypesGroupsMarkup = createEventTypeGroupsMarkup(EventTypes, dayCount, eventType.name);
 
 
-  const destinationMarkup = destination ? createDestinationMarkup(destination) : ``;
+  const destinationMarkup = destination ? new DestinationComponent(destination).getTemplate() : ``;
   const isBlockSaveButton = !isValidFormData(city, dateStart, dateEnd, price);
 
   return (
@@ -303,12 +281,17 @@ export default class EventEdit extends AbstractSmartComponent {
     this._flatpickrFrom = flatpickr(dateStartElement, {
       allowInput: true,
       defaultDate: this._event.dateStart || `today`,
-      dateFormat: `d/m/y H:i`
+      dateFormat: `d/m/y H:i`,
+      enableTime: true,
+      [`time_24hr`]: true
     });
     this._flatpickrTo = flatpickr(dateEndElement, {
       allowInput: true,
       defaultDate: this._event.dateEnd || `today`,
-      dateFormat: `d/m/y H:i`
+      dateFormat: `d/m/y H:i`,
+      enableTime: true,
+      [`time_24hr`]: true,
+      minDate: this._event.dateStart
     });
   }
 
@@ -332,13 +315,11 @@ export default class EventEdit extends AbstractSmartComponent {
 
     element.querySelector(`.event__input--destination`).addEventListener(`change`, (evt) => {
       const cityFromInput = evt.target.value;
-      if (!cityFromInput) {
-        return false;
-      }
-      if (citiesList.indexOf(cityFromInput) === -1) {
+      if (!cityFromInput || citiesList.indexOf(cityFromInput) === -1) {
         evt.target.value = ``;
         return false;
       }
+
       this._destination = Object.assign({}, this._destinations.find((destination) => destination.name === cityFromInput));
 
       this.rerender();
@@ -347,7 +328,26 @@ export default class EventEdit extends AbstractSmartComponent {
     element.querySelector(`.event__input--price`).addEventListener(`change`, (evt) => {
       if (isNaN(evt.target.value)) {
         evt.target.value = ``;
+      } else {
+        evt.target.value = parseInt(evt.target.value, 10);
       }
+    });
+
+    Array.from(element.querySelectorAll(`.event__offer-checkbox`)).forEach((offerCheckbox) => {
+      offerCheckbox.addEventListener(`change`, (evt) => {
+        const offerTitle = evt.target.value;
+
+        const offerGroupByType = Object.assign({}, this._offers.find((offerGroup) => offerGroup.type === this._eventType.name));
+        const offerByTitle = Object.assign({}, offerGroupByType.offers.find((offerGroup) => offerGroup.title === offerTitle));
+
+        const index = this._offersChecked ? this._offersChecked.findIndex((offerChecked) => offerChecked.title === offerByTitle.title) : -1;
+        if (index !== -1) {
+          this._offersChecked.splice(index, 1);
+        } else {
+          this._offersChecked.push(offerByTitle);
+        }
+        // this.rerender();
+      });
     });
 
     // валидация формы и активация кнопки save

@@ -112,6 +112,7 @@ export default class TripController {
 
     this._onViewChange(); // закрыть все открытые формы
     this._eventsModel.setEverythingFilter(); // снять фильтры
+    getSortedEvents(this._eventsModel.getEvents(), SortType.EVENT);
 
     const dayListElement = this._container.getElement().querySelector(`.trip-days`);
     this._creatingEvent = new EventController(dayListElement, this._offers, this._destinations, this._onDataChange, this._onViewChange, 0);
@@ -211,30 +212,29 @@ export default class TripController {
         });
     } else {
       // изменение
-      if (stayOnAddingMode) {
-        // изменение данных без закрытия и сохранение формы, например добавление в избранное
-        eventController.render(newData, EventControllerMode.ADDING);
-      } else {
-        // изменение данных с закрытием формы
-        this._api.updateEvent(oldData.id, newData)
-          .then((eventModel) => {
-            const isSuccess = this._eventsModel.updateEvent(oldData.id, eventModel);
-            if (isSuccess) {
-              if (isSameDate(oldData, newData)) {
-                // если дата не меняется перерисовываем только данное событие
-                eventController.render(eventModel, EventControllerMode.DEFAULT);
-                eventController.unblockEditForm();
+      this._api.updateEvent(oldData.id, newData)
+        .then((eventModel) => {
+          const isSuccess = this._eventsModel.updateEvent(oldData.id, eventModel);
+          if (isSuccess) {
+            if (isSameDate(oldData, newData)) {
+              // если дата не меняется перерисовываем только данное событие
+              if (stayOnAddingMode) {
+                // изменение данных без закрытия и сохранения формы, например добавление в избранное
+                eventController.render(newData, EventControllerMode.ADDING);
               } else {
-                // если дата меняется, пересовываем весь список
-                this._updateEvents();
-                eventController.unblockEditForm();
+                // изменение данных с закрытием формы
+                eventController.render(eventModel, EventControllerMode.DEFAULT);
               }
+            } else {
+              // если дата меняется, пересовываем весь список
+              this._updateEvents();
             }
-          })
-          .catch(() => {
-            eventController.shake();
-          });
-      }
+            eventController.unblockEditForm();
+          }
+        })
+        .catch(() => {
+          eventController.shake();
+        });
     }
   }
 
