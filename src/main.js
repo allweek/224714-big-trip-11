@@ -30,6 +30,8 @@ render(menuComponent, tripControls, RenderPosition.AFTERBEGIN);
 const newEventButton = tripMain.querySelector(`.trip-main__event-add-btn`);
 newEventButton.addEventListener(`click`, function () {
   tripController.createEvent();
+  // statisticsComponent.hide();
+  // tripController.show();
 });
 
 const filterController = new FilterController(tripControls, eventsModel);

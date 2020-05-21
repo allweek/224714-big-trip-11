@@ -317,7 +317,7 @@ export default class EventEdit extends AbstractSmartComponent {
       const cityFromInput = evt.target.value;
       if (!cityFromInput || citiesList.indexOf(cityFromInput) === -1) {
         evt.target.value = ``;
-        return false;
+        return;
       }
 
       this._destination = Object.assign({}, this._destinations.find((destination) => destination.name === cityFromInput));

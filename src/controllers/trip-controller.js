@@ -94,25 +94,24 @@ export default class TripController {
     this._onViewChange = this._onViewChange.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
+    this._setSortType = this._setSortType.bind(this);
     this._creatingEvent = null;
     this._showingPreloader = null;
     this._showingNoEvents = null;
+    this._sortTypeBeforeCreateEvent = null;
+
 
     this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
     this._eventsModel.setFilterChangeHandler(this._onFilterChange);
   }
 
   createEvent() {
+
     if (this._creatingEvent) {
       return;
     }
-    if (this._showingNoEvents) {
-      this.removeNoEvents();
-    }
 
-    this._onViewChange(); // закрыть все открытые формы
-    this._eventsModel.setEverythingFilter(); // снять фильтры
-    getSortedEvents(this._eventsModel.getEvents(), SortType.EVENT);
+    this._onEventCreate();
 
     const dayListElement = this._container.getElement().querySelector(`.trip-days`);
     this._creatingEvent = new EventController(dayListElement, this._offers, this._destinations, this._onDataChange, this._onViewChange, 0);
@@ -153,7 +152,7 @@ export default class TripController {
     this._destinations = this._eventsModel.getDestinations();
 
     let newEvents;
-    if (this._sortComponent.getSortType() === `sort-event`) {
+    if (this._sortComponent.getSortType() === SortType.EVENT) {
       newEvents = renderEventsWithDays(dayList, events, this._offers, this._destinations, this._onDataChange, this._onViewChange);
     } else {
       newEvents = renderEventsWithoutDays(dayList, events, this._offers, this._destinations, this._onDataChange, this._onViewChange);
@@ -182,14 +181,14 @@ export default class TripController {
       if (newData === null) {
         // при создании нового event пришли пустые данные
         eventController.destroy();
-        this._updateEvents();
+        this._setSortType(this._sortTypeBeforeCreateEvent);
         eventController.unblockEditForm();
       } else {
         // добавление нового event
         this._api.createEvent(newData)
           .then((eventModel) => {
             this._eventsModel.addEvent(eventModel);
-            this._updateEvents();
+            this._setSortType(this._sortTypeBeforeCreateEvent);
             eventController.unblockEditForm();
           })
           .catch(() => {
@@ -243,11 +242,27 @@ export default class TripController {
     this._updateEvents();
   }
 
+  _onEventCreate() {
+    if (this._showingNoEvents) {
+      this.removeNoEvents();
+    }
+    this._onViewChange(); // закрыть все открытые формы
+    this._eventsModel.setEverythingFilter(); // снять фильтры
+    this._sortTypeBeforeCreateEvent = this._sortComponent.getSortType();
+    this._setSortType(SortType.EVENT); // сброс сортировки
+    // getSortedEvents(this._eventsModel.getEvents(), SortType.EVENT);
+  }
+
   _onSortTypeChange(sortType) {
     const sortedEvents = getSortedEvents(this._eventsModel.getEvents(), sortType);
 
     this._removeEvents();
     this._renderEvents(sortedEvents);
+  }
+
+  _setSortType(sortType) {
+    this._sortComponent.setSortType(sortType);
+    this._onSortTypeChange(sortType);
   }
 
   showPreloader() {
