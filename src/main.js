@@ -1,13 +1,16 @@
 import API from "./api.js";
-import BoardComponent from "./components/board.js";
+import TripComponent from "./components/trip.js";
 import EventsModel from "./models/events.js";
 import FilterController from "./controllers/filter";
 import InfoComponent from "./components/trip-info";
 import InfoMainComponent from "./components/trip-info-main";
 import InfoCostComponent from "./components/trip-info-cost";
+import StatComponent from "./components/stat";
 import MenuComponent from "./components/menu";
+import {MenuItem} from "./const";
 import {render, RenderPosition} from "./utils/render.js";
-import TripController from "./controllers/trip-controller.js";
+import Trip from "./controllers/trip.js";
+
 
 const AUTHORIZATION = `Basic eo0w590ik21389a=`;
 const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
@@ -28,23 +31,43 @@ const menuComponent = new MenuComponent();
 render(menuComponent, tripControls, RenderPosition.AFTERBEGIN);
 
 const newEventButton = tripMain.querySelector(`.trip-main__event-add-btn`);
-newEventButton.addEventListener(`click`, function () {
-  tripController.createEvent();
-  // statisticsComponent.hide();
-  // tripController.show();
-});
 
 const filterController = new FilterController(tripControls, eventsModel);
 filterController.render();
 
-const boardComponent = new BoardComponent();
-const tripController = new TripController(boardComponent, eventsModel, api);
+const tripComponent = new TripComponent();
+const tripController = new Trip(tripComponent, eventsModel, api);
 tripController.showPreloader();
 newEventButton.disabled = true;
 
 const container = document.querySelectorAll(`.page-body__container`)[1];
-render(boardComponent, container, RenderPosition.BEFOREEND);
+render(tripComponent, container, RenderPosition.BEFOREEND);
 
+const statComponent = new StatComponent({events: eventsModel});
+render(statComponent, container, RenderPosition.BEFOREEND);
+statComponent.hide();
+
+newEventButton.addEventListener(`click`, function () {
+  statComponent.hide();
+  menuComponent.setActiveItem(MenuItem.TABLE)
+  tripController.show();
+  tripController.createEvent();
+});
+
+menuComponent.setOnChange((menuItem) => {
+  switch (menuItem) {
+    case MenuItem.TABLE:
+      menuComponent.setActiveItem(MenuItem.TABLE);
+      statComponent.hide();
+      tripController.show();
+      break;
+    case MenuItem.STATISTICS:
+      menuComponent.setActiveItem(MenuItem.STATISTICS);
+      tripController.hide();
+      statComponent.show();
+      break;
+  }
+});
 
 api.getOffers()
   .then((offers) => {

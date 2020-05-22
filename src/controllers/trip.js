@@ -78,7 +78,7 @@ const getSortedEvents = (events, sortType) => {
   return sortedEvents;
 };
 
-export default class TripController {
+export default class Trip {
   constructor(container, eventsModel, api) {
     this._container = container;
     this._eventsModel = eventsModel;
@@ -103,6 +103,14 @@ export default class TripController {
 
     this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
     this._eventsModel.setFilterChangeHandler(this._onFilterChange);
+  }
+
+  hide() {
+    this._container.hide();
+  }
+
+  show() {
+    this._container.show();
   }
 
   createEvent() {

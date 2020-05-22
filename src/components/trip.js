@@ -1,7 +1,7 @@
 import AbstractComponent from "./abstract-component";
 
 
-const createBoardTemplate = () => {
+const createTripTemplate = () => {
   return (
     `<section class="trip-events">
       <h2 class="visually-hidden">Trip events</h2>
@@ -10,8 +10,8 @@ const createBoardTemplate = () => {
 };
 
 
-export default class Board extends AbstractComponent {
+export default class Trip extends AbstractComponent {
   getTemplate() {
-    return createBoardTemplate();
+    return createTripTemplate();
   }
 }

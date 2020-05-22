@@ -10,6 +10,11 @@ export const SortType = {
   PRICE: `sort-price`,
 };
 
+export const MenuItem = {
+  TABLE: `table`,
+  STATISTICS: `stats`
+};
+
 export const EventTypes = [
   {
     name: `taxi`,
