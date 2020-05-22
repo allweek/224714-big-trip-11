@@ -183,7 +183,7 @@ export default class Stat extends AbstractSmartComponent {
     const element = this.getElement();
 
     const transport = getTransport();
-    console.log(this._events);
+    console.log(this._events.getEvents());
     // this._applyFlatpickr(this.getElement().querySelector(`.statistic__period-input`));
     //
     // const daysCtx = element.querySelector(`.statistic__days`);
