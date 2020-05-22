@@ -257,8 +257,7 @@ export default class Trip {
     this._onViewChange(); // закрыть все открытые формы
     this._eventsModel.setEverythingFilter(); // снять фильтры
     this._sortTypeBeforeCreateEvent = this._sortComponent.getSortType();
-    this._setSortType(SortType.EVENT); // сброс сортировки
-    // getSortedEvents(this._eventsModel.getEvents(), SortType.EVENT);
+    this.setDefaultSortType(); // сброс сортировки
   }
 
   _onSortTypeChange(sortType) {
@@ -271,6 +270,10 @@ export default class Trip {
   _setSortType(sortType) {
     this._sortComponent.setSortType(sortType);
     this._onSortTypeChange(sortType);
+  }
+
+  setDefaultSortType() {
+    this._setSortType(SortType.EVENT);
   }
 
   showPreloader() {

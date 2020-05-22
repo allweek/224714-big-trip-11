@@ -17,6 +17,10 @@ export default class Events {
     return getEventsByFilter(this._events, this._activeFilterType);
   }
 
+  getAllEvents() {
+    return this._events;
+  }
+
   setEvents(events) {
     this._events = Array.from(events);
     this._callHandlers(this._dataChangeHandlers);

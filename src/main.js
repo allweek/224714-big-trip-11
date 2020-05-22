@@ -49,7 +49,7 @@ statComponent.hide();
 
 newEventButton.addEventListener(`click`, function () {
   statComponent.hide();
-  menuComponent.setActiveItem(MenuItem.TABLE)
+  menuComponent.setActiveItem(MenuItem.TABLE);
   tripController.show();
   tripController.createEvent();
 });
@@ -64,6 +64,7 @@ menuComponent.setOnChange((menuItem) => {
     case MenuItem.STATISTICS:
       menuComponent.setActiveItem(MenuItem.STATISTICS);
       tripController.hide();
+      tripController.setDefaultSortType();
       statComponent.show();
       break;
   }
