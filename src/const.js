@@ -58,4 +58,17 @@ export const EventTypes = [
   }
 ];
 
+export const EventTypesEmojiMapping = {
+  'taxi': `🚕 TAXI`,
+  'bus': `🚌 BUS`,
+  'train': `🚆 TRAIN`,
+  'ship': `🚢 SHIP`,
+  'transport': `🚄 TRANSPORT`,
+  'drive': `🚗 DRIVE`,
+  'flight': `✈ FLIGHT`,
+  'check-in': `🏨 CHECK-IN`,
+  'sightseeing': `🏛 SIGHTSEEING`,
+  'restaurant': `🍽 restaurant`
+};
+
 export const defaultEventType = EventTypes[0];
