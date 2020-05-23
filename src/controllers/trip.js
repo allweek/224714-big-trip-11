@@ -113,11 +113,13 @@ export default class Trip {
     this._container.show();
   }
 
-  createEvent() {
+  createEvent(newEventButton) {
 
     if (this._creatingEvent) {
       return;
     }
+
+    this._newEventButton = newEventButton;
 
     this._onEventCreate();
 
@@ -191,6 +193,7 @@ export default class Trip {
         eventController.destroy();
         this._setSortType(this._sortTypeBeforeCreateEvent);
         eventController.unblockEditForm();
+        this._newEventButton.disabled = false;
       } else {
         // добавление нового event
         this._api.createEvent(newData)
@@ -198,13 +201,11 @@ export default class Trip {
             this._eventsModel.addEvent(eventModel);
             this._setSortType(this._sortTypeBeforeCreateEvent);
             eventController.unblockEditForm();
+            this._newEventButton.disabled = false;
           })
           .catch(() => {
             eventController.shake();
           });
-
-        // eventController.render(newData, EventControllerMode.DEFAULT);
-        // this._eventControllers = [].concat(eventController, this._eventControllers);
       }
     } else if (newData === null) {
       // удаление event
@@ -255,7 +256,9 @@ export default class Trip {
       this.removeNoEvents();
     }
     this._onViewChange(); // закрыть все открытые формы
+
     this._eventsModel.setEverythingFilter(); // снять фильтры
+
     this._sortTypeBeforeCreateEvent = this._sortComponent.getSortType();
     this.setDefaultSortType(); // сброс сортировки
   }

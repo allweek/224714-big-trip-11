@@ -47,11 +47,12 @@ const statComponent = new StatComponent({events: eventsModel});
 render(statComponent, container, RenderPosition.BEFOREEND);
 statComponent.hide();
 
-newEventButton.addEventListener(`click`, function () {
+newEventButton.addEventListener(`click`, () => {
   statComponent.hide();
   menuComponent.setActiveItem(MenuItem.TABLE);
   tripController.show();
-  tripController.createEvent();
+  newEventButton.disabled = true;
+  tripController.createEvent(newEventButton);
 });
 
 menuComponent.setOnChange((menuItem) => {
@@ -70,19 +71,12 @@ menuComponent.setOnChange((menuItem) => {
   }
 });
 
-api.getOffers()
-  .then((offers) => {
-    eventsModel.setOffers(offers);
-    return api.getDestinations()
-      .then((destinations) => {
-        eventsModel.setDestinations(destinations);
-        return api.getEvents()
-          .then((events) => {
-            eventsModel.setEvents(events);
-            tripController.render();
-            newEventButton.disabled = false;
-          });
-      });
-  });
-
+Promise.all([api.getOffers(), api.getDestinations(), api.getEvents()]).then((data) => {
+  const [offers, destinations, events] = data;
+  eventsModel.setOffers(offers);
+  eventsModel.setDestinations(destinations);
+  eventsModel.setEvents(events);
+  tripController.render();
+  newEventButton.disabled = false;
+});
 
