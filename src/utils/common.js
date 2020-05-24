@@ -1,5 +1,5 @@
 import moment from "moment";
-import {EventTypes} from "../const";
+import {PointTypes} from "../const";
 
 export const formatTime = (date) => {
   return moment(date).format(`HH:mm`);
@@ -48,8 +48,8 @@ export const getMonthShortName = (date) => {
   return moment(date).format(`MMM`);
 };
 
-export const matchEventType = (eventName) => {
-  return Object.assign({}, EventTypes.find((event) => event.name === eventName));
+export const matchPointType = (pointName) => {
+  return Object.assign({}, PointTypes.find((point) => point.name === pointName));
 };
 
 export const capitalizeWord = (string) => string.charAt(0).toUpperCase() + string.slice(1);

@@ -3,14 +3,14 @@ import OptionsComponent from "./option";
 import {formatTime, getDurationFormatted, formatDateWithHyphenTime, capitalizeWord} from "../utils/common.js";
 
 
-const createEventMarkup = (event) => {
-  const {eventType, city, price, dateStart, dateEnd, offersChecked} = event;
-  const eventNameToCapitalize = eventType.name ? capitalizeWord(eventType.name) : ``;
+const createPointMarkup = (point) => {
+  const {pointType, city, price, dateStart, dateEnd, offersChecked} = point;
+  const pointNameToCapitalize = pointType.name ? capitalizeWord(pointType.name) : ``;
   const timeStartFormatted = formatTime(dateStart);
   const timeEndFormatted = formatTime(dateEnd);
   const durationFormatted = getDurationFormatted(dateStart, dateEnd);
 
-  const preposition = eventType.group === `Transfer` ? `to` : `in`;
+  const preposition = pointType.group === `Transfer` ? `to` : `in`;
   const dateTimeStart = formatDateWithHyphenTime(dateStart);
   const dateTimeEnd = formatDateWithHyphenTime(dateEnd);
 
@@ -18,9 +18,9 @@ const createEventMarkup = (event) => {
     `<li class="trip-events__item">
       <div class="event">
         <div class="event__type">
-                 <img class="event__type-icon" width="42" height="42" src="img/icons/${eventType.name}.png" alt="Event type icon">
+                 <img class="event__type-icon" width="42" height="42" src="img/icons/${pointType.name}.png" alt="Event type icon">
                </div>
-        <h3 class="event__title">${eventNameToCapitalize} ${preposition} ${city}</h3>
+        <h3 class="event__title">${pointNameToCapitalize} ${preposition} ${city}</h3>
 
         <div class="event__schedule">
           <p class="event__time">
@@ -46,14 +46,14 @@ const createEventMarkup = (event) => {
 };
 
 
-export default class Event extends AbstractComponent {
-  constructor(event) {
+export default class Point extends AbstractComponent {
+  constructor(point) {
     super();
-    this._event = event;
+    this._point = point;
   }
 
   getTemplate() {
-    return createEventMarkup(this._event);
+    return createPointMarkup(this._point);
   }
 
   setRollupButtonClickHandler(handler) {

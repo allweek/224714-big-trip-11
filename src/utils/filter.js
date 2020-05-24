@@ -1,23 +1,23 @@
 import {FilterType} from "../const";
 
-export const getPastEvents = (events) => {
-  return events.filter((event) => event.dateEnd < Date.now());
+export const getPastPoints = (points) => {
+  return points.filter((point) => point.dateEnd < Date.now());
 };
 
-export const getFutureEvents = (events) => {
-  return events.filter((event) => event.dateStart.getTime() > Date.now());
+export const getFuturePoints = (points) => {
+  return points.filter((point) => point.dateStart.getTime() > Date.now());
 };
 
-export const getEventsByFilter = (events, filter) => {
+export const getPointsByFilter = (points, filter) => {
   switch (filter) {
     case FilterType.EVERYTHING:
-      return events;
+      return points;
     case FilterType.FUTURE:
-      return getFutureEvents(events);
+      return getFuturePoints(points);
     case FilterType.PAST:
-      return getPastEvents(events);
+      return getPastPoints(points);
   }
 
-  return events;
+  return points;
 };
 

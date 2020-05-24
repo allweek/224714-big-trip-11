@@ -1,8 +1,8 @@
 import AbstractComponent from "./abstract-component";
 
-const createOfferMarkup = (eventOffers, dayCount) => {
-  return eventOffers
-    .map((eventOffer, index) => {
+const createOfferMarkup = (pointOffers, dayCount) => {
+  return pointOffers
+    .map((pointOffer, index) => {
       return (
         `<div class="event__offer-selector">
           <input 
@@ -10,15 +10,15 @@ const createOfferMarkup = (eventOffers, dayCount) => {
             id="event-offer-${dayCount}${index}" 
             type="checkbox" 
             name="event-offer"           
-            value="${eventOffer.offer.title}"
-            ${eventOffer.checked ? `checked` : ``}
+            value="${pointOffer.offer.title}"
+            ${pointOffer.checked ? `checked` : ``}
           /> 
           <label 
             class="event__offer-label" 
             for="event-offer-${dayCount}${index}">
-            <span class="event__offer-title">${eventOffer.offer.title}</span>
+            <span class="event__offer-title">${pointOffer.offer.title}</span>
             &plus;
-            &euro;&nbsp;<span class="event__offer-price">${eventOffer.offer.price}</span>
+            &euro;&nbsp;<span class="event__offer-price">${pointOffer.offer.price}</span>
           </label>
         </div>`
       );
@@ -28,10 +28,10 @@ const createOfferMarkup = (eventOffers, dayCount) => {
 
 
 export default class Offers extends AbstractComponent {
-  constructor(eventOptions, dayCount) {
+  constructor(pointOptions, dayCount) {
     super();
 
-    this._options = eventOptions;
+    this._options = pointOptions;
     this._dayCount = dayCount;
   }
 

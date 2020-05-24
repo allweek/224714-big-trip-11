@@ -4,9 +4,9 @@ import {FilterType} from "../const";
 
 
 export default class FilterController {
-  constructor(container, eventsModel) {
+  constructor(container, pointsModel) {
     this._container = container;
-    this._eventsModel = eventsModel;
+    this._pointsModel = pointsModel;
 
     this._activeFilterType = FilterType.EVERYTHING;
     this._filterComponent = null;
@@ -15,8 +15,8 @@ export default class FilterController {
     this._onFilterChange = this._onFilterChange.bind(this);
     this._setActiveFilterCheckbox = this._setActiveFilterCheckbox.bind(this);
 
-    this._eventsModel.setDataChangeHandler(this._onDataChange);
-    this._eventsModel.setFilterChangeHandlerInComponent(this._setActiveFilterCheckbox);
+    this._pointsModel.setDataChangeHandler(this._onDataChange);
+    this._pointsModel.setFilterChangeHandlerInComponent(this._setActiveFilterCheckbox);
   }
 
   render() {
@@ -40,12 +40,12 @@ export default class FilterController {
   }
 
   _onFilterChange(filterType) {
-    this._eventsModel.setFilter(filterType);
+    this._pointsModel.setFilter(filterType);
     this._activeFilterType = filterType;
   }
 
   _setActiveFilterCheckbox() {
-    this._activeFilterType = this._eventsModel._activeFilterType;
+    this._activeFilterType = this._pointsModel._activeFilterType;
     this._filterComponent.setActiveFilterCheckbox(this._activeFilterType);
   }
 

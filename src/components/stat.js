@@ -2,7 +2,7 @@ import AbstractSmartComponent from "./abstract-smart-component";
 import Chart from "chart.js";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {getDurationFormatted} from "../utils/common";
-import {EventTypesEmojiMapping} from "../const";
+import {PointTypesEmojiMapping} from "../const";
 
 
 const createStatTemplate = () => {
@@ -29,10 +29,10 @@ const createStatTemplate = () => {
 const BAR_HEIGHT = 55;
 
 const renderMoneyChart = (moneyCtx, money) => {
-  const eventType = [...Object.keys(money)].map((kind) => kind.toUpperCase());
-  const eventTypeMoney = [...Object.values(money)];
+  const pointType = [...Object.keys(money)].map((kind) => kind.toUpperCase());
+  const pointTypeMoney = [...Object.values(money)];
 
-  const barsCount = eventType.length;
+  const barsCount = pointType.length;
   moneyCtx.height = BAR_HEIGHT * barsCount;
   moneyCtx.style.backgroundColor = `rgba(236,235,235,1)`;
 
@@ -40,9 +40,9 @@ const renderMoneyChart = (moneyCtx, money) => {
     plugins: [ChartDataLabels],
     type: `horizontalBar`,
     data: {
-      labels: eventType,
+      labels: pointType,
       datasets: [{
-        data: eventTypeMoney,
+        data: pointTypeMoney,
         backgroundColor: `#ffffff`,
         hoverBackgroundColor: `#ffffff`,
         anchor: `start`
@@ -195,10 +195,10 @@ const renderTransportChart = (transportCtx, transportKinds) => {
 
 const renderTimeSpendChart = (timeSpendCtx, timeSpend) => {
 
-  const eventType = [...Object.keys(timeSpend)].map((kind) => kind.toUpperCase());
-  const eventTypeTimeSpend = [...Object.values(timeSpend)];
+  const pointType = [...Object.keys(timeSpend)].map((kind) => kind.toUpperCase());
+  const pointTypeTimeSpend = [...Object.values(timeSpend)];
 
-  const barsCount = eventType.length;
+  const barsCount = pointType.length;
   timeSpendCtx.height = BAR_HEIGHT * barsCount;
   timeSpendCtx.style.backgroundColor = `rgba(236,235,235,1)`;
 
@@ -206,9 +206,9 @@ const renderTimeSpendChart = (timeSpendCtx, timeSpend) => {
     plugins: [ChartDataLabels],
     type: `horizontalBar`,
     data: {
-      labels: eventType,
+      labels: pointType,
       datasets: [{
-        data: eventTypeTimeSpend,
+        data: pointTypeTimeSpend,
         backgroundColor: `#ffffff`,
         hoverBackgroundColor: `#ffffff`,
         anchor: `start`
@@ -276,10 +276,10 @@ const renderTimeSpendChart = (timeSpendCtx, timeSpend) => {
   });
 };
 
-const getTransport = (events) => {
-  return events.reduce((transport, event) => {
-    const transportKind = EventTypesEmojiMapping[event.eventType.name];
-    if (event.eventType.group === `Transfer`) {
+const getTransport = (points) => {
+  return points.reduce((transport, point) => {
+    const transportKind = PointTypesEmojiMapping[point.pointType.name];
+    if (point.pointType.group === `Transfer`) {
       if (transport[transportKind]) {
         transport[transportKind] += 1;
       } else {
@@ -290,36 +290,36 @@ const getTransport = (events) => {
   }, {});
 };
 
-const getMoneyByEventTypes = (events) => {
-  return events.reduce((money, event) => {
-    const eventType = EventTypesEmojiMapping[event.eventType.name];
-    if (money[eventType]) {
-      money[eventType] += event.price;
+const getMoneyByPointTypes = (points) => {
+  return points.reduce((money, point) => {
+    const pointType = PointTypesEmojiMapping[point.pointType.name];
+    if (money[pointType]) {
+      money[pointType] += point.price;
     } else {
-      money[eventType] = event.price;
+      money[pointType] = point.price;
     }
     return money;
   }, {});
 };
 
-const getTimeSpendByTypes = (events) => {
-  return events.reduce((time, event) => {
-    const eventType = EventTypesEmojiMapping[event.eventType.name];
-    const timeSpend = event.dateEnd - event.dateStart;
-    if (time[eventType]) {
-      time[eventType] += timeSpend;
+const getTimeSpendByTypes = (points) => {
+  return points.reduce((time, point) => {
+    const pointType = PointTypesEmojiMapping[point.pointType.name];
+    const timeSpend = point.dateEnd - point.dateStart;
+    if (time[pointType]) {
+      time[pointType] += timeSpend;
     } else {
-      time[eventType] = timeSpend;
+      time[pointType] = timeSpend;
     }
     return time;
   }, {});
 };
 
 export default class Stat extends AbstractSmartComponent {
-  constructor({events}) {
+  constructor({points}) {
     super();
 
-    this._events = events;
+    this._points = points;
 
     this._moneyChart = null;
     this._transportChart = null;
@@ -335,13 +335,13 @@ export default class Stat extends AbstractSmartComponent {
   show() {
     super.show();
 
-    this.rerender(this._events);
+    this.rerender(this._points);
   }
 
   recoveryListeners() {}
 
-  rerender(events) {
-    this._events = events;
+  rerender(points) {
+    this._points = points;
 
     super.rerender();
 
@@ -351,11 +351,11 @@ export default class Stat extends AbstractSmartComponent {
   _renderCharts() {
     const element = this.getElement();
 
-    const allEvents = this._events.getEvents();
+    const allPoints = this._points.getPoints();
 
-    const money = getMoneyByEventTypes(allEvents);
-    const transport = getTransport(allEvents);
-    const timeSpend = getTimeSpendByTypes(allEvents);
+    const money = getMoneyByPointTypes(allPoints);
+    const transport = getTransport(allPoints);
+    const timeSpend = getTimeSpendByTypes(allPoints);
 
     this._resetCharts();
 

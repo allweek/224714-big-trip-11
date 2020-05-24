@@ -1,4 +1,4 @@
-import Event from "./models/event";
+import Point from "./models/point";
 
 const Method = {
   GET: `GET`,
@@ -21,14 +21,14 @@ const API = class {
     this._authorization = authorization;
   }
 
-  getEvents() {
+  getPoints() {
     return this._load({url: `points`})
       .then((response) => response.json())
-      .then(Event.parseEvents);
+      .then(Point.parsePoints);
   }
 
 
-  updateEvent(id, data) {
+  updatePoint(id, data) {
     return this._load({
       url: `points/${id}`,
       method: Method.PUT,
@@ -36,21 +36,21 @@ const API = class {
       headers: new Headers({"Content-Type": `application/json`})
     })
       .then((response) => response.json())
-      .then(Event.parseEvent);
+      .then(Point.parsePoint);
   }
 
-  createEvent(event) {
+  createPoint(point) {
     return this._load({
       url: `points`,
       method: Method.POST,
-      body: JSON.stringify(event.toRAW()),
+      body: JSON.stringify(point.toRAW()),
       headers: new Headers({"Content-Type": `application/json`})
     })
       .then((response) => response.json())
-      .then(Event.parseEvent);
+      .then(Point.parsePoint);
   }
 
-  deleteEvent(id) {
+  deletePoint(id) {
     return this._load({url: `points/${id}`, method: Method.DELETE});
   }
 

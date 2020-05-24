@@ -2,10 +2,10 @@ import AbstractSmartComponent from "./abstract-smart-component.js";
 import DestinationComponent from "./destination";
 import OffersComponent from "./offer";
 import {encode} from "he";
-import {EventTypes} from "../const";
+import {PointTypes} from "../const";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
-import {formatFromStringToDate, matchEventType, capitalizeWord} from "../utils/common";
+import {formatFromStringToDate, matchPointType, capitalizeWord} from "../utils/common";
 
 const SHAKE_ANIMATION_TIMEOUT = 900;
 
@@ -25,51 +25,51 @@ const createCitiesListElem = (citiesList) => {
     .join(`\n`);
 };
 
-const getAllEventTypes = (types) => {
-  const eventTypesGroups = new Set();
+const getAllPointTypes = (types) => {
+  const pointTypesGroups = new Set();
   types.forEach((item) => {
-    eventTypesGroups.add(item.group);
+    pointTypesGroups.add(item.group);
   });
-  return eventTypesGroups;
+  return pointTypesGroups;
 };
 
-const eventTypesGroups = getAllEventTypes(EventTypes);
+const pointTypesGroups = getAllPointTypes(PointTypes);
 
-const createEventTypeMarkup = (eventType, dayCount, isChecked) => {
+const createPointTypeMarkup = (pointType, dayCount, isChecked) => {
   return (
     `<div class="event__type-item">
       <input
-        id="event-type-${eventType.name}-${dayCount}"
+        id="event-type-${pointType.name}-${dayCount}"
         class="event__type-input  visually-hidden"
         type="radio"
         name="event-type"
-        value="${eventType.name}" ${isChecked ? `checked` : ``}
+        value="${pointType.name}" ${isChecked ? `checked` : ``}
       />
       <label
         class="event__type-label
-        event__type-label--${eventType.name}"
-        for="event-type-${eventType.name}-${dayCount}">${capitalizeWord(eventType.name)}
+        event__type-label--${pointType.name}"
+        for="event-type-${pointType.name}-${dayCount}">${capitalizeWord(pointType.name)}
       </label>
     </div>`
   );
 };
 
-const createEventTypeGroupsMarkup = (events, dayCount, checkedType) => {
+const createPointTypeGroupsMarkup = (points, dayCount, checkedType) => {
   const fieldSetsMarkup = [];
-  for (const group of eventTypesGroups) {
-    const eventTypeMarkups = [];
-    events.forEach((event) => {
-      const isChecked = checkedType === event.name;
-      if (event.group === group) {
-        eventTypeMarkups.push(
-            createEventTypeMarkup(event, dayCount, isChecked)
+  for (const group of pointTypesGroups) {
+    const pointTypeMarkups = [];
+    points.forEach((point) => {
+      const isChecked = checkedType === point.name;
+      if (point.group === group) {
+        pointTypeMarkups.push(
+            createPointTypeMarkup(point, dayCount, isChecked)
         );
       }
     });
     fieldSetsMarkup.push(
         `<fieldset class="event__type-group">
               <legend class="visually-hidden">${group}</legend>
-              ${eventTypeMarkups.join(`\n`)}
+              ${pointTypeMarkups.join(`\n`)}
         </fieldset>`
     );
   }
@@ -79,22 +79,22 @@ const createEventTypeGroupsMarkup = (events, dayCount, checkedType) => {
 const isValidFormData = (city, dateStart, dateEnd, price) => city && city.length && (dateStart instanceof Date) && (dateEnd instanceof Date) && (dateStart.getTime() <= dateEnd.getTime()) && (price && price >= 0);
 
 
-const createEventEditTemplate = (currentEvent, offers, destinations, externalData, dayCount, isCreatingNew) => {
+const createPointEditTemplate = (currentPoint, offers, destinations, externalData, dayCount, isCreatingNew) => {
 
-  const {destination, eventType, offersChecked, price, dateStart, dateEnd, isFavorite} = currentEvent;
+  const {destination, pointType, offersChecked, price, dateStart, dateEnd, isFavorite} = currentPoint;
 
   const city = destination ? encode(destination.name) : ``;
 
-  const priceSanitized = encode(price.toString());
+  const priceSanitized = price ? encode(price.toString()) : ``;
 
   const citiesList = destinations.map((destinationItem) => destinationItem.name);
   const citiesListMarkup = createCitiesListElem(citiesList);
 
-  const eventNameToCapitalize = eventType.name ? capitalizeWord(eventType.name) : ``;
+  const pointNameToCapitalize = pointType.name ? capitalizeWord(pointType.name) : ``;
 
-  const preposition = eventType.group === `Transfer` ? `to` : `in`;
+  const preposition = pointType.group === `Transfer` ? `to` : `in`;
 
-  const offerGroupByType = offers.find((offerGroup) => offerGroup.type === eventType.name);
+  const offerGroupByType = offers.find((offerGroup) => offerGroup.type === pointType.name);
   const allOffers = offerGroupByType.offers;
 
   const deleteButtonText = externalData.deleteButtonText;
@@ -118,7 +118,7 @@ const createEventEditTemplate = (currentEvent, offers, destinations, externalDat
   }
 
 
-  const eventTypesGroupsMarkup = createEventTypeGroupsMarkup(EventTypes, dayCount, eventType.name);
+  const pointTypesGroupsMarkup = createPointTypeGroupsMarkup(PointTypes, dayCount, pointType.name);
 
 
   const destinationMarkup = destination ? new DestinationComponent(destination).getTemplate() : ``;
@@ -130,18 +130,18 @@ const createEventEditTemplate = (currentEvent, offers, destinations, externalDat
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-${dayCount}">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${eventType.name}.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${pointType.name}.png" alt="Event type icon">
           </label>
           <input class="event__type-toggle visually-hidden" id="event-type-toggle-${dayCount}" type="checkbox">
 
           <div class="event__type-list">
-            ${eventTypesGroupsMarkup}
+            ${pointTypesGroupsMarkup}
           </div>
         </div>
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-${dayCount}">
-            ${eventNameToCapitalize} ${preposition}
+            ${pointNameToCapitalize} ${preposition}
           </label>
           <input class="event__input  event__input--destination" id="event-destination-${dayCount}" type="text" name="event-destination" value="${city ? city : ``}" list="destination-list-${dayCount}">
           <datalist id="destination-list-${dayCount}">
@@ -166,7 +166,7 @@ const createEventEditTemplate = (currentEvent, offers, destinations, externalDat
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-${dayCount}" type="text" name="event-price" value="${priceSanitized ? priceSanitized : ``}">
+          <input class="event__input  event__input--price" id="event-price-${dayCount}" type="text" name="event-price" value="${priceSanitized}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit" ${isBlockSaveButton ? `
@@ -203,12 +203,12 @@ disabled` : ``}>${saveButtonText}</button>
 };
 
 
-export default class EventEdit extends AbstractSmartComponent {
-  constructor(event, offers, destinations, dayCount, isCreatingNew) {
+export default class PointEdit extends AbstractSmartComponent {
+  constructor(point, offers, destinations, dayCount, isCreatingNew) {
     super();
 
-    this._event = event;
-    this._currentEvent = JSON.parse(JSON.stringify(event));
+    this._point = point;
+    this._currentPoint = JSON.parse(JSON.stringify(point));
     this._offers = offers;
     this._destinations = destinations;
     this._dayCount = dayCount;
@@ -226,8 +226,8 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return createEventEditTemplate(
-        this._currentEvent,
+    return createPointEditTemplate(
+        this._currentPoint,
         this._offers,
         this._destinations,
         this._externalData,
@@ -252,7 +252,7 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   reset() {
-    this._currentEvent = JSON.parse(JSON.stringify(this._event));
+    this._currentPoint = JSON.parse(JSON.stringify(this._point));
 
     this.rerender();
   }
@@ -272,18 +272,18 @@ export default class EventEdit extends AbstractSmartComponent {
     const dateEndElement = this.getElement().querySelector(`[name="event-end-time"]`);
     this._flatpickrFrom = flatpickr(dateStartElement, {
       allowInput: true,
-      defaultDate: this._currentEvent.dateStart || `today`,
+      defaultDate: this._currentPoint.dateStart || `today`,
       dateFormat: `d/m/y H:i`,
       enableTime: true,
       [`time_24hr`]: true
     });
     this._flatpickrTo = flatpickr(dateEndElement, {
       allowInput: true,
-      defaultDate: this._currentEvent.dateEnd || `today`,
+      defaultDate: this._currentPoint.dateEnd || `today`,
       dateFormat: `d/m/y H:i`,
       enableTime: true,
       [`time_24hr`]: true,
-      minDate: this._currentEvent.dateStart
+      minDate: this._currentPoint.dateStart
     });
   }
 
@@ -298,8 +298,8 @@ export default class EventEdit extends AbstractSmartComponent {
 
     Array.from(element.querySelectorAll(`.event__type-group`)).forEach((fieldset) => {
       fieldset.addEventListener(`change`, (evt) => {
-        const eventName = evt.target.value;
-        this._currentEvent.eventType = matchEventType(eventName);
+        const pointName = evt.target.value;
+        this._currentPoint.pointType = matchPointType(pointName);
 
         this.rerender();
       });
@@ -312,7 +312,7 @@ export default class EventEdit extends AbstractSmartComponent {
         return;
       }
 
-      this._currentEvent.destination = Object.assign({}, this._destinations.find((destination) => destination.name === cityFromInput));
+      this._currentPoint.destination = Object.assign({}, this._destinations.find((destination) => destination.name === cityFromInput));
 
       this.rerender();
     });
@@ -323,39 +323,39 @@ export default class EventEdit extends AbstractSmartComponent {
       } else {
         evt.target.value = parseInt(evt.target.value, 10);
       }
-      this._currentEvent.price = evt.target.value;
+      this._currentPoint.price = evt.target.value;
     });
 
     Array.from(element.querySelectorAll(`.event__offer-checkbox`)).forEach((offerCheckbox) => {
       offerCheckbox.addEventListener(`change`, (evt) => {
         const offerTitle = evt.target.value;
 
-        const offerGroupByType = Object.assign({}, this._offers.find((offerGroup) => offerGroup.type === this._currentEvent.eventType.name));
+        const offerGroupByType = Object.assign({}, this._offers.find((offerGroup) => offerGroup.type === this._currentPoint.pointType.name));
         const offerByTitle = Object.assign({}, offerGroupByType.offers.find((offerGroup) => offerGroup.title === offerTitle));
 
-        if (this._currentEvent.offersChecked) {
+        if (this._currentPoint.offersChecked) {
           // при редактировании
-          const index = this._currentEvent.offersChecked.findIndex((offerChecked) => offerChecked.title === offerByTitle.title);
+          const index = this._currentPoint.offersChecked.findIndex((offerChecked) => offerChecked.title === offerByTitle.title);
           if (index !== -1) {
-            this._currentEvent.offersChecked.splice(index, 1);
+            this._currentPoint.offersChecked.splice(index, 1);
           } else {
-            this._currentEvent.offersChecked.push(offerByTitle);
+            this._currentPoint.offersChecked.push(offerByTitle);
           }
         } else {
           // при добавлении event
-          this._currentEvent.offersChecked = [];
-          this._currentEvent.offersChecked.push(offerByTitle);
+          this._currentPoint.offersChecked = [];
+          this._currentPoint.offersChecked.push(offerByTitle);
         }
       });
     });
 
     element.querySelector(`[name="event-start-time"]`).addEventListener(`change`, (evt) => {
-      this._currentEvent.dateStart = evt.target.value;
-      this._flatpickrTo.set(`minDate`, this._currentEvent.dateStart);
+      this._currentPoint.dateStart = evt.target.value;
+      this._flatpickrTo.set(`minDate`, this._currentPoint.dateStart);
     });
 
     element.querySelector(`[name="event-end-time"]`).addEventListener(`change`, (evt) => {
-      this._currentEvent.dateEnd = evt.target.value;
+      this._currentPoint.dateEnd = evt.target.value;
     });
 
     // валидация формы и активация кнопки save

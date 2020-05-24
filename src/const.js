@@ -15,7 +15,7 @@ export const MenuItem = {
   STATISTICS: `stats`
 };
 
-export const EventTypes = [
+export const PointTypes = [
   {
     name: `taxi`,
     group: `Transfer`
@@ -58,7 +58,7 @@ export const EventTypes = [
   }
 ];
 
-export const EventTypesEmojiMapping = {
+export const PointTypesEmojiMapping = {
   'taxi': `🚕 TAXI`,
   'bus': `🚌 BUS`,
   'train': `🚆 TRAIN`,
@@ -71,4 +71,4 @@ export const EventTypesEmojiMapping = {
   'restaurant': `🍽 restaurant`
 };
 
-export const defaultEventType = EventTypes[0];
+export const defaultPointType = PointTypes[0];

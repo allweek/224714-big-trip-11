@@ -1,9 +1,9 @@
-import EventComponent from "../components/event";
-import EventEditComponent from "../components/event-edit";
-import EventModel from "../models/event";
+import PointComponent from "../components/point";
+import PointEditComponent from "../components/point-edit";
+import PointModel from "../models/point";
 import {formatFromStringToDate} from "../utils/common";
 import {render, RenderPosition, replace, remove} from "../utils/render";
-import {defaultEventType} from "../const";
+import {defaultPointType} from "../const";
 
 
 const parseFormData = (form, offersList, destinations) => {
@@ -28,7 +28,7 @@ const parseFormData = (form, offersList, destinations) => {
       return checkedOffersArray;
     }, []);
 
-  return new EventModel({
+  return new PointModel({
     "base_price": Number(formData.get(`event-price`)),
     "date_from": dateStart ? dateStart : null,
     "date_to": dateEnd ? dateEnd : null,
@@ -45,8 +45,8 @@ export const Mode = {
   EDIT: `edit`,
 };
 
-export const EmptyEvent = {
-  eventType: defaultEventType,
+export const EmptyPoint = {
+  pointType: defaultPointType,
   destination: null,
   price: null,
   dateStart: new Date(),
@@ -55,7 +55,7 @@ export const EmptyEvent = {
 };
 
 
-export default class EventController {
+export default class PointController {
   constructor(container, offers, destinations, onDataChange, onViewChange, dayCount) {
     this._container = container;
     this._dayCount = dayCount;
@@ -65,121 +65,121 @@ export default class EventController {
     this._onViewChange = onViewChange;
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
     this._mode = Mode.DEFAULT;
-    this._eventComponent = null;
-    this._eventEditComponent = null;
+    this._pointComponent = null;
+    this._pointEditComponent = null;
   }
-  render(event, mode) {
-    const oldEventComponent = this._eventComponent;
-    const oldEventEditComponent = this._eventEditComponent;
+  render(point, mode) {
+    const oldPointComponent = this._pointComponent;
+    const oldPointEditComponent = this._pointEditComponent;
     this._mode = mode;
 
-    const isCreatingNew = event === EmptyEvent;
+    const isCreatingNew = point === EmptyPoint;
 
-    this._eventComponent = new EventComponent(event);
-    this._eventEditComponent = new EventEditComponent(event, this._offers, this._destinations, this._dayCount, isCreatingNew);
+    this._pointComponent = new PointComponent(point);
+    this._pointEditComponent = new PointEditComponent(point, this._offers, this._destinations, this._dayCount, isCreatingNew);
 
-    this._eventEditComponent.setSubmitHandler((evt) => {
+    this._pointEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
-      this._eventEditComponent.removeFormErrorBorder();
-      const form = this._eventEditComponent;
+      this._pointEditComponent.removeFormErrorBorder();
+      const form = this._pointEditComponent;
       const data = parseFormData(form, this._offers, this._destinations);
 
-      this._eventEditComponent.setButtonTextData({
+      this._pointEditComponent.setButtonTextData({
         saveButtonText: `Saving...`,
       });
 
 
-      this._eventEditComponent.blockEditForm();
+      this._pointEditComponent.blockEditForm();
 
-      this._onDataChange(this, event, data, false);
+      this._onDataChange(this, point, data, false);
     });
 
-    this._eventComponent.setRollupButtonClickHandler(() => {
+    this._pointComponent.setRollupButtonClickHandler(() => {
 
-      this._replaceEventToEdit();
+      this._replacePointToEdit();
       document.addEventListener(`keydown`, this._onEscKeyDown);
     });
 
-    this._eventEditComponent.setRollupButtonClickHandler(() => {
-      this._replaceEditToEvent();
+    this._pointEditComponent.setRollupButtonClickHandler(() => {
+      this._replaceEditToPoint();
       document.removeEventListener(`keydown`, this._onEscKeyDown);
     });
 
-    this._eventEditComponent.setFavoritesButtonClickHandler(() => {
-      const newEvent = EventModel.clone(event);
-      newEvent.isFavorite = !newEvent.isFavorite;
+    this._pointEditComponent.setFavoritesButtonClickHandler(() => {
+      const newPoint = PointModel.clone(point);
+      newPoint.isFavorite = !newPoint.isFavorite;
 
-      this._onDataChange(this, event, newEvent, true);
+      this._onDataChange(this, point, newPoint, true);
     });
 
-    this._eventEditComponent.setDeleteButtonClickHandler(() => {
+    this._pointEditComponent.setDeleteButtonClickHandler(() => {
       if (isCreatingNew) {
         // cancel button
-        this._onDataChange(this, EmptyEvent, null, false);
+        this._onDataChange(this, EmptyPoint, null, false);
       } else {
         // delete button
-        this._eventEditComponent.setButtonTextData({
+        this._pointEditComponent.setButtonTextData({
           deleteButtonText: `Deleting...`,
         });
 
-        this._eventEditComponent.blockEditForm();
+        this._pointEditComponent.blockEditForm();
 
-        this._onDataChange(this, event, null, false);
+        this._onDataChange(this, point, null, false);
       }
     });
 
     switch (mode) {
       case Mode.DEFAULT:
-        if (oldEventComponent && oldEventEditComponent) {
-          replace(this._eventComponent, oldEventComponent);
-          replace(this._eventEditComponent, oldEventEditComponent);
-          this._replaceEditToEvent();
+        if (oldPointComponent && oldPointEditComponent) {
+          replace(this._pointComponent, oldPointComponent);
+          replace(this._pointEditComponent, oldPointEditComponent);
+          this._replaceEditToPoint();
         } else {
-          render(this._eventComponent, this._container, RenderPosition.BEFOREEND);
+          render(this._pointComponent, this._container, RenderPosition.BEFOREEND);
         }
         break;
       case Mode.ADDING:
-        if (oldEventComponent && oldEventEditComponent) {
-          remove(oldEventComponent);
-          remove(oldEventEditComponent);
+        if (oldPointComponent && oldPointEditComponent) {
+          remove(oldPointComponent);
+          remove(oldPointEditComponent);
         }
         document.addEventListener(`keydown`, this._onEscKeyDown);
-        render(this._eventEditComponent, this._container, RenderPosition.AFTERBEGIN);
+        render(this._pointEditComponent, this._container, RenderPosition.AFTERBEGIN);
         break;
     }
   }
 
   setDefaultView() {
     if (this._mode !== Mode.DEFAULT) {
-      this._replaceEditToEvent();
+      this._replaceEditToPoint();
     }
   }
 
   destroy() {
-    remove(this._eventEditComponent);
-    remove(this._eventComponent);
+    remove(this._pointEditComponent);
+    remove(this._pointComponent);
     document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
   shake() {
-    this._eventEditComponent.shake();
+    this._pointEditComponent.shake();
   }
 
   unblockEditForm() {
-    this._eventEditComponent.unblockEditForm();
+    this._pointEditComponent.unblockEditForm();
   }
 
-  _replaceEventToEdit() {
+  _replacePointToEdit() {
     this._onViewChange();
-    replace(this._eventEditComponent, this._eventComponent);
+    replace(this._pointEditComponent, this._pointComponent);
     this._mode = Mode.EDIT;
   }
 
-  _replaceEditToEvent() {
+  _replaceEditToPoint() {
     document.removeEventListener(`keydown`, this._onEscKeyDown);
-    this._eventEditComponent.reset();
-    if (document.contains(this._eventEditComponent.getElement())) {
-      replace(this._eventComponent, this._eventEditComponent);
+    this._pointEditComponent.reset();
+    if (document.contains(this._pointEditComponent.getElement())) {
+      replace(this._pointComponent, this._pointEditComponent);
     }
 
     this._mode = Mode.DEFAULT;
@@ -190,11 +190,11 @@ export default class EventController {
     if (isEscKey) {
       if (this._mode !== Mode.ADDING) {
         // при редактировании event
-        this._replaceEditToEvent();
+        this._replaceEditToPoint();
         document.removeEventListener(`keydown`, this._onEscKeyDown);
       } else {
         // при добавлении event
-        this._onDataChange(this, EmptyEvent, null, false);
+        this._onDataChange(this, EmptyPoint, null, false);
       }
     }
   }

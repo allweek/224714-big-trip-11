@@ -1,9 +1,9 @@
-import {matchEventType} from "../utils/common";
+import {matchPointType} from "../utils/common";
 
-export default class Event {
+export default class Point {
   constructor(data) {
     this.id = data[`id`];
-    this.eventType = matchEventType(data[`type`]);
+    this.pointType = matchPointType(data[`type`]);
     this.city = data[`destination`][`name`];
     this.price = data[`base_price`];
     this.dateStart = data[`date_from`] ? new Date(data[`date_from`]) : null;
@@ -22,19 +22,19 @@ export default class Event {
       "id": this.id,
       "is_favorite": this.isFavorite,
       "offers": this.offersChecked,
-      "type": this.eventType.name
+      "type": this.pointType.name
     };
   }
 
-  static parseEvent(data) {
-    return new Event(data);
+  static parsePoint(data) {
+    return new Point(data);
   }
 
-  static parseEvents(data) {
-    return data.map(Event.parseEvent);
+  static parsePoints(data) {
+    return data.map(Point.parsePoint);
   }
 
   static clone(data) {
-    return new Event(data.toRAW());
+    return new Point(data.toRAW());
   }
 }
