@@ -395,7 +395,7 @@ export default class EventEdit extends AbstractSmartComponent {
     this._deleteButtonClickHandler = handler;
   }
 
-  setData(data) {
+  setButtonTextData(data) {
     this._externalData = Object.assign({}, DefaultData, data);
     // this.rerender();
   }
@@ -407,7 +407,7 @@ export default class EventEdit extends AbstractSmartComponent {
     setTimeout(() => {
       this.getElement().animation = ``;
 
-      this.setData({
+      this.setButtonTextData({
         saveButtonText: `Save`,
         deleteButtonText: `Delete`,
       });

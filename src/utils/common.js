@@ -26,6 +26,10 @@ export const getDuration = (start, end) => {
   return moment.duration(diff);
 };
 
+export const castTimeFormat = (value) => {
+  return value < 10 ? `0${value}` : String(value);
+};
+
 export const getDurationFormatted = (start, end) => {
   const diff = moment(end).diff(moment(start));
   const duration = moment.duration(diff);
@@ -34,9 +38,9 @@ export const getDurationFormatted = (start, end) => {
   const hours = duration.hours();
   const minutes = duration.minutes();
 
-  const daysFormatted = days !== 0 ? `${days}D` : ``;
-  const hoursFormatted = hours !== 0 ? `${hours}H` : ``;
-  const minutesFormatted = minutes !== 0 ? `${minutes}M` : ``;
+  const daysFormatted = days !== 0 ? `${castTimeFormat(days)}D` : ``;
+  const hoursFormatted = hours !== 0 ? `${castTimeFormat(hours)}H` : ``;
+  const minutesFormatted = minutes !== 0 ? `${castTimeFormat(minutes)}M` : ``;
   return `${daysFormatted} ${hoursFormatted} ${minutesFormatted}`;
 };
 

@@ -1,7 +1,7 @@
 import {FilterType} from "../const";
 
 export const getPastEvents = (events) => {
-  return events.filter((event) => event.dateStart < Date.now());
+  return events.filter((event) => event.dateEnd < Date.now());
 };
 
 export const getFutureEvents = (events) => {

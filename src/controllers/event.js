@@ -4,6 +4,7 @@ import EventModel from "../models/event";
 import {formatFromStringToDate} from "../utils/common";
 import {render, RenderPosition, replace, remove} from "../utils/render";
 import {defaultEventType} from "../const";
+import {newEventButton} from "../main";
 
 export const Mode = {
   ADDING: `adding`,
@@ -55,15 +56,6 @@ export const EmptyEvent = {
   isFavorite: false
 };
 
-// const handler = {
-//   set(target, prop, value, receiver) {
-//     console.log(`property set: ` + prop + ` = ` + value);
-//     console.trace();
-//     return true;
-//   }
-// };
-
-// export const EmptyEvent = new Proxy(EmptyEvent0, handler);
 
 export default class EventController {
   constructor(container, offers, destinations, onDataChange, onViewChange, dayCount) {
@@ -94,7 +86,7 @@ export default class EventController {
       const form = this._eventEditComponent;
       const data = parseFormData(form, this._offers, this._destinations);
 
-      this._eventEditComponent.setData({
+      this._eventEditComponent.setButtonTextData({
         saveButtonText: `Saving...`,
       });
 
@@ -104,6 +96,7 @@ export default class EventController {
     });
 
     this._eventComponent.setRollupButtonClickHandler(() => {
+
       this._replaceEventToEdit();
       document.addEventListener(`keydown`, this._onEscKeyDown);
     });
@@ -121,7 +114,7 @@ export default class EventController {
     });
 
     this._eventEditComponent.setDeleteButtonClickHandler(() => {
-      this._eventEditComponent.setData({
+      this._eventEditComponent.setButtonTextData({
         deleteButtonText: `Deleting...`,
       });
 
@@ -180,8 +173,8 @@ export default class EventController {
   _replaceEditToEvent() {
     document.removeEventListener(`keydown`, this._onEscKeyDown);
     this._eventEditComponent.reset();
-
     if (document.contains(this._eventEditComponent.getElement())) {
+      alert(11);
       replace(this._eventComponent, this._eventEditComponent);
     }
 
@@ -190,10 +183,14 @@ export default class EventController {
 
   _onEscKeyDown(evt) {
     const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-
     if (isEscKey) {
-      this._replaceEditToEvent();
-      document.removeEventListener(`keydown`, this._onEscKeyDown);
+      if (this._mode !== Mode.ADDING) {
+        this._replaceEditToEvent();
+        document.removeEventListener(`keydown`, this._onEscKeyDown);
+      } else {
+        this.destroy();
+        newEventButton.disabled = false;
+      }
     }
   }
 }

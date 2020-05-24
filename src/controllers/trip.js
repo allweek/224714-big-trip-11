@@ -178,6 +178,11 @@ export default class Trip {
 
   _onViewChange() {
     this._eventControllers.forEach((eventController) => eventController.setDefaultView());
+    if (this._creatingEvent) {
+      this._creatingEvent.destroy();
+      this._creatingEvent = null;
+      this._newEventButton.disabled = false;
+    }
   }
 
   _updateEvents() {
@@ -219,7 +224,7 @@ export default class Trip {
           eventController.shake();
         });
     } else {
-      // изменение
+      // изменение event
       this._api.updateEvent(oldData.id, newData)
         .then((eventModel) => {
           const isSuccess = this._eventsModel.updateEvent(oldData.id, eventModel);
