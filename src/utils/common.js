@@ -5,7 +5,7 @@ export const formatTime = (date) => {
   return moment(date).format(`HH:mm`);
 };
 
-export const formatDateWithHypen = (date) => {
+export const formatDateWithHyphen = (date) => {
   return moment(date).format(`YYYY-MM-DD`);
 };
 
@@ -18,7 +18,7 @@ export const formatFromStringToDate = (date) => {
 };
 
 export const isSameDate = (oldData, newData) => {
-  return ((formatDateWithHypen(oldData.dateStart) === formatDateWithHypen(newData.dateStart)) && (formatDateWithHypen(oldData.dateEnd) === formatDateWithHypen(newData.dateEnd)));
+  return ((formatDateWithHyphen(oldData.dateStart) === formatDateWithHyphen(newData.dateStart)) && (formatDateWithHyphen(oldData.dateEnd) === formatDateWithHyphen(newData.dateEnd)));
 };
 
 export const getDuration = (start, end) => {

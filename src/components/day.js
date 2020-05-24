@@ -1,9 +1,9 @@
 import AbstractComponent from "./abstract-component";
-import {getMonthShortName, formatDateWithHypen} from "../utils/common.js";
+import {getMonthShortName, formatDateWithHyphen} from "../utils/common.js";
 
 const createTripDay = (date, dayCount) => {
   const monthShortName = date ? getMonthShortName(date) : ``;
-  const dateTime = date ? formatDateWithHypen(date) : ``;
+  const dateTime = date ? formatDateWithHyphen(date) : ``;
   const dayOfMonth = date ? date.getDate() : ``;
 
   return (

@@ -1,8 +1,9 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
+import DestinationComponent from "./destination";
+import OffersComponent from "./offer";
+import {encode} from "he";
 import {EventTypes} from "../const";
 import flatpickr from "flatpickr";
-import OffersComponent from "./offer";
-import DestinationComponent from "./destination";
 import "flatpickr/dist/flatpickr.min.css";
 import {formatFromStringToDate, matchEventType, capitalizeWord} from "../utils/common";
 
@@ -79,9 +80,12 @@ const isValidFormData = (city, dateStart, dateEnd, price) => city && city.length
 
 
 const createEventEditTemplate = (currentEvent, offers, destinations, externalData, dayCount, isCreatingNew) => {
+
   const {destination, eventType, offersChecked, price, dateStart, dateEnd, isFavorite} = currentEvent;
 
-  const city = destination ? destination.name : ``;
+  const city = destination ? encode(destination.name) : ``;
+
+  const priceSanitized = encode(price.toString());
 
   const citiesList = destinations.map((destinationItem) => destinationItem.name);
   const citiesListMarkup = createCitiesListElem(citiesList);
@@ -162,7 +166,7 @@ const createEventEditTemplate = (currentEvent, offers, destinations, externalDat
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-${dayCount}" type="text" name="event-price" value="${price ? price : ``}">
+          <input class="event__input  event__input--price" id="event-price-${dayCount}" type="text" name="event-price" value="${priceSanitized ? priceSanitized : ``}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit" ${isBlockSaveButton ? `
@@ -222,7 +226,6 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    console.log(this._currentEvent.offersChecked)
     return createEventEditTemplate(
         this._currentEvent,
         this._offers,
@@ -335,9 +338,7 @@ export default class EventEdit extends AbstractSmartComponent {
           const index = this._currentEvent.offersChecked.findIndex((offerChecked) => offerChecked.title === offerByTitle.title);
           if (index !== -1) {
             this._currentEvent.offersChecked.splice(index, 1);
-            console.log(`!==-1`);
           } else {
-            console.log(`-1`);
             this._currentEvent.offersChecked.push(offerByTitle);
           }
         } else {

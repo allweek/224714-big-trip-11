@@ -6,13 +6,6 @@ import {render, RenderPosition, replace, remove} from "../utils/render";
 import {defaultEventType} from "../const";
 
 
-export const Mode = {
-  ADDING: `adding`,
-  DEFAULT: `default`,
-  EDIT: `edit`,
-};
-
-
 const parseFormData = (form, offersList, destinations) => {
   const formData = form.getData();
   const dateStartString = formData.get(`event-start-time`);
@@ -46,6 +39,11 @@ const parseFormData = (form, offersList, destinations) => {
   });
 };
 
+export const Mode = {
+  ADDING: `adding`,
+  DEFAULT: `default`,
+  EDIT: `edit`,
+};
 
 export const EmptyEvent = {
   eventType: defaultEventType,
