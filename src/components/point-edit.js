@@ -334,7 +334,7 @@ export default class PointEdit extends AbstractSmartComponent {
         const offerByTitle = Object.assign({}, offerGroupByType.offers.find((offerGroup) => offerGroup.title === offerTitle));
 
         if (this._currentPoint.offersChecked) {
-          // при редактировании
+          // при редактировании event
           const index = this._currentPoint.offersChecked.findIndex((offerChecked) => offerChecked.title === offerByTitle.title);
           if (index !== -1) {
             this._currentPoint.offersChecked.splice(index, 1);
