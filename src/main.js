@@ -40,8 +40,6 @@ const tripController = new Trip(tripComponent, eventsModel, api);
 tripController.showPreloader();
 newEventButton.disabled = true;
 
-export {newEventButton};
-
 const container = document.querySelectorAll(`.page-body__container`)[1];
 render(tripComponent, container, RenderPosition.BEFOREEND);
 

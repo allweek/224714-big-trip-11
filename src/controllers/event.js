@@ -4,7 +4,7 @@ import EventModel from "../models/event";
 import {formatFromStringToDate} from "../utils/common";
 import {render, RenderPosition, replace, remove} from "../utils/render";
 import {defaultEventType} from "../const";
-import {newEventButton} from "../main";
+
 
 export const Mode = {
   ADDING: `adding`,
@@ -90,6 +90,7 @@ export default class EventController {
         saveButtonText: `Saving...`,
       });
 
+
       this._eventEditComponent.blockEditForm();
 
       this._onDataChange(this, event, data, false);
@@ -114,13 +115,19 @@ export default class EventController {
     });
 
     this._eventEditComponent.setDeleteButtonClickHandler(() => {
-      this._eventEditComponent.setButtonTextData({
-        deleteButtonText: `Deleting...`,
-      });
+      if (isCreatingNew) {
+        // cancel button
+        this._onDataChange(this, EmptyEvent, null, false);
+      } else {
+        // delete button
+        this._eventEditComponent.setButtonTextData({
+          deleteButtonText: `Deleting...`,
+        });
 
-      this._eventEditComponent.blockEditForm();
+        this._eventEditComponent.blockEditForm();
 
-      this._onDataChange(this, event, null, false);
+        this._onDataChange(this, event, null, false);
+      }
     });
 
     switch (mode) {
@@ -174,7 +181,6 @@ export default class EventController {
     document.removeEventListener(`keydown`, this._onEscKeyDown);
     this._eventEditComponent.reset();
     if (document.contains(this._eventEditComponent.getElement())) {
-      alert(11);
       replace(this._eventComponent, this._eventEditComponent);
     }
 
@@ -185,11 +191,12 @@ export default class EventController {
     const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
     if (isEscKey) {
       if (this._mode !== Mode.ADDING) {
+        // при редактировании event
         this._replaceEditToEvent();
         document.removeEventListener(`keydown`, this._onEscKeyDown);
       } else {
-        this.destroy();
-        newEventButton.disabled = false;
+        // при добавлении event
+        this._onDataChange(this, EmptyEvent, null, false);
       }
     }
   }

@@ -213,7 +213,7 @@ export default class Trip {
           });
       }
     } else if (newData === null) {
-      // удаление event
+      // удаление существующего event
       this._api.deleteEvent(oldData.id)
         .then(() => {
           this._eventsModel.removeEvent(oldData.id);

@@ -27,9 +27,7 @@ const createCitiesListElem = (citiesList) => {
 const getAllEventTypes = (types) => {
   const eventTypesGroups = new Set();
   types.forEach((item) => {
-    if (!eventTypesGroups.has(item.group)) {
-      eventTypesGroups.add(item.group);
-    }
+    eventTypesGroups.add(item.group);
   });
   return eventTypesGroups;
 };
@@ -80,9 +78,9 @@ const createEventTypeGroupsMarkup = (events, dayCount, checkedType) => {
 const isValidFormData = (city, dateStart, dateEnd, price) => city && city.length && (dateStart instanceof Date) && (dateEnd instanceof Date) && (dateStart.getTime() <= dateEnd.getTime()) && (price && price >= 0);
 
 
-const createEventEditTemplate = (event, offers, destinations, externalData, dayCount, isCreatingNew, options) => {
-  const {price, dateStart, dateEnd, isFavorite} = event;
-  const {destination, eventType, offersChecked} = options;
+const createEventEditTemplate = (currentEvent, offers, destinations, externalData, dayCount, isCreatingNew) => {
+  const {destination, eventType, offersChecked, price, dateStart, dateEnd, isFavorite} = currentEvent;
+
   const city = destination ? destination.name : ``;
 
   const citiesList = destinations.map((destinationItem) => destinationItem.name);
@@ -206,6 +204,7 @@ export default class EventEdit extends AbstractSmartComponent {
     super();
 
     this._event = event;
+    this._currentEvent = JSON.parse(JSON.stringify(event));
     this._offers = offers;
     this._destinations = destinations;
     this._dayCount = dayCount;
@@ -217,26 +216,21 @@ export default class EventEdit extends AbstractSmartComponent {
     this._flatpickrFrom = null;
     this._flatpickrTo = null;
     this._isCreatingNew = isCreatingNew;
-    this._destination = event.destination ? event.destination : null;
-    this._eventType = event.eventType;
-    this._offersChecked = event.offersChecked;
 
     this._applyFlatpickr();
     this._subscribeOnEvents();
   }
 
   getTemplate() {
+    console.log(this._currentEvent.offersChecked)
     return createEventEditTemplate(
-        this._event,
+        this._currentEvent,
         this._offers,
         this._destinations,
         this._externalData,
         this._dayCount,
-        this._isCreatingNew, {
-          destination: this._destination,
-          eventType: this._eventType,
-          offersChecked: this._offersChecked
-        });
+        this._isCreatingNew
+    );
   }
 
   // восстановить слушатели после rerender
@@ -255,12 +249,7 @@ export default class EventEdit extends AbstractSmartComponent {
   }
 
   reset() {
-    const event = this._event;
-
-    this._eventType = event.eventType;
-    this._offersChecked = event.offersChecked;
-    this._destination = event.destination;
-    // this._event.isFavorite = event.isFavorite;
+    this._currentEvent = JSON.parse(JSON.stringify(this._event));
 
     this.rerender();
   }
@@ -280,18 +269,18 @@ export default class EventEdit extends AbstractSmartComponent {
     const dateEndElement = this.getElement().querySelector(`[name="event-end-time"]`);
     this._flatpickrFrom = flatpickr(dateStartElement, {
       allowInput: true,
-      defaultDate: this._event.dateStart || `today`,
+      defaultDate: this._currentEvent.dateStart || `today`,
       dateFormat: `d/m/y H:i`,
       enableTime: true,
       [`time_24hr`]: true
     });
     this._flatpickrTo = flatpickr(dateEndElement, {
       allowInput: true,
-      defaultDate: this._event.dateEnd || `today`,
+      defaultDate: this._currentEvent.dateEnd || `today`,
       dateFormat: `d/m/y H:i`,
       enableTime: true,
       [`time_24hr`]: true,
-      minDate: this._event.dateStart
+      minDate: this._currentEvent.dateStart
     });
   }
 
@@ -307,7 +296,7 @@ export default class EventEdit extends AbstractSmartComponent {
     Array.from(element.querySelectorAll(`.event__type-group`)).forEach((fieldset) => {
       fieldset.addEventListener(`change`, (evt) => {
         const eventName = evt.target.value;
-        this._eventType = matchEventType(eventName);
+        this._currentEvent.eventType = matchEventType(eventName);
 
         this.rerender();
       });
@@ -320,7 +309,7 @@ export default class EventEdit extends AbstractSmartComponent {
         return;
       }
 
-      this._destination = Object.assign({}, this._destinations.find((destination) => destination.name === cityFromInput));
+      this._currentEvent.destination = Object.assign({}, this._destinations.find((destination) => destination.name === cityFromInput));
 
       this.rerender();
     });
@@ -331,23 +320,41 @@ export default class EventEdit extends AbstractSmartComponent {
       } else {
         evt.target.value = parseInt(evt.target.value, 10);
       }
+      this._currentEvent.price = evt.target.value;
     });
 
     Array.from(element.querySelectorAll(`.event__offer-checkbox`)).forEach((offerCheckbox) => {
       offerCheckbox.addEventListener(`change`, (evt) => {
         const offerTitle = evt.target.value;
 
-        const offerGroupByType = Object.assign({}, this._offers.find((offerGroup) => offerGroup.type === this._eventType.name));
+        const offerGroupByType = Object.assign({}, this._offers.find((offerGroup) => offerGroup.type === this._currentEvent.eventType.name));
         const offerByTitle = Object.assign({}, offerGroupByType.offers.find((offerGroup) => offerGroup.title === offerTitle));
 
-        const index = this._offersChecked ? this._offersChecked.findIndex((offerChecked) => offerChecked.title === offerByTitle.title) : -1;
-        if (index !== -1) {
-          this._offersChecked.splice(index, 1);
+        if (this._currentEvent.offersChecked) {
+          // при редактировании
+          const index = this._currentEvent.offersChecked.findIndex((offerChecked) => offerChecked.title === offerByTitle.title);
+          if (index !== -1) {
+            this._currentEvent.offersChecked.splice(index, 1);
+            console.log(`!==-1`);
+          } else {
+            console.log(`-1`);
+            this._currentEvent.offersChecked.push(offerByTitle);
+          }
         } else {
-          this._offersChecked.push(offerByTitle);
+          // при добавлении event
+          this._currentEvent.offersChecked = [];
+          this._currentEvent.offersChecked.push(offerByTitle);
         }
-        // this.rerender();
       });
+    });
+
+    element.querySelector(`[name="event-start-time"]`).addEventListener(`change`, (evt) => {
+      this._currentEvent.dateStart = evt.target.value;
+      this._flatpickrTo.set(`minDate`, this._currentEvent.dateStart);
+    });
+
+    element.querySelector(`[name="event-end-time"]`).addEventListener(`change`, (evt) => {
+      this._currentEvent.dateEnd = evt.target.value;
     });
 
     // валидация формы и активация кнопки save
@@ -397,7 +404,7 @@ export default class EventEdit extends AbstractSmartComponent {
 
   setButtonTextData(data) {
     this._externalData = Object.assign({}, DefaultData, data);
-    // this.rerender();
+    this.rerender();
   }
 
   shake() {
