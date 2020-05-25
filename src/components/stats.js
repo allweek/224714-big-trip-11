@@ -315,7 +315,7 @@ const getTimeSpendByTypes = (points) => {
   }, {});
 };
 
-export default class Stat extends AbstractSmartComponent {
+export default class Stats extends AbstractSmartComponent {
   constructor({points}) {
     super();
 

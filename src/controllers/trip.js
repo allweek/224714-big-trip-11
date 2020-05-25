@@ -4,7 +4,7 @@ import PointController, {Mode as PointControllerMode, EmptyPoint} from "../contr
 import SortComponent from "../components/sort";
 import DaysController from "../controllers/days";
 import DayComponent from "../components/day";
-import Preloader from "../components/preloader";
+import PreloaderComponent from "../components/preloader";
 import NoPointsComponent from "../components/no-points";
 import {SortType} from "../const";
 
@@ -88,7 +88,7 @@ export default class Trip {
 
     this._pointControllers = [];
     this._sortComponent = new SortComponent();
-    this._preloader = new Preloader();
+    this._preloader = new PreloaderComponent();
     this._noPointsComponent = new NoPointsComponent();
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);

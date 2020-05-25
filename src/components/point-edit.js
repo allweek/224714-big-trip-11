@@ -1,6 +1,6 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
 import DestinationComponent from "./destination";
-import OffersComponent from "./offer";
+import OffersComponent from "./offers";
 import {encode} from "he";
 import {PointTypes} from "../const";
 import flatpickr from "flatpickr";

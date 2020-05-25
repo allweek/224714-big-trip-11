@@ -55,7 +55,7 @@ export const EmptyPoint = {
 };
 
 
-export default class PointController {
+export default class Point {
   constructor(container, offers, destinations, onDataChange, onViewChange, dayCount) {
     this._container = container;
     this._dayCount = dayCount;

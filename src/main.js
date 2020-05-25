@@ -2,7 +2,7 @@ import API from "./api.js";
 import TripComponent from "./components/trip.js";
 import PointsModel from "./models/points.js";
 import FilterController from "./controllers/filter";
-import StatComponent from "./components/stat";
+import StatsComponent from "./components/stats";
 import MenuComponent from "./components/menu";
 import {MenuItem} from "./const";
 import {render, RenderPosition} from "./utils/render.js";
@@ -34,7 +34,7 @@ newPointButton.disabled = true;
 const container = document.querySelectorAll(`.page-body__container`)[1];
 render(tripComponent, container, RenderPosition.BEFOREEND);
 
-const statComponent = new StatComponent({points: pointsModel});
+const statComponent = new StatsComponent({points: pointsModel});
 render(statComponent, container, RenderPosition.BEFOREEND);
 statComponent.hide();
 

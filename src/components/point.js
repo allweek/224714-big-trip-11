@@ -1,5 +1,5 @@
 import AbstractComponent from "./abstract-component";
-import OptionsComponent from "./option";
+import OptionsComponent from "./options";
 import {formatTime, getDurationFormatted, formatDateWithHyphenTime, capitalizeWord} from "../utils/common.js";
 
 
