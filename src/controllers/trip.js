@@ -8,8 +8,8 @@ import Preloader from "../components/preloader";
 import NoPointsComponent from "../components/no-points";
 import {SortType} from "../const";
 
-const sortPoints = (pointsArray) => {
-  const sortedPoints = [...pointsArray];
+const sortPoints = (points) => {
+  const sortedPoints = [...points];
   return sortedPoints.sort((a, b)=> a.dateStart.getTime() - b.dateStart.getTime());
 };
 

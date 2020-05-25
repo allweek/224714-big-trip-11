@@ -16,16 +16,16 @@ const parseFormData = (form, offersList, destinations) => {
   const city = formData.get(`event-destination`);
   const destination = Object.assign({}, destinations.find((destinationItem) => destinationItem.name === city));
   const offersTitles = formData.getAll(`event-offer`);
-  const checkedOffers = offersList
-    .reduce((checkedOffersArray, offersListItem) => {
+  const checkedOffersList = offersList
+    .reduce((checkedOffers, offersListItem) => {
       const offers = offersListItem.offers;
       offersTitles.forEach((offerTitle) => {
         const matchedOffer = offers.find((offer) => offerTitle === offer.title);
         if (matchedOffer) {
-          checkedOffersArray.push(matchedOffer);
+          checkedOffers.push(matchedOffer);
         }
       });
-      return checkedOffersArray;
+      return checkedOffers;
     }, []);
 
   return new PointModel({
@@ -34,7 +34,7 @@ const parseFormData = (form, offersList, destinations) => {
     "date_to": dateEnd ? dateEnd : null,
     "destination": destination,
     "is_favorite": !!formData.get(`event-favorite`),
-    "offers": checkedOffers ? checkedOffers : null,
+    "offers": checkedOffersList ? checkedOffersList : null,
     "type": formData.get(`event-type`)
   });
 };

@@ -256,10 +256,10 @@ export default class PointEdit extends AbstractSmartComponent {
     this.rerender();
   }
 
-  _flatPickrDestroy(flatpckrObject) {
-    if (flatpckrObject) {
-      flatpckrObject.destroy();
-      flatpckrObject = null;
+  _flatPickrDestroy(flatpckr) {
+    if (flatpckr) {
+      flatpckr.destroy();
+      flatpckr = null;
     }
   }
 
