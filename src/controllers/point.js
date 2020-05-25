@@ -172,6 +172,7 @@ export default class PointController {
   _replacePointToEdit() {
     this._onViewChange();
     replace(this._pointEditComponent, this._pointComponent);
+    this._pointEditComponent.applyFlatpickr();
     this._mode = Mode.EDIT;
   }
 

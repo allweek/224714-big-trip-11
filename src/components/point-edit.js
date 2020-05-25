@@ -221,7 +221,6 @@ export default class PointEdit extends AbstractSmartComponent {
     this._flatpickrTo = null;
     this._isCreatingNew = isCreatingNew;
 
-    this._applyFlatpickr();
     this._subscribeOnEvents();
   }
 
@@ -248,7 +247,7 @@ export default class PointEdit extends AbstractSmartComponent {
   rerender() {
     super.rerender();
 
-    this._applyFlatpickr();
+    this.applyFlatpickr();
   }
 
   reset() {
@@ -264,7 +263,7 @@ export default class PointEdit extends AbstractSmartComponent {
     }
   }
 
-  _applyFlatpickr() {
+  applyFlatpickr() {
     this._flatPickrDestroy(this._flatpickrFrom);
     this._flatPickrDestroy(this._flatpickrTo);
 
