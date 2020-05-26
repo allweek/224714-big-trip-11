@@ -19,9 +19,9 @@ const createOptionsMarkup = (offersChecked) => {
          ${optionsMarkup}
        </ul>`
     );
-  } else {
-    return ``;
   }
+
+  return ``;
 };
 
 
