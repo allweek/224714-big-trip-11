@@ -239,7 +239,7 @@ export default class Trip {
                 pointController.render(pointModel, PointControllerMode.DEFAULT);
               }
             } else {
-              // если дата меняется, пересовываем весь список
+              // если дата меняется, перерисовываем весь список
               this._updatePoints();
             }
             pointController.unblockEditForm();
