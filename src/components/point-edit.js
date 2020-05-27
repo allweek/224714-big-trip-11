@@ -107,9 +107,9 @@ const createPointEditTemplate = (currentPoint, offers, destinations, externalDat
       const index = offersChecked ? offersChecked.findIndex((offerChecked) => offerChecked.title === offer.title) : -1;
       if (index !== -1) {
         return {offer, checked: true};
-      } else {
-        return {offer, checked: false};
       }
+
+      return {offer, checked: false};
     });
     if (offersWithCheckedFlag) {
       const offersComponent = new OffersComponent(offersWithCheckedFlag, dayCount);
