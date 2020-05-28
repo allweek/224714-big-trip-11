@@ -138,20 +138,36 @@ export default class Trip {
     const points = this._pointsModel.getPoints();
 
     if (this._showingPreloader) {
-      this.removePreloader();
+      this._removePreloader();
     }
 
     this._daysController = new DaysController(container);
     this._daysController.render();
 
     if (!points.length) {
-      this.showNoPoints();
+      this._showNoPoints();
     } else {
-      this.removeNoPoints();
+      this._removeNoPoints();
       render(this._sortComponent, container, RenderPosition.AFTERBEGIN);
 
       this._renderPoints(points);
     }
+  }
+
+  setDefaultSortType() {
+    this._setSortType(SortType.EVENT);
+  }
+
+  showPreloader() {
+    const container = this._container.getElement();
+    this._showingPreloader = true;
+
+    render(this._preloader, container, RenderPosition.BEFOREEND);
+  }
+
+  _removePreloader() {
+    remove(this._preloader);
+    this._showingPreloader = false;
   }
 
   _renderPoints(points) {
@@ -171,18 +187,26 @@ export default class Trip {
     this._pointControllers = this._pointControllers.concat(newPoints);
   }
 
+  _removeNoPoints() {
+    remove(this._noPointsComponent);
+    this._showingNoPoints = false;
+  }
+
   _removePoints() {
     this._pointControllers.forEach((pointController) => pointController.destroy());
     this._pointControllers = [];
   }
 
-  _onViewChange() {
-    this._pointControllers.forEach((pointController) => pointController.setDefaultView());
-    if (this._creatingPoint) {
-      this._creatingPoint.destroy();
-      this._creatingPoint = null;
-      this._newPointButton.disabled = false;
-    }
+  _setSortType(sortType) {
+    this._sortComponent.setSortType(sortType);
+    this._onSortTypeChange(sortType);
+  }
+
+  _showNoPoints() {
+    const container = this._container.getElement();
+    this._showingNoPoints = true;
+
+    render(this._noPointsComponent, container, RenderPosition.BEFOREEND);
   }
 
   _updatePoints() {
@@ -254,11 +278,12 @@ export default class Trip {
   _onFilterChange() {
     this._creatingPoint = null;
     this._updatePoints();
+    this._newPointButton.disabled = false;
   }
 
   _onPointCreate() {
     if (this._showingNoPoints) {
-      this.removeNoPoints();
+      this._removeNoPoints();
     }
     this._onViewChange(); // закрыть все открытые формы
 
@@ -275,36 +300,12 @@ export default class Trip {
     this._renderPoints(sortedPoints);
   }
 
-  _setSortType(sortType) {
-    this._sortComponent.setSortType(sortType);
-    this._onSortTypeChange(sortType);
-  }
-
-  setDefaultSortType() {
-    this._setSortType(SortType.EVENT);
-  }
-
-  showPreloader() {
-    const container = this._container.getElement();
-    this._showingPreloader = true;
-
-    render(this._preloader, container, RenderPosition.BEFOREEND);
-  }
-
-  removePreloader() {
-    remove(this._preloader);
-    this._showingPreloader = false;
-  }
-
-  showNoPoints() {
-    const container = this._container.getElement();
-    this._showingNoPoints = true;
-
-    render(this._noPointsComponent, container, RenderPosition.BEFOREEND);
-  }
-
-  removeNoPoints() {
-    remove(this._noPointsComponent);
-    this._showingNoPoints = false;
+  _onViewChange() {
+    this._pointControllers.forEach((pointController) => pointController.setDefaultView());
+    if (this._creatingPoint) {
+      this._creatingPoint.destroy();
+      this._creatingPoint = null;
+      this._newPointButton.disabled = false;
+    }
   }
 }

@@ -39,14 +39,14 @@ export default class Filter {
     }
   }
 
-  _onFilterChange(filterType) {
-    this._pointsModel.setFilter(filterType);
-    this._activeFilterType = filterType;
-  }
-
   _setActiveFilterCheckbox() {
     this._activeFilterType = this._pointsModel._activeFilterType;
     this._filterComponent.setActiveFilterCheckbox(this._activeFilterType);
+  }
+
+  _onFilterChange(filterType) {
+    this._pointsModel.setFilter(filterType);
+    this._activeFilterType = filterType;
   }
 
   _onDataChange() {

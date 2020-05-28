@@ -68,6 +68,7 @@ export default class Point {
     this._pointComponent = null;
     this._pointEditComponent = null;
   }
+
   render(point, mode) {
     const oldPointComponent = this._pointComponent;
     const oldPointEditComponent = this._pointEditComponent;
@@ -95,7 +96,6 @@ export default class Point {
     });
 
     this._pointComponent.setRollupButtonClickHandler(() => {
-
       this._replacePointToEdit();
       document.addEventListener(`keydown`, this._onEscKeyDown);
     });
@@ -145,6 +145,7 @@ export default class Point {
         }
         document.addEventListener(`keydown`, this._onEscKeyDown);
         render(this._pointEditComponent, this._container, RenderPosition.AFTERBEGIN);
+        this._pointEditComponent.applyFlatpickr();
         break;
     }
   }

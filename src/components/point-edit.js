@@ -15,6 +15,13 @@ const DefaultData = {
   cancelButtonText: `Cancel`
 };
 
+const flatPickrDestroy = (flatpckr) => {
+  if (flatpckr) {
+    flatpckr.destroy();
+    flatpckr = null;
+  }
+};
+
 const createCitiesListElem = (citiesList) => {
   return citiesList
     .map((city) => {
@@ -76,7 +83,9 @@ const createPointTypeGroupsMarkup = (points, dayCount, checkedType) => {
   return fieldSetsMarkup.join(`\n`);
 };
 
-const isValidFormData = (city, dateStart, dateEnd, price) => city && city.length && (dateStart instanceof Date) && (dateEnd instanceof Date) && (dateStart.getTime() <= dateEnd.getTime()) && (price && price >= 0);
+const isValidFormData = (city, dateStart, dateEnd, price) => {
+  return city && city.length && (dateStart instanceof Date) && (dateEnd instanceof Date) && (dateStart.getTime() <= dateEnd.getTime()) && (price && price >= 0);
+};
 
 
 const createPointEditTemplate = (currentPoint, offers, destinations, externalData, dayCount, isCreatingNew) => {
@@ -235,6 +244,19 @@ export default class PointEdit extends AbstractSmartComponent {
     );
   }
 
+  removeElement() {
+    flatPickrDestroy(this._flatpickrFrom);
+    flatPickrDestroy(this._flatpickrTo);
+
+    super.removeElement();
+  }
+
+  rerender() {
+    super.rerender();
+
+    this.applyFlatpickr();
+  }
+
   // восстановить слушатели после rerender
   recoveryListeners() {
     this.setSubmitHandler(this._submitHandler);
@@ -244,130 +266,15 @@ export default class PointEdit extends AbstractSmartComponent {
     this._subscribeOnEvents();
   }
 
-  rerender() {
-    super.rerender();
-
-    this.applyFlatpickr();
-  }
-
   reset() {
     this._currentPoint = JSON.parse(JSON.stringify(this._point));
 
     this.rerender();
   }
 
-  _flatPickrDestroy(flatpckr) {
-    if (flatpckr) {
-      flatpckr.destroy();
-      flatpckr = null;
-    }
-  }
-
-  applyFlatpickr() {
-    this._flatPickrDestroy(this._flatpickrFrom);
-    this._flatPickrDestroy(this._flatpickrTo);
-
-    const dateStartElement = this.getElement().querySelector(`[name="event-start-time"]`);
-    const dateEndElement = this.getElement().querySelector(`[name="event-end-time"]`);
-    this._flatpickrFrom = flatpickr(dateStartElement, {
-      allowInput: true,
-      defaultDate: this._currentPoint.dateStart || `today`,
-      dateFormat: `d/m/y H:i`,
-      enableTime: true,
-      [`time_24hr`]: true
-    });
-    this._flatpickrTo = flatpickr(dateEndElement, {
-      allowInput: true,
-      defaultDate: this._currentPoint.dateEnd || `today`,
-      dateFormat: `d/m/y H:i`,
-      enableTime: true,
-      [`time_24hr`]: true,
-      minDate: this._currentPoint.dateStart
-    });
-  }
-
   getData() {
     const form = this.getElement();
     return new FormData(form);
-  }
-
-  _subscribeOnEvents() {
-    const element = this.getElement();
-    const citiesList = this._destinations.map((destinationItem) => destinationItem.name);
-
-    Array.from(element.querySelectorAll(`.event__type-group`)).forEach((fieldset) => {
-      fieldset.addEventListener(`change`, (evt) => {
-        const pointName = evt.target.value;
-        this._currentPoint.pointType = matchPointType(pointName);
-
-        this.rerender();
-      });
-    });
-
-    element.querySelector(`.event__input--destination`).addEventListener(`change`, (evt) => {
-      const cityFromInput = evt.target.value;
-      if (!cityFromInput || citiesList.indexOf(cityFromInput) === -1) {
-        evt.target.value = ``;
-        return;
-      }
-
-      this._currentPoint.destination = Object.assign({}, this._destinations.find((destination) => destination.name === cityFromInput));
-
-      this.rerender();
-    });
-
-    element.querySelector(`.event__input--price`).addEventListener(`change`, (evt) => {
-      if (isNaN(evt.target.value)) {
-        evt.target.value = ``;
-      } else {
-        evt.target.value = parseInt(evt.target.value, 10);
-      }
-      this._currentPoint.price = evt.target.value;
-    });
-
-    Array.from(element.querySelectorAll(`.event__offer-checkbox`)).forEach((offerCheckbox) => {
-      offerCheckbox.addEventListener(`change`, (evt) => {
-        const offerTitle = evt.target.value;
-
-        const offerGroupByType = Object.assign({}, this._offers.find((offerGroup) => offerGroup.type === this._currentPoint.pointType.name));
-        const offerByTitle = Object.assign({}, offerGroupByType.offers.find((offerGroup) => offerGroup.title === offerTitle));
-
-        if (this._currentPoint.offersChecked) {
-          // при редактировании
-          const index = this._currentPoint.offersChecked.findIndex((offerChecked) => offerChecked.title === offerByTitle.title);
-          if (index !== -1) {
-            this._currentPoint.offersChecked.splice(index, 1);
-          } else {
-            this._currentPoint.offersChecked.push(offerByTitle);
-          }
-        } else {
-          // при добавлении event
-          this._currentPoint.offersChecked = [];
-          this._currentPoint.offersChecked.push(offerByTitle);
-        }
-      });
-    });
-
-    element.querySelector(`[name="event-start-time"]`).addEventListener(`change`, (evt) => {
-      this._currentPoint.dateStart = evt.target.value;
-      this._flatpickrTo.set(`minDate`, this._currentPoint.dateStart);
-    });
-
-    element.querySelector(`[name="event-end-time"]`).addEventListener(`change`, (evt) => {
-      this._currentPoint.dateEnd = evt.target.value;
-    });
-
-    // валидация формы и активация кнопки save
-    element.addEventListener(`change`, () => {
-      const formData = this.getData();
-      const city = formData.get(`event-destination`);
-      const dateStartString = formData.get(`event-start-time`);
-      const dateStart = formatFromStringToDate(dateStartString);
-      const dateEndString = formData.get(`event-end-time`);
-      const dateEnd = formatFromStringToDate(dateEndString);
-      const price = Number(formData.get(`event-price`));
-      element.querySelector(`.event__save-btn`).disabled = !isValidFormData(city, dateStart, dateEnd, price);
-    });
   }
 
   setSubmitHandler(handler) {
@@ -437,5 +344,107 @@ export default class PointEdit extends AbstractSmartComponent {
 
   removeFormErrorBorder() {
     this.getElement().style.border = ``;
+  }
+
+  applyFlatpickr() {
+    flatPickrDestroy(this._flatpickrFrom);
+    flatPickrDestroy(this._flatpickrTo);
+
+    const dateStartElement = this.getElement().querySelector(`[name="event-start-time"]`);
+    const dateEndElement = this.getElement().querySelector(`[name="event-end-time"]`);
+    this._flatpickrFrom = flatpickr(dateStartElement, {
+      allowInput: true,
+      defaultDate: this._currentPoint.dateStart || `today`,
+      dateFormat: `d/m/y H:i`,
+      enableTime: true,
+      [`time_24hr`]: true
+    });
+    this._flatpickrTo = flatpickr(dateEndElement, {
+      allowInput: true,
+      defaultDate: this._currentPoint.dateEnd || `today`,
+      dateFormat: `d/m/y H:i`,
+      enableTime: true,
+      [`time_24hr`]: true,
+      minDate: this._currentPoint.dateStart
+    });
+  }
+
+  _subscribeOnEvents() {
+    const element = this.getElement();
+    const citiesList = this._destinations.map((destinationItem) => destinationItem.name);
+
+    Array.from(element.querySelectorAll(`.event__type-group`)).forEach((fieldset) => {
+      fieldset.addEventListener(`change`, (evt) => {
+        const pointName = evt.target.value;
+        this._currentPoint.pointType = matchPointType(pointName);
+
+        this.rerender();
+      });
+    });
+
+    element.querySelector(`.event__input--destination`).addEventListener(`change`, (evt) => {
+      const cityFromInput = evt.target.value;
+      if (!cityFromInput || citiesList.indexOf(cityFromInput) === -1) {
+        evt.target.value = ``;
+        return;
+      }
+
+      this._currentPoint.destination = Object.assign({}, this._destinations.find((destination) => destination.name === cityFromInput));
+
+      this.rerender();
+    });
+
+    element.querySelector(`.event__input--price`).addEventListener(`change`, (evt) => {
+      if (isNaN(evt.target.value) || evt.target.value === ``) {
+        evt.target.value = ``;
+      } else {
+        evt.target.value = parseInt(evt.target.value, 10);
+      }
+      this._currentPoint.price = evt.target.value;
+    });
+
+    Array.from(element.querySelectorAll(`.event__offer-checkbox`)).forEach((offerCheckbox) => {
+      offerCheckbox.addEventListener(`change`, (evt) => {
+        const offerTitle = evt.target.value;
+
+        const offerGroupByType = Object.assign({}, this._offers.find((offerGroup) => offerGroup.type === this._currentPoint.pointType.name));
+        const offerByTitle = Object.assign({}, offerGroupByType.offers.find((offerGroup) => offerGroup.title === offerTitle));
+
+        if (this._currentPoint.offersChecked) {
+          // при редактировании
+          const index = this._currentPoint.offersChecked.findIndex((offerChecked) => offerChecked.title === offerByTitle.title);
+          if (index !== -1) {
+            this._currentPoint.offersChecked.splice(index, 1);
+          } else {
+            this._currentPoint.offersChecked.push(offerByTitle);
+          }
+        } else {
+          // при добавлении event
+          this._currentPoint.offersChecked = [];
+          this._currentPoint.offersChecked.push(offerByTitle);
+        }
+      });
+    });
+
+    element.querySelector(`[name="event-start-time"]`).addEventListener(`change`, (evt) => {
+      this._currentPoint.dateStart = evt.target.value;
+      this._flatpickrTo.set(`minDate`, this._currentPoint.dateStart);
+    });
+
+    element.querySelector(`[name="event-end-time"]`).addEventListener(`change`, (evt) => {
+      this._currentPoint.dateEnd = evt.target.value;
+    });
+
+    // валидация формы и активация кнопки save
+    element.addEventListener(`change`, () => {
+      const formData = this.getData();
+      const city = formData.get(`event-destination`);
+      const dateStartString = formData.get(`event-start-time`);
+      const dateStart = formatFromStringToDate(dateStartString);
+      const dateEndString = formData.get(`event-end-time`);
+      const dateEnd = formatFromStringToDate(dateEndString);
+      const price = Number(formData.get(`event-price`));
+      this.getElement().querySelector(`.event__save-btn`).disabled = !isValidFormData(city, dateStart, dateEnd, price);
+    });
   }
 }
