@@ -278,7 +278,9 @@ export default class Trip {
   _onFilterChange() {
     this._creatingPoint = null;
     this._updatePoints();
-    this._newPointButton.disabled = false;
+    if (this._newPointButton) {
+      this._newPointButton.disabled = false;
+    }
   }
 
   _onPointCreate() {

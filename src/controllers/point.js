@@ -6,27 +6,26 @@ import {render, RenderPosition, replace, remove} from "../utils/render";
 import {defaultPointType} from "../const";
 
 
-const parseFormData = (form, offersList, destinations) => {
+const parseFormData = (form, offers, destinations) => {
   const formData = form.getData();
   const dateStartString = formData.get(`event-start-time`);
   const dateStart = formatFromStringToDate(dateStartString);
   const dateEndString = formData.get(`event-end-time`);
   const dateEnd = formatFromStringToDate(dateEndString);
 
+  const type = formData.get(`event-type`);
   const city = formData.get(`event-destination`);
   const destination = Object.assign({}, destinations.find((destinationItem) => destinationItem.name === city));
   const offersTitles = formData.getAll(`event-offer`);
-  const checkedOffersList = offersList
-    .reduce((checkedOffers, offersListItem) => {
-      const offers = offersListItem.offers;
-      offersTitles.forEach((offerTitle) => {
-        const matchedOffer = offers.find((offer) => offerTitle === offer.title);
-        if (matchedOffer) {
-          checkedOffers.push(matchedOffer);
-        }
-      });
-      return checkedOffers;
-    }, []);
+  const offersGroupByPointType = [...offers].find((offer) => offer.type === type);
+  const offersByPointType = offersGroupByPointType.offers;
+  const checkedOffers = [];
+  offersTitles.forEach((offerTitle) => {
+    const matchedOffer = offersByPointType.find((offer) => offer.title === offerTitle);
+    if (matchedOffer) {
+      checkedOffers.push(matchedOffer);
+    }
+  });
 
   return new PointModel({
     "base_price": Number(formData.get(`event-price`)),
@@ -34,8 +33,8 @@ const parseFormData = (form, offersList, destinations) => {
     "date_to": dateEnd ? dateEnd : null,
     "destination": destination,
     "is_favorite": !!formData.get(`event-favorite`),
-    "offers": checkedOffersList ? checkedOffersList : null,
-    "type": formData.get(`event-type`)
+    "offers": checkedOffers ? checkedOffers : null,
+    "type": type
   });
 };
 

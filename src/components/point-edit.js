@@ -377,6 +377,7 @@ export default class PointEdit extends AbstractSmartComponent {
       fieldset.addEventListener(`change`, (evt) => {
         const pointName = evt.target.value;
         this._currentPoint.pointType = matchPointType(pointName);
+        this._currentPoint.offersChecked = [];
 
         this.rerender();
       });
