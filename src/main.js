@@ -2,9 +2,7 @@ import API from "./api.js";
 import TripComponent from "./components/trip.js";
 import PointsModel from "./models/points.js";
 import FilterController from "./controllers/filter";
-import InfoComponent from "./components/trip-info";
-import InfoMainComponent from "./components/trip-info-main";
-import InfoCostComponent from "./components/trip-info-cost";
+import TripInfoController from "./controllers/trip-info";
 import StatsComponent from "./components/stats";
 import MenuComponent from "./components/menu";
 import {MenuItem} from "./const";
@@ -12,7 +10,7 @@ import {render, RenderPosition} from "./utils/render.js";
 import Trip from "./controllers/trip.js";
 
 
-const AUTHORIZATION = `Basic eo0w590ik22659a=`;
+const AUTHORIZATION = `Basic eo0w590ik22579a=`;
 const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
 
 const api = new API(END_POINT, AUTHORIZATION);
@@ -20,10 +18,8 @@ const pointsModel = new PointsModel();
 
 
 const tripMain = document.querySelector(`.trip-main`);
-render(new InfoComponent(), tripMain, RenderPosition.AFTERBEGIN);
-const tripInfo = tripMain.querySelector(`.trip-info`);
-render(new InfoMainComponent(), tripInfo, RenderPosition.AFTERBEGIN);
-render(new InfoCostComponent(), tripInfo, RenderPosition.BEFOREEND);
+const tripInfoController = new TripInfoController(tripMain, pointsModel);
+tripInfoController.render();
 
 const tripControls = tripMain.querySelector(`.trip-controls`);
 const menuComponent = new MenuComponent();
