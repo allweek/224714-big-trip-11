@@ -266,12 +266,6 @@ export default class PointEdit extends AbstractSmartComponent {
     this._subscribeOnEvents();
   }
 
-  reset() {
-    this._currentPoint = JSON.parse(JSON.stringify(this._point));
-
-    this.rerender();
-  }
-
   getData() {
     const form = this.getElement();
     return new FormData(form);
@@ -311,6 +305,12 @@ export default class PointEdit extends AbstractSmartComponent {
 
   setButtonTextData(data) {
     this._externalData = Object.assign({}, DefaultData, data);
+    this.rerender();
+  }
+
+  reset() {
+    this._currentPoint = JSON.parse(JSON.stringify(this._point));
+
     this.rerender();
   }
 

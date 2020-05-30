@@ -18,18 +18,18 @@ const createTripInfoMain = (points) => {
     }
   });
 
-  const oldestPointCity = oldestPoint.city;
-  const newestPointCity = newestPoint.city;
+  const oldestPointCity = oldestPoint ? oldestPoint.city : ``;
+  const newestPointCity = newestPoint ? newestPoint.city : ``;
   let middleCity = `...`;
   if (points.length === 3) {
     const middleCityPoint = points.filter((point) => ((point.city !== oldestPointCity) && (point.city !== newestPointCity)))[0];
     middleCity = middleCityPoint.city;
   }
-  const oldestPointMonth = getMonthShortName(oldestPoint.dateStart);
-  const oldestPointDay = oldestPoint.dateStart.getDate();
-  const newestPointMonth = getMonthShortName(newestPoint.dateEnd);
+  const oldestPointMonth = oldestPoint ? getMonthShortName(oldestPoint.dateStart) : ``;
+  const oldestPointDay = oldestPoint ? oldestPoint.dateStart.getDate() : ``;
+  const newestPointMonth = newestPoint ? getMonthShortName(newestPoint.dateEnd) : ``;
   const newestPointMonthVisible = newestPointMonth === oldestPointMonth ? `` : `${newestPointMonth}&nbsp`;
-  const newestPointDay = newestPoint.dateEnd.getDate();
+  const newestPointDay = newestPoint ? newestPoint.dateEnd.getDate() : ``;
 
   return (`
       <h1 class="trip-info__title">${oldestPointCity} &mdash; ${middleCity} &mdash; ${newestPointCity}</h1>

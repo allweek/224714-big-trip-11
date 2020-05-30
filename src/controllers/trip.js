@@ -1,5 +1,5 @@
 import {render, remove, RenderPosition} from "../utils/render";
-import {isSameDate, getDuration} from "../utils/common";
+import {getDuration} from "../utils/common";
 import PointController, {Mode as PointControllerMode, EmptyPoint} from "../controllers/point";
 import SortComponent from "../components/sort";
 import DaysController from "../controllers/days";
@@ -105,6 +105,10 @@ export default class Trip {
     this._pointsModel.setFilterChangeHandler(this._onFilterChange);
   }
 
+  setDefaultSortType() {
+    this._setSortType(SortType.EVENT);
+  }
+
   hide() {
     this._container.hide();
   }
@@ -152,10 +156,6 @@ export default class Trip {
 
       this._renderPoints(points);
     }
-  }
-
-  setDefaultSortType() {
-    this._setSortType(SortType.EVENT);
   }
 
   showPreloader() {
@@ -211,7 +211,8 @@ export default class Trip {
 
   _updatePoints() {
     this._removePoints();
-    this._renderPoints(this._pointsModel.getPoints());
+    const sortedPoints = getSortedPoints(this._pointsModel.getPoints(), this._sortComponent.getSortType());
+    this._renderPoints(sortedPoints);
   }
 
   _onDataChange(pointController, oldData, newData, stayOnAddingMode) {
@@ -253,17 +254,11 @@ export default class Trip {
         .then((pointModel) => {
           const isSuccess = this._pointsModel.updatePoint(oldData.id, pointModel);
           if (isSuccess) {
-            if (isSameDate(oldData, newData)) {
-              // если дата не меняется перерисовываем только данное событие
-              if (stayOnAddingMode) {
-                // изменение данных без закрытия и сохранения формы, например добавление в избранное
-                pointController.render(newData, PointControllerMode.ADDING);
-              } else {
-                // изменение данных с закрытием формы
-                pointController.render(pointModel, PointControllerMode.DEFAULT);
-              }
+            if (stayOnAddingMode) {
+              // изменение данных без закрытия и сохранения формы, например добавление в избранное
+              pointController.render(newData, PointControllerMode.ADDING);
             } else {
-              // если дата меняется, перерисовываем весь список
+              // изменение данных с закрытием формы
               this._updatePoints();
             }
             pointController.unblockEditForm();
