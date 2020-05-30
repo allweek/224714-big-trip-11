@@ -2,7 +2,7 @@ import DaysComponent from "../components/days";
 import {render, RenderPosition} from "../utils/render";
 
 
-export default class DaysController {
+export default class Days {
   constructor(container) {
     this._container = container;
 

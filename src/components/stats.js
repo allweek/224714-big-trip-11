@@ -315,7 +315,7 @@ const getTimeSpendByTypes = (points) => {
   }, {});
 };
 
-export default class Stat extends AbstractSmartComponent {
+export default class Stats extends AbstractSmartComponent {
   constructor({points}) {
     super();
 
@@ -348,6 +348,13 @@ export default class Stat extends AbstractSmartComponent {
     this._renderCharts();
   }
 
+  destroyChart(chart) {
+    if (chart) {
+      chart.destroy();
+      chart = null;
+    }
+  }
+
   _renderCharts() {
     const element = this.getElement();
 
@@ -367,13 +374,6 @@ export default class Stat extends AbstractSmartComponent {
     this._moneyChart = renderMoneyChart(moneyCtx, money);
     this._transportChart = renderTransportChart(transportCtx, transport);
     this._timeSpendChart = renderTimeSpendChart(timeSpendCtx, timeSpend);
-  }
-
-  destroyChart(chart) {
-    if (chart) {
-      chart.destroy();
-      chart = null;
-    }
   }
 
   _resetCharts() {

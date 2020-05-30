@@ -17,10 +17,6 @@ export const formatFromStringToDate = (date) => {
   return moment(date, `DD/MM/YY HH:mm`).toDate();
 };
 
-export const isSameDate = (oldData, newData) => {
-  return ((formatDateWithHyphen(oldData.dateStart) === formatDateWithHyphen(newData.dateStart)) && (formatDateWithHyphen(oldData.dateEnd) === formatDateWithHyphen(newData.dateEnd)));
-};
-
 export const getDuration = (start, end) => {
   const diff = moment(end).diff(moment(start));
   return moment.duration(diff);

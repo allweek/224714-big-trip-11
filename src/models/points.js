@@ -17,19 +17,13 @@ export default class Points {
     return getPointsByFilter(this._points, this._activeFilterType);
   }
 
+  getPointsAll() {
+    return this._points;
+  }
+
   setPoints(points) {
     this._points = Array.from(points);
     this._callHandlers(this._dataChangeHandlers);
-  }
-
-  setFilter(filterType) {
-    this._activeFilterType = filterType;
-    this._callHandlers(this._filterChangeHandlers);
-  }
-
-  setEverythingFilter() {
-    this._activeFilterType = FilterType.EVERYTHING;
-    this._callHandlers(this._changeComponentFilterCheckbox);
   }
 
   setOffers(offers) {
@@ -46,6 +40,16 @@ export default class Points {
 
   getDestinations() {
     return this._destinations;
+  }
+
+  setFilter(filterType) {
+    this._activeFilterType = filterType;
+    this._callHandlers(this._filterChangeHandlers);
+  }
+
+  setEverythingFilter() {
+    this._activeFilterType = FilterType.EVERYTHING;
+    this._callHandlers(this._changeComponentFilterCheckbox);
   }
 
   updatePoint(id, point) {

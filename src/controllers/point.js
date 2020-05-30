@@ -6,27 +6,26 @@ import {render, RenderPosition, replace, remove} from "../utils/render";
 import {defaultPointType} from "../const";
 
 
-const parseFormData = (form, offersList, destinations) => {
+const parseFormData = (form, offers, destinations) => {
   const formData = form.getData();
   const dateStartString = formData.get(`event-start-time`);
   const dateStart = formatFromStringToDate(dateStartString);
   const dateEndString = formData.get(`event-end-time`);
   const dateEnd = formatFromStringToDate(dateEndString);
 
+  const type = formData.get(`event-type`);
   const city = formData.get(`event-destination`);
   const destination = Object.assign({}, destinations.find((destinationItem) => destinationItem.name === city));
   const offersTitles = formData.getAll(`event-offer`);
-  const checkedOffers = offersList
-    .reduce((checkedOffersArray, offersListItem) => {
-      const offers = offersListItem.offers;
-      offersTitles.forEach((offerTitle) => {
-        const matchedOffer = offers.find((offer) => offerTitle === offer.title);
-        if (matchedOffer) {
-          checkedOffersArray.push(matchedOffer);
-        }
-      });
-      return checkedOffersArray;
-    }, []);
+  const offersGroupByPointType = Object.assign({}, offers.find((offer) => offer.type === type));
+  const offersByPointType = offersGroupByPointType.offers;
+  const checkedOffers = [];
+  offersTitles.forEach((offerTitle) => {
+    const matchedOffer = offersByPointType.find((offer) => offer.title === offerTitle);
+    if (matchedOffer) {
+      checkedOffers.push(matchedOffer);
+    }
+  });
 
   return new PointModel({
     "base_price": Number(formData.get(`event-price`)),
@@ -35,7 +34,7 @@ const parseFormData = (form, offersList, destinations) => {
     "destination": destination,
     "is_favorite": !!formData.get(`event-favorite`),
     "offers": checkedOffers ? checkedOffers : null,
-    "type": formData.get(`event-type`)
+    "type": type
   });
 };
 
@@ -55,7 +54,7 @@ export const EmptyPoint = {
 };
 
 
-export default class PointController {
+export default class Point {
   constructor(container, offers, destinations, onDataChange, onViewChange, dayCount) {
     this._container = container;
     this._dayCount = dayCount;
@@ -68,6 +67,7 @@ export default class PointController {
     this._pointComponent = null;
     this._pointEditComponent = null;
   }
+
   render(point, mode) {
     const oldPointComponent = this._pointComponent;
     const oldPointEditComponent = this._pointEditComponent;
@@ -95,7 +95,6 @@ export default class PointController {
     });
 
     this._pointComponent.setRollupButtonClickHandler(() => {
-
       this._replacePointToEdit();
       document.addEventListener(`keydown`, this._onEscKeyDown);
     });
@@ -145,6 +144,7 @@ export default class PointController {
         }
         document.addEventListener(`keydown`, this._onEscKeyDown);
         render(this._pointEditComponent, this._container, RenderPosition.AFTERBEGIN);
+        this._pointEditComponent.applyFlatpickr();
         break;
     }
   }
@@ -172,6 +172,7 @@ export default class PointController {
   _replacePointToEdit() {
     this._onViewChange();
     replace(this._pointEditComponent, this._pointComponent);
+    this._pointEditComponent.applyFlatpickr();
     this._mode = Mode.EDIT;
   }
 

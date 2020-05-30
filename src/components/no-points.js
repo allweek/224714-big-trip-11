@@ -8,7 +8,7 @@ const createNoPointsTemplate = () => {
 };
 
 
-export default class Preloader extends AbstractComponent {
+export default class NoPoints extends AbstractComponent {
   getTemplate() {
     return createNoPointsTemplate();
   }

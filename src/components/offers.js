@@ -1,6 +1,6 @@
 import AbstractComponent from "./abstract-component";
 
-const createOfferMarkup = (pointOffers, dayCount) => {
+const createOffersMarkup = (pointOffers, dayCount) => {
   return pointOffers
     .map((pointOffer, index) => {
       return (
@@ -36,6 +36,6 @@ export default class Offers extends AbstractComponent {
   }
 
   getTemplate() {
-    return createOfferMarkup(this._options, this._dayCount);
+    return createOffersMarkup(this._options, this._dayCount);
   }
 }

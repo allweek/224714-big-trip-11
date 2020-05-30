@@ -1,15 +1,15 @@
 import {render, remove, RenderPosition} from "../utils/render";
-import {isSameDate, getDuration} from "../utils/common";
+import {getDuration} from "../utils/common";
 import PointController, {Mode as PointControllerMode, EmptyPoint} from "../controllers/point";
 import SortComponent from "../components/sort";
 import DaysController from "../controllers/days";
 import DayComponent from "../components/day";
-import Preloader from "../components/preloader";
+import PreloaderComponent from "../components/preloader";
 import NoPointsComponent from "../components/no-points";
 import {SortType} from "../const";
 
-const sortPoints = (pointsArray) => {
-  const sortedPoints = [...pointsArray];
+const sortPoints = (points) => {
+  const sortedPoints = [...points];
   return sortedPoints.sort((a, b)=> a.dateStart.getTime() - b.dateStart.getTime());
 };
 
@@ -88,7 +88,7 @@ export default class Trip {
 
     this._pointControllers = [];
     this._sortComponent = new SortComponent();
-    this._preloader = new Preloader();
+    this._preloader = new PreloaderComponent();
     this._noPointsComponent = new NoPointsComponent();
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
@@ -103,6 +103,10 @@ export default class Trip {
 
     this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
     this._pointsModel.setFilterChangeHandler(this._onFilterChange);
+  }
+
+  setDefaultSortType() {
+    this._setSortType(SortType.EVENT);
   }
 
   hide() {
@@ -138,20 +142,32 @@ export default class Trip {
     const points = this._pointsModel.getPoints();
 
     if (this._showingPreloader) {
-      this.removePreloader();
+      this._removePreloader();
     }
 
     this._daysController = new DaysController(container);
     this._daysController.render();
 
     if (!points.length) {
-      this.showNoPoints();
+      this._showNoPoints();
     } else {
-      this.removeNoPoints();
+      this._removeNoPoints();
       render(this._sortComponent, container, RenderPosition.AFTERBEGIN);
 
       this._renderPoints(points);
     }
+  }
+
+  showPreloader() {
+    const container = this._container.getElement();
+    this._showingPreloader = true;
+
+    render(this._preloader, container, RenderPosition.BEFOREEND);
+  }
+
+  _removePreloader() {
+    remove(this._preloader);
+    this._showingPreloader = false;
   }
 
   _renderPoints(points) {
@@ -171,23 +187,32 @@ export default class Trip {
     this._pointControllers = this._pointControllers.concat(newPoints);
   }
 
+  _removeNoPoints() {
+    remove(this._noPointsComponent);
+    this._showingNoPoints = false;
+  }
+
   _removePoints() {
     this._pointControllers.forEach((pointController) => pointController.destroy());
     this._pointControllers = [];
   }
 
-  _onViewChange() {
-    this._pointControllers.forEach((pointController) => pointController.setDefaultView());
-    if (this._creatingPoint) {
-      this._creatingPoint.destroy();
-      this._creatingPoint = null;
-      this._newPointButton.disabled = false;
-    }
+  _setSortType(sortType) {
+    this._sortComponent.setSortType(sortType);
+    this._onSortTypeChange(sortType);
+  }
+
+  _showNoPoints() {
+    const container = this._container.getElement();
+    this._showingNoPoints = true;
+
+    render(this._noPointsComponent, container, RenderPosition.BEFOREEND);
   }
 
   _updatePoints() {
     this._removePoints();
-    this._renderPoints(this._pointsModel.getPoints());
+    const sortedPoints = getSortedPoints(this._pointsModel.getPoints(), this._sortComponent.getSortType());
+    this._renderPoints(sortedPoints);
   }
 
   _onDataChange(pointController, oldData, newData, stayOnAddingMode) {
@@ -229,17 +254,11 @@ export default class Trip {
         .then((pointModel) => {
           const isSuccess = this._pointsModel.updatePoint(oldData.id, pointModel);
           if (isSuccess) {
-            if (isSameDate(oldData, newData)) {
-              // если дата не меняется перерисовываем только данное событие
-              if (stayOnAddingMode) {
-                // изменение данных без закрытия и сохранения формы, например добавление в избранное
-                pointController.render(newData, PointControllerMode.ADDING);
-              } else {
-                // изменение данных с закрытием формы
-                pointController.render(pointModel, PointControllerMode.DEFAULT);
-              }
+            if (stayOnAddingMode) {
+              // изменение данных без закрытия и сохранения формы, например добавление в избранное
+              pointController.render(newData, PointControllerMode.ADDING);
             } else {
-              // если дата меняется, пересовываем весь список
+              // изменение данных с закрытием формы
               this._updatePoints();
             }
             pointController.unblockEditForm();
@@ -254,11 +273,14 @@ export default class Trip {
   _onFilterChange() {
     this._creatingPoint = null;
     this._updatePoints();
+    if (this._newPointButton) {
+      this._newPointButton.disabled = false;
+    }
   }
 
   _onPointCreate() {
     if (this._showingNoPoints) {
-      this.removeNoPoints();
+      this._removeNoPoints();
     }
     this._onViewChange(); // закрыть все открытые формы
 
@@ -275,36 +297,12 @@ export default class Trip {
     this._renderPoints(sortedPoints);
   }
 
-  _setSortType(sortType) {
-    this._sortComponent.setSortType(sortType);
-    this._onSortTypeChange(sortType);
-  }
-
-  setDefaultSortType() {
-    this._setSortType(SortType.EVENT);
-  }
-
-  showPreloader() {
-    const container = this._container.getElement();
-    this._showingPreloader = true;
-
-    render(this._preloader, container, RenderPosition.BEFOREEND);
-  }
-
-  removePreloader() {
-    remove(this._preloader);
-    this._showingPreloader = false;
-  }
-
-  showNoPoints() {
-    const container = this._container.getElement();
-    this._showingNoPoints = true;
-
-    render(this._noPointsComponent, container, RenderPosition.BEFOREEND);
-  }
-
-  removeNoPoints() {
-    remove(this._noPointsComponent);
-    this._showingNoPoints = false;
+  _onViewChange() {
+    this._pointControllers.forEach((pointController) => pointController.setDefaultView());
+    if (this._creatingPoint) {
+      this._creatingPoint.destroy();
+      this._creatingPoint = null;
+      this._newPointButton.disabled = false;
+    }
   }
 }
