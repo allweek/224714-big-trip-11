@@ -17,14 +17,30 @@ const createTripInfoMain = (points) => {
       min = point.dateStart.getTime();
     }
   });
-
+  const pointsLength = points.length;
   const oldestPointCity = oldestPoint ? oldestPoint.city : ``;
-  const newestPointCity = newestPoint ? newestPoint.city : ``;
-  let middleCity = `...`;
-  if (points.length === 3) {
-    const middleCityPoint = points.filter((point) => ((point.city !== oldestPointCity) && (point.city !== newestPointCity)))[0];
-    middleCity = middleCityPoint.city;
+  let newestPointCity = !newestPoint || pointsLength === 1 ? `` : newestPoint.city;
+
+  let citySeparator = ``;
+  switch (pointsLength) {
+    case 1:
+      citySeparator = ``;
+      break;
+    case 2:
+      citySeparator = `&nbsp;&mdash;&nbsp;`;
+      if (newestPointCity === oldestPointCity) {
+        newestPointCity = ``;
+        citySeparator = ``;
+      }
+      break;
+    case 3:
+      const middleCityPoint = points.find((point) => ((point.id !== oldestPoint.id) && (point.id !== newestPoint.id)));
+      citySeparator = `&mdash;&nbsp;${middleCityPoint.city}&nbsp;&mdash;`;
+      break;
+    default:
+      citySeparator = `&mdash;&nbsp;...&nbsp;&mdash;`;
   }
+
   const oldestPointMonth = oldestPoint ? getMonthShortName(oldestPoint.dateStart) : ``;
   const oldestPointDay = oldestPoint ? oldestPoint.dateStart.getDate() : ``;
   const newestPointMonth = newestPoint ? getMonthShortName(newestPoint.dateEnd) : ``;
@@ -32,7 +48,7 @@ const createTripInfoMain = (points) => {
   const newestPointDay = newestPoint ? newestPoint.dateEnd.getDate() : ``;
 
   return (`
-      <h1 class="trip-info__title">${oldestPointCity} &mdash; ${middleCity} &mdash; ${newestPointCity}</h1>
+      <h1 class="trip-info__title">${oldestPointCity} ${citySeparator} ${newestPointCity}</h1>
 
       <p class="trip-info__dates">${oldestPointMonth} ${oldestPointDay}&nbsp;&mdash;&nbsp;${newestPointMonthVisible}${newestPointDay}</p>`
   );
