@@ -12,7 +12,6 @@ const createTripDay = (date, dayCount) => {
         ${date ? `<span class="day__counter">${dayCount}</span>
           <time class="day__date" datetime="${dateTime}">${monthShortName} ${dayOfMonth}</time>` : ``}       
       </div>
-
       <ul class="trip-events__list">       
       </ul>
     </li>`
