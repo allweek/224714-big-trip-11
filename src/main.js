@@ -2,6 +2,9 @@ import API from "./api.js";
 import TripComponent from "./components/trip.js";
 import PointsModel from "./models/points.js";
 import FilterController from "./controllers/filter";
+import InfoComponent from "./components/trip-info";
+import InfoMainComponent from "./components/trip-info-main";
+import InfoCostComponent from "./components/trip-info-cost";
 import StatsComponent from "./components/stats";
 import MenuComponent from "./components/menu";
 import {MenuItem} from "./const";
@@ -17,6 +20,11 @@ const pointsModel = new PointsModel();
 
 
 const tripMain = document.querySelector(`.trip-main`);
+render(new InfoComponent(), tripMain, RenderPosition.AFTERBEGIN);
+const tripInfo = tripMain.querySelector(`.trip-info`);
+render(new InfoMainComponent(), tripInfo, RenderPosition.AFTERBEGIN);
+render(new InfoCostComponent(), tripInfo, RenderPosition.BEFOREEND);
+
 const tripControls = tripMain.querySelector(`.trip-controls`);
 const menuComponent = new MenuComponent();
 render(menuComponent, tripControls, RenderPosition.AFTERBEGIN);
