@@ -26,7 +26,7 @@ const createStatTemplate = () => {
 };
 
 
-const BAR_HEIGHT = 85;
+const BAR_HEIGHT = 55;
 
 const renderMoneyChart = (moneyCtx, money) => {
   const pointType = [...Object.keys(money)].map((kind) => kind.toUpperCase());
