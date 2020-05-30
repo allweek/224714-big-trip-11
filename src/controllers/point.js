@@ -17,7 +17,7 @@ const parseFormData = (form, offers, destinations) => {
   const city = formData.get(`event-destination`);
   const destination = Object.assign({}, destinations.find((destinationItem) => destinationItem.name === city));
   const offersTitles = formData.getAll(`event-offer`);
-  const offersGroupByPointType = [...offers].find((offer) => offer.type === type);
+  const offersGroupByPointType = Object.assign({}, offers.find((offer) => offer.type === type));
   const offersByPointType = offersGroupByPointType.offers;
   const checkedOffers = [];
   offersTitles.forEach((offerTitle) => {
