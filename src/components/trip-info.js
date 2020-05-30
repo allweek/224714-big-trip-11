@@ -28,7 +28,7 @@ const createTripInfoMain = (points) => {
   const oldestPointMonth = getMonthShortName(oldestPoint.dateStart);
   const oldestPointDay = oldestPoint.dateStart.getDate();
   const newestPointMonth = getMonthShortName(newestPoint.dateEnd);
-  const newestPointMonthVisible = newestPointMonth === oldestPointMonth ? `` : newestPointMonth + `&nbsp`;
+  const newestPointMonthVisible = newestPointMonth === oldestPointMonth ? `` : `${newestPointMonth}&nbsp`;
   const newestPointDay = newestPoint.dateEnd.getDate();
 
   return (`

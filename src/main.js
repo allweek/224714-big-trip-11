@@ -10,7 +10,7 @@ import {render, RenderPosition} from "./utils/render.js";
 import Trip from "./controllers/trip.js";
 
 
-const AUTHORIZATION = `Basic eo0w590ik22579a=`;
+const AUTHORIZATION = `Basic eo0w590ik22779a=`;
 const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
 
 const api = new API(END_POINT, AUTHORIZATION);
