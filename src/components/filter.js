@@ -7,7 +7,7 @@ const getFilterNameById = (id) => {
 };
 
 const createFilterMarkup = (filter) => {
-  const {name, isChecked} = filter;
+  const {name, isChecked, isDisabled} = filter;
   return (
     `<div class="trip-filters__filter">
        <input 
@@ -15,7 +15,8 @@ const createFilterMarkup = (filter) => {
          class="trip-filters__filter-input visually-hidden" type="radio" 
          name="trip-filter" 
          value="${name}"  
-         ${isChecked ? `checked` : ``}      
+         ${isChecked ? `checked` : ``}
+         ${isDisabled ? `disabled` : ``} 
        />
        <label class="trip-filters__filter-label" for="filter-${name}">${name}</label>
      </div>`

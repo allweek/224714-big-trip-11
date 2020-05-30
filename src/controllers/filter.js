@@ -1,6 +1,7 @@
 import FilterComponent from "../components/filter";
 import {render, replace, RenderPosition} from "../utils/render";
 import {FilterType} from "../const";
+import {getPointsByFilter} from "../utils/filter";
 
 
 export default class Filter {
@@ -21,10 +22,12 @@ export default class Filter {
 
   render() {
     const container = this._container;
+    const allPoints = this._pointsModel.getPointsAll();
     const filters = Object.values(FilterType).map((filterType) => {
       return {
         name: filterType,
-        isChecked: filterType === this._activeFilterType
+        isChecked: filterType === this._activeFilterType,
+        isDisabled: !getPointsByFilter(allPoints, filterType).length
       };
     });
     const oldComponent = this._filterComponent;
